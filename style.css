@@ -1,0 +1,25 @@
+body{
+background:#0b0b0b;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+header{
+padding:20px;
+}
+
+.match{
+background:#1a1a1a;
+margin:20px;
+padding:20px;
+border-radius:10px;
+}
+
+button{
+background:#ff3c3c;
+border:none;
+padding:10px 20px;
+color:white;
+border-radius:5px;
+}
