@@ -28,14 +28,19 @@ style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; colo
 Next
 </button>
 
-</div></div><!-- FIREBASE SCRIPT --><script type="module">
+</div></div><!-- PAYMENT POPUP --><div id="paymentPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center;"><div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;"><h3>Pay Entry Fee</h3><p>Send ₹20 to UPI</p><p style="font-size:18px; color:#00ff90;">vishal@upi</p><input id="refInput" type="text" placeholder="Enter UPI Reference Number"
+style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
+
+<button id="submitPaymentBtn"
+style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px; cursor:pointer;">
+Submit
+</button>
+
+</div></div><script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 
 const firebaseConfig = {
 apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
@@ -45,15 +50,13 @@ storageBucket: "ignite-scrims.firebasestorage.app",
 messagingSenderId: "497561769270",
 appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
 };
-
-
-const app = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 
-// LOGIN BUTTON
+// LOGIN
 
 document.getElementById("loginBtn").addEventListener("click", () => {
 
@@ -69,41 +72,35 @@ const userRef = doc(db, "users", user.uid);
 const docSnap = await getDoc(userRef);
 
 if(!docSnap.exists()){
-
 document.getElementById("usernamePopup").style.display = "flex";
-
 }
 
 })
 
 .catch((error) => {
-
 console.log(error);
-
 });
 
 });
 
 
-// SAVE USERNAME
+// USERNAME SAVE
 
 document.getElementById("saveUsernameBtn").addEventListener("click", async () => {
 
 const username = document.getElementById("usernameInput").value.toLowerCase();
 
-if(username.includes(" ")){alert("No spaces allowed in username");
+if(username.includes(" ")){
+alert("No spaces allowed in username");
 return;
-
 }
 
 const usernameRef = doc(db, "usernames", username);
 const usernameSnap = await getDoc(usernameRef);
 
 if(usernameSnap.exists()){
-
 alert("Username already taken");
 return;
-
 }
 
 const user = auth.currentUser;
@@ -113,12 +110,10 @@ uid: user.uid
 });
 
 await setDoc(doc(db,"users",user.uid),{
-
 username: username,
 email: user.email,
 coins: 0,
 matchesPlayed: 0
-
 });
 
 alert("Username saved successfully");
@@ -133,10 +128,8 @@ document.getElementById("usernamePopup").style.display="none";
 document.getElementById("joinBtn").addEventListener("click", () => {
 
 if(!auth.currentUser){
-
 alert("Please login first");
 return;
-
 }
 
 document.getElementById("rulesPopup").style.display = "flex";
@@ -144,36 +137,57 @@ document.getElementById("rulesPopup").style.display = "flex";
 });
 
 
-// RULES NEXT
+// RULES -> IGN
 
 document.getElementById("rulesNextBtn").addEventListener("click", () => {
 
 document.getElementById("rulesPopup").style.display = "none";
-
 document.getElementById("ignPopup").style.display = "flex";
 
 });
 
 
-// IGN SAVE
+// IGN -> PAYMENT
 
 document.getElementById("saveIgnBtn").addEventListener("click", () => {
 
 const ign = document.getElementById("ignInput").value;
 
 if(ign==""){
-
 alert("Please enter your Free Fire IGN");
 return;
-
 }
 
-alert("Next step: Payment system");
-
 document.getElementById("ignPopup").style.display="none";
+document.getElementById("paymentPopup").style.display="flex";
+
+});
+
+
+// PAYMENT SUBMIT
+
+document.getElementById("submitPaymentBtn").addEventListener("click", async () => {
+
+const ref = document.getElementById("refInput").value;
+
+if(ref==""){
+alert("Enter payment reference number");
+return;
+}
+
+const user = auth.currentUser;
+
+await setDoc(doc(db,"payments",ref),{
+uid:user.uid,
+reference:ref,
+status:"pending"
+});
+
+alert("Payment submitted. Wait for verification.");
+
+document.getElementById("paymentPopup").style.display="none";
 
 });
 
 </script></body>
 </html>
-  
