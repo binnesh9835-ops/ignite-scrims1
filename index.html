@@ -18,7 +18,7 @@
 
 <p>Play Fair • Win Big</p>
 
-<button class="login-btn" onclick="loginUser()">Login / Register</button>
+<button class="login-btn" id="loginBtn">Login / Register</button>
 
 <div class="scroll-down">⬇</div>
 
@@ -37,7 +37,7 @@
 
 <p>Players: 12 / 48</p>
 
-<button onclick="checkLogin()">Join Match</button>
+<button id="joinBtn">Join Match</button>
 
 </div>
 
@@ -68,7 +68,9 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 
-window.loginUser = function(){
+// LOGIN BUTTON
+
+document.getElementById("loginBtn").addEventListener("click", () => {
 
 signInWithPopup(auth, provider)
 
@@ -86,10 +88,12 @@ console.log(error);
 
 });
 
-}
+});
 
 
-window.checkLogin = function(){
+// JOIN MATCH BUTTON
+
+document.getElementById("joinBtn").addEventListener("click", () => {
 
 if(auth.currentUser){
 
@@ -103,10 +107,6 @@ alert("Please login first");
 
 }
 
-}
+});
 
 </script>
-
-
-</body>
-</html>
