@@ -240,24 +240,34 @@ document.getElementById("submitPaymentBtn").onclick = async () => {
 const ref = document.getElementById("refInput").value;
 
 if(ref==""){
-
 alert("Enter reference number");
 return;
-
 }
 
 const user = auth.currentUser;
 
+if(!user){
+alert("Please login first");
+return;
+}
+
+try{
+
 await setDoc(doc(db,"payments",ref),{
-
 uid:user.uid,
+reference:ref,
 status:"pending"
-
 });
 
-alert("Payment submitted");
+alert("Payment submitted successfully");
 
 document.getElementById("paymentPopup").style.display="none";
+
+}catch(e){
+
+alert("Error submitting payment");
+
+}
 
 };
 
