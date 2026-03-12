@@ -1,62 +1,165 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
+<html>
+
+<head>
 <title>IGNITE SCRIMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
-</head><body><header class="hero"><h1>IGNITE SCRIMS</h1>
-<p>Play Fair • Win Big</p><button class="login-btn" id="loginBtn">Login / Register</button>
+</head>
 
-<div class="scroll-down">⬇️</div></header><section class="matches"><h2>Upcoming Matches</h2><div class="match"><h3>Duo Match</h3>
+<body>
+
+<header class="hero">
+<h1>IGNITE SCRIMS</h1>
+<p>Play Fair • Win Big</p>
+
+<button class="login-btn" id="loginBtn">
+Login / Register
+</button>
+
+<div class="scroll-down">⬇️</div>
+</header>
+
+
+<section class="matches">
+
+<h2>Upcoming Matches</h2>
+
+<div class="match">
+<h3>Duo Match</h3>
 <p>Entry: ₹20</p>
-<p>Players: 12 / 48</p><button id="joinBtn">Join Match</button>
+<p>Players: 12 / 48</p>
 
-</div></section><!-- USERNAME POPUP --><div id="usernamePopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;"><div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:80%; max-width:320px;"><h3 style="color:white;">Choose Your Username</h3><input id="usernameInput" type="text" placeholder="Enter Username" style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;"><button id="saveUsernameBtn" style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px; cursor:pointer;">
+<button id="joinBtn">
+Join Match
+</button>
+
+</div>
+
+</section>
+
+
+<!-- USERNAME POPUP -->
+
+<div id="usernamePopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+
+<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:80%; max-width:320px;">
+
+<h3 style="color:white;">Choose Your Username</h3>
+
+<input id="usernameInput" type="text" placeholder="Enter Username"
+style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
+
+<button id="saveUsernameBtn"
+style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">
 Submit
-</button></div>
-</div><!-- RULES POPUP --><div id="rulesPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;"><div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;"><h3>IGNITE SCRIMS RULES</h3><p style="text-align:left; font-size:14px; margin-top:10px;">
+</button>
+
+</div>
+</div>
+
+
+
+<!-- RULES POPUP -->
+
+<div id="rulesPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
+
+<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
+
+<h3>IGNITE SCRIMS RULES</h3>
+
+<p style="text-align:left; font-size:14px; margin-top:10px;">
 • No hacking<br>
 • No teaming<br>
 • Entry fee non-refundable<br>
-• Join room 10 minutes before match<br>
-</p><button id="rulesNextBtn" style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px; cursor:pointer;">
+• Join room 10 minutes before match
+</p>
+
+<button id="rulesNextBtn"
+style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">
 Next
-</button></div>
-</div><!-- IGN POPUP --><div id="ignPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;"><div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;"><h3>Enter Free Fire IGN</h3><input id="ignInput" type="text" placeholder="Your In Game Name"
+</button>
+
+</div>
+</div>
+
+
+
+<!-- IGN POPUP -->
+
+<div id="ignPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
+
+<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
+
+<h3>Enter Free Fire IGN</h3>
+
+<input id="ignInput" type="text" placeholder="Your In Game Name"
 style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
 
 <button id="saveIgnBtn"
-style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px; cursor:pointer;">
+style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">
 Next
 </button>
 
-</div></div><!-- PAYMENT POPUP --><div id="paymentPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center;"><div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;"><h3>Pay Entry Fee</h3><p>Send ₹20 to UPI</p><p style="font-size:18px; color:#00ff90;">vishal@upi</p><input id="refInput" type="text" placeholder="Enter UPI Reference Number"
+</div>
+</div>
+
+
+
+<!-- PAYMENT POPUP -->
+
+<div id="paymentPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center;">
+
+<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
+
+<h3>Pay Entry Fee</h3>
+
+<p>Send ₹20 to UPI</p>
+
+<p style="font-size:18px; color:#00ff90;">
+9279072936@axl
+</p>
+
+<input id="refInput" type="text"
+placeholder="Enter UPI Reference Number"
 style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
 
 <button id="submitPaymentBtn"
-style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px; cursor:pointer;">
+style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">
 Submit
 </button>
 
-</div></div><script type="module">
+</div>
+</div>
+
+
+
+<script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+
 const firebaseConfig = {
+
 apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
 authDomain: "ignite-scrims.firebaseapp.com",
 projectId: "ignite-scrims",
 storageBucket: "ignite-scrims.firebasestorage.app",
 messagingSenderId: "497561769270",
 appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+
 };
+
   const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 
-// LOGIN
 
 document.getElementById("loginBtn").addEventListener("click", () => {
 
@@ -72,90 +175,92 @@ const userRef = doc(db, "users", user.uid);
 const docSnap = await getDoc(userRef);
 
 if(!docSnap.exists()){
+
 document.getElementById("usernamePopup").style.display = "flex";
+
 }
 
-})
-
-.catch((error) => {
-console.log(error);
 });
 
 });
 
 
-// USERNAME SAVE
 
 document.getElementById("saveUsernameBtn").addEventListener("click", async () => {
 
 const username = document.getElementById("usernameInput").value.toLowerCase();
 
 if(username.includes(" ")){
-alert("No spaces allowed in username");
+
+alert("No spaces allowed");
 return;
+
 }
 
 const usernameRef = doc(db, "usernames", username);
 const usernameSnap = await getDoc(usernameRef);
 
 if(usernameSnap.exists()){
+
 alert("Username already taken");
 return;
+
 }
 
 const user = auth.currentUser;
 
 await setDoc(usernameRef,{
-uid: user.uid
+uid:user.uid
 });
 
 await setDoc(doc(db,"users",user.uid),{
-username: username,
-email: user.email,
-coins: 0,
-matchesPlayed: 0
+
+username:username,
+email:user.email
+
 });
 
-alert("Username saved successfully");
+alert("Username saved");
 
 document.getElementById("usernamePopup").style.display="none";
 
 });
 
 
-// JOIN MATCH
 
 document.getElementById("joinBtn").addEventListener("click", () => {
 
 if(!auth.currentUser){
+
 alert("Please login first");
 return;
+
 }
 
-document.getElementById("rulesPopup").style.display = "flex";
+document.getElementById("rulesPopup").style.display="flex";
 
 });
 
 
-// RULES -> IGN
 
 document.getElementById("rulesNextBtn").addEventListener("click", () => {
 
-document.getElementById("rulesPopup").style.display = "none";
-document.getElementById("ignPopup").style.display = "flex";
+document.getElementById("rulesPopup").style.display="none";
+document.getElementById("ignPopup").style.display="flex";
 
 });
 
 
-// IGN -> PAYMENT
 
 document.getElementById("saveIgnBtn").addEventListener("click", () => {
 
 const ign = document.getElementById("ignInput").value;
 
 if(ign==""){
+
 alert("Please enter your Free Fire IGN");
 return;
+
 }
 
 document.getElementById("ignPopup").style.display="none";
@@ -163,53 +268,36 @@ document.getElementById("paymentPopup").style.display="flex";
 
 });
 
-  <!-- PAYMENT POPUP -->
 
-<div id="paymentPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center;">
-
-<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
-
-<h3>Pay Entry Fee</h3>
-
-<p>Send ₹20 to UPI</p>
-
-<p style="font-size:18px; color:#00ff90;">9279072936@axl
-
-<input id="refInput" type="text" placeholder="Enter UPI Reference Number"
-style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
-
-<button id="submitPaymentBtn"
-style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px; cursor:pointer;">
-Submit
-</button>
-
-</div>
-</div>
-
-// PAYMENT SUBMIT
 
 document.getElementById("submitPaymentBtn").addEventListener("click", async () => {
 
 const ref = document.getElementById("refInput").value;
 
 if(ref==""){
+
 alert("Enter payment reference number");
 return;
+
 }
 
 const user = auth.currentUser;
 
 await setDoc(doc(db,"payments",ref),{
+
 uid:user.uid,
 reference:ref,
 status:"pending"
+
 });
 
-alert("Payment submitted. Wait for verification.");
+alert("Payment submitted");
 
 document.getElementById("paymentPopup").style.display="none";
 
 });
 
-</script></body>
+</script>
+
+</body>
 </html>
