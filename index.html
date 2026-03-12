@@ -75,7 +75,7 @@ console.log(error);
 
 document.getElementById("saveUsernameBtn").addEventListener("click", async () => {
 
-const username = document.getElementById("usernameInput").value;
+const username = document.getElementById("usernameInput").value.toLowerCase();
 
 if(username.includes(" ")){
 
@@ -84,9 +84,25 @@ return;
 
 }
 
+const usernameRef = doc(db, "usernames", username);
+const usernameSnap = await getDoc(usernameRef);
+
+if(usernameSnap.exists()){
+
+alert("Username already taken");
+return;
+
+}
+
 const user = auth.currentUser;
 
-await setDoc(doc(db, "users", user.uid),{
+// save username lock
+await setDoc(usernameRef,{
+uid: user.uid
+});
+
+// save user profile
+await setDoc(doc(db,"users",user.uid),{
 
 username: username,
 email: user.email,
@@ -97,7 +113,7 @@ matchesPlayed: 0
 
 alert("Username saved successfully");
 
-document.getElementById("usernamePopup").style.display = "none";
+document.getElementById("usernamePopup").style.display="none";
 
 });
 
