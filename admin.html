@@ -4,43 +4,14 @@
 <title>IGNITE SCRIMS ADMIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{
-  background:#0f0f0f;
-  color:white;
-  font-family:sans-serif;
-  padding:20px;
-}
-
-.payment{
-  background:#1e1e1e;
-  padding:15px;
-  margin-top:15px;
-  border-radius:10px;
-}
-
-button{
-  padding:8px 15px;
-  margin-top:10px;
-  margin-right:10px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-.approve{
-  background:green;
-  color:white;
-}
-
-.reject{
-  background:red;
-  color:white;
-}
-
+body{background:#0f0f0f;color:white;font-family:sans-serif;padding:20px;}
+.payment{background:#1e1e1e;padding:15px;margin-top:15px;border-radius:10px;}
+button{padding:8px 15px;margin-top:10px;margin-right:10px;border:none;border-radius:6px;cursor:pointer;}
+.approve{background:green;color:white;}
+.reject{background:red;color:white;}
 </style>
 </head>
 <body>
-
 <h2>Pending Payments</h2>
 <div id="payments"></div>
 
@@ -49,46 +20,42 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims",
-  storageBucket: "ignite-scrims.firebasestorage.app",
-  messagingSenderId: "497561769270",
-  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+  apiKey:"AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain:"ignite-scrims.firebaseapp.com",
+  projectId:"ignite-scrims",
+  storageBucket:"ignite-scrims.firebasestorage.app",
+  messagingSenderId:"497561769270",
+  appId:"1:497561769270:web:ef4f215a253e984f2dcf97"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const container = document.getElementById("payments");
 
-// Real-time listener for payments
-onSnapshot(collection(db,"payments"), (snapshot) => {
-  container.innerHTML = ""; 
-
-  snapshot.forEach((docSnap) => {
+onSnapshot(collection(db,"payments"),(snapshot)=>{
+  container.innerHTML="";
+  snapshot.forEach((docSnap)=>{
     const data = docSnap.data();
-
-    if(data.status === "pending"){
+    if(data.status==="pending"){
       const div = document.createElement("div");
-      div.className = "payment";
-      div.innerHTML = 
-        <p><b>Reference:</b> ${docSnap.id}</p>
-        <p><b>Email:</b> ${data.email || "N/A"}</p>
+      div.className="payment";
+      div.innerHTML=
+        <p><b>Reference:</b> ${data.reference || docSnap.id}</p>
         <p><b>IGN:</b> ${data.ign || "N/A"}</p>
+        <p><b>Email:</b> ${data.email || "N/A"}</p>
         <p><b>Status:</b> ${data.status}</p>
         <button class="approve">Approve</button>
         <button class="reject">Reject</button>
       ;
+      const approveBtn = div.querySelector(".approve");
+      const rejectBtn = div.querySelector(".reject");
 
-      div.querySelector(".approve").onclick = async () => {
-        await updateDoc(doc(db,"payments",docSnap.id), { status:"approved" });
+      approveBtn.onclick = async ()=>{
+        await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"});
       };
-
-      div.querySelector(".reject").onclick = async () => {
-        await updateDoc(doc(db,"payments",docSnap.id), { status:"rejected" });
+      rejectBtn.onclick = async ()=>{
+        await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"});
       };
-
       container.appendChild(div);
     }
   });
