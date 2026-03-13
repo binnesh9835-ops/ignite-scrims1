@@ -1,0 +1,115 @@
+<!DOCTYPE html><html><head>
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"><style>
+
+body{
+background:#0f0f0f;
+color:white;
+font-family:sans-serif;
+padding:20px;
+}
+
+.payment{
+background:#1e1e1e;
+padding:15px;
+margin-top:15px;
+border-radius:10px;
+}
+
+button{
+padding:8px 15px;
+margin-top:10px;
+margin-right:10px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.approve{
+background:green;
+color:white;
+}
+
+.reject{
+background:red;
+color:white;
+}
+
+</style></head><body><h2>Pending Payments</h2><div id="payments"></div><script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+authDomain: "ignite-scrims.firebaseapp.com",
+projectId: "ignite-scrims",
+storageBucket: "ignite-scrims.firebasestorage.app",
+messagingSenderId: "497561769270",
+appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const container = document.getElementById("payments");
+
+async function loadPayments(){
+
+const querySnapshot = await getDocs(collection(db,"payments"));
+
+querySnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+if(data.status=="pending"){
+
+const div = document.createElement("div");
+
+div.className="payment";
+
+div.innerHTML = 
+<p><b>Reference:</b> ${data.reference}</p>
+<p>Status: ${data.status}</p>
+
+<button class="approve">Approve</button>
+<button class="reject">Reject</button>
+;
+
+const approveBtn = div.querySelector(".approve");
+const rejectBtn = div.querySelector(".reject");
+
+approveBtn.onclick = async ()=>{
+
+await updateDoc(doc(db,"payments",docSnap.id),{
+status:"approved"
+});
+
+div.remove();
+
+};
+
+rejectBtn.onclick = async ()=>{
+
+await updateDoc(doc(db,"payments",docSnap.id),{
+status:"rejected"
+});
+
+div.remove();
+
+};
+
+container.appendChild(div);
+
+}
+
+});
+
+}
+
+loadPayments();
+
+</script></body>
+</html>
