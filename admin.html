@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>IGNITE SCRIMS ADMIN</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { margin:0; font-family:sans-serif; background:#0f0f0f; color:white; }
-    .sidebar { width:200px; background:#1e1e1e; height:100vh; position:fixed; left:0; top:0; padding:20px; }
-    .sidebar button { display:block; width:100%; margin-bottom:10px; padding:10px; border:none; border-radius:6px; cursor:pointer; background:#ff3c3c; color:white; }
-    .main { margin-left:220px; padding:20px; }
-    h2,h3 { margin:10px 0; }
-    .match, .payment { background:#1a1a1a; padding:15px; margin-bottom:15px; border-radius:10px; }
-    .match img { max-width:100px; display:block; margin-bottom:10px; border-radius:6px; }
-    .btn { padding:8px 15px; margin-right:10px; border:none; border-radius:6px; cursor:pointer; }
-    .approve { background:green; color:white; }
-    .reject { background:red; color:white; }
-    .back, .cut { background:#555; color:white; }
-    input, textarea { width:100%; padding:10px; margin:5px 0; border-radius:6px; border:none; }
-  </style>
+<title>IGNITE SCRIMS ADMIN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { margin:0; font-family:sans-serif; background:#0f0f0f; color:white; }
+.sidebar { width:200px; background:#1e1e1e; height:100vh; position:fixed; left:0; top:0; padding:20px; }
+.sidebar button { display:block; width:100%; margin-bottom:10px; padding:10px; border:none; border-radius:6px; cursor:pointer; background:#ff3c3c; color:white; }
+.main { margin-left:220px; padding:20px; display:none; }
+.main.active { display:block; }
+.match, .payment { background:#1a1a1a; padding:15px; margin-bottom:15px; border-radius:10px; }
+.match img { max-width:100px; display:block; margin-bottom:10px; border-radius:6px; }
+.btn { padding:8px 15px; margin-right:10px; border:none; border-radius:6px; cursor:pointer; }
+.approve { background:green; color:white; }
+.reject { background:red; color:white; }
+.back, .cut { background:#555; color:white; }
+input, textarea { width:100%; padding:10px; margin:5px 0; border-radius:6px; border:none; }
+</style>
 </head>
 <body>
 
@@ -26,12 +26,12 @@
   <button id="paymentsBtn">Payments</button>
 </div>
 
-<div class="main" id="homeFeed">
+<div class="main active" id="homeFeed">
   <h2>Home Feed</h2>
   <div id="matchesList"></div>
 </div>
 
-<div class="main" id="addMatchForm" style="display:none;">
+<div class="main" id="addMatchForm">
   <h2>Add/Edit Match</h2>
   <label>Title:</label>
   <input type="text" id="newTitle" placeholder="Match Title">
@@ -45,7 +45,7 @@
   <button id="cancelAddMatch" class="btn back">Back</button>
 </div>
 
-<div class="main" id="paymentsSection" style="display:none;">
+<div class="main" id="paymentsSection">
   <h2>Pending Payments</h2>
   <div id="paymentsList"></div>
   <button id="backPayments" class="btn back">Back</button>
@@ -53,8 +53,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
@@ -67,7 +66,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 const homeFeed = document.getElementById("homeFeed");
 const addMatchForm = document.getElementById("addMatchForm");
@@ -77,24 +75,23 @@ const paymentsList = document.getElementById("paymentsList");
 
 // Show sections
 function showSection(section){
-  homeFeed.style.display = "none";
-  addMatchForm.style.display = "none";
-  paymentsSection.style.display = "none";
-  section.style.display = "block";
+  [homeFeed, addMatchForm, paymentsSection].forEach(s => s.classList.remove("active"));
+  section.classList.add("active");
 }
 
 // Sidebar buttons
-document.getElementById("homeBtn").onclick = () => { showSection(homeFeed); loadMatches(); };
-document.getElementById("addMatchBtn").onclick = () => { showSection(addMatchForm); };
-document.getElementById("paymentsBtn").onclick = () => { showSection(paymentsSection); loadPayments(); };
+document.getElementById("homeBtn").addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
+document.getElementById("addMatchBtn").addEventListener("click", ()=>{ showSection(addMatchForm); });
+document.getElementById("paymentsBtn").addEventListener("click", ()=>{ showSection(paymentsSection); loadPayments(); });
 
 // Back buttons
-document.getElementById("cancelAddMatch").onclick = () => { showSection(homeFeed); loadMatches(); };
-document.getElementById("backPayments").onclick = () => { showSection(homeFeed); loadMatches(); };
-  // Load Matches
+document.getElementById("cancelAddMatch").addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
+document.getElementById("backPayments").addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
+
+// Load Matches
 function loadMatches(){
   matchesList.innerHTML="";
-  onSnapshot(collection(db,"matches"), (snapshot)=>{
+  onSnapshot(collection(db,"matches"), snapshot=>{
     matchesList.innerHTML="";
     snapshot.forEach(docSnap=>{
       const data = docSnap.data();
@@ -114,7 +111,7 @@ function loadMatches(){
 // Load Payments
 function loadPayments(){
   paymentsList.innerHTML="";
-  onSnapshot(collection(db,"payments"), (snapshot)=>{
+  onSnapshot(collection(db,"payments"), snapshot=>{
     paymentsList.innerHTML="";
     snapshot.forEach(docSnap=>{
       const data = docSnap.data();
@@ -133,16 +130,16 @@ function loadPayments(){
         const approveBtn = div.querySelector(".approve");
         const rejectBtn = div.querySelector(".reject");
         const cutBtn = div.querySelector(".cut");
-        approveBtn.onclick = async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"}); };
-        rejectBtn.onclick = async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"}); };
-        cutBtn.onclick = ()=>{ showSection(homeFeed); loadMatches(); };
+        approveBtn.addEventListener("click", async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"}); });
+        rejectBtn.addEventListener("click", async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"}); });
+        cutBtn.addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
         paymentsList.appendChild(div);
       }
     });
   });
 }
 
-// Initialize home feed
+// Init
 showSection(homeFeed);
 loadMatches();
 
