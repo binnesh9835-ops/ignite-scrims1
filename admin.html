@@ -4,15 +4,69 @@
 <title>IGNITE SCRIMS ADMIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{background:#0f0f0f;color:white;font-family:sans-serif;padding:20px;}
-.payment{background:#1e1e1e;padding:15px;margin-top:15px;border-radius:10px;}
-button{padding:8px 15px;margin-top:10px;margin-right:10px;border:none;border-radius:6px;cursor:pointer;}
-.approve{background:green;color:white;}
-.reject{background:red;color:white;}
+body{
+    background:#0f0f0f;
+    color:white;
+    font-family:sans-serif;
+    padding:20px;
+}
+
+#controls{
+    margin-bottom:20px;
+}
+
+button{
+    padding:8px 15px;
+    margin-right:10px;
+    margin-top:5px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.filterBtn{
+    background:#444;
+    color:white;
+}
+
+.payment{
+    background:#1e1e1e;
+    padding:15px;
+    margin-top:10px;
+    border-radius:10px;
+}
+
+.approve{
+    background:green;
+    color:white;
+}
+
+.reject{
+    background:red;
+    color:white;
+}
+
+#searchInput{
+    padding:8px 10px;
+    width:250px;
+    border-radius:6px;
+    border:none;
+    margin-right:10px;
+}
 </style>
 </head>
 <body>
-<h2>Pending Payments</h2>
+
+<h2>Payments Dashboard</h2>
+
+<div id="controls">
+    <input type="text" id="searchInput" placeholder="Search by IGN / Email / Ref">
+    <button class="filterBtn" data-filter="all">All</button>
+    <button class="filterBtn" data-filter="pending">Pending</button>
+    <button class="filterBtn" data-filter="approved">Approved</button>
+    <button class="filterBtn" data-filter="rejected">Rejected</button>
+</div>
+
 <div id="payments"></div>
 
 <script type="module">
@@ -20,46 +74,87 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain:"ignite-scrims.firebaseapp.com",
-  projectId:"ignite-scrims",
-  storageBucket:"ignite-scrims.firebasestorage.app",
-  messagingSenderId:"497561769270",
-  appId:"1:497561769270:web:ef4f215a253e984f2dcf97"
+    apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+    authDomain: "ignite-scrims.firebaseapp.com",
+    projectId: "ignite-scrims",
+    storageBucket: "ignite-scrims.firebasestorage.app",
+    messagingSenderId: "497561769270",
+    appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
 const container = document.getElementById("payments");
+const searchInput = document.getElementById("searchInput");
+const filterBtns = document.querySelectorAll(".filterBtn");
 
-onSnapshot(collection(db,"payments"),(snapshot)=>{
-  container.innerHTML="";
-  snapshot.forEach((docSnap)=>{
-    const data = docSnap.data();
-    if(data.status==="pending"){
-      const div = document.createElement("div");
-      div.className="payment";
-      div.innerHTML=
-        <p><b>Reference:</b> ${data.reference || docSnap.id}</p>
-        <p><b>IGN:</b> ${data.ign || "N/A"}</p>
-        <p><b>Email:</b> ${data.email || "N/A"}</p>
-        <p><b>Status:</b> ${data.status}</p>
-        <button class="approve">Approve</button>
-        <button class="reject">Reject</button>
-      ;
-      const approveBtn = div.querySelector(".approve");
-      const rejectBtn = div.querySelector(".reject");
+let paymentsData = [];
+let currentFilter = "all";
 
-      approveBtn.onclick = async ()=>{
-        await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"});
-      };
-      rejectBtn.onclick = async ()=>{
-        await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"});
-      };
-      container.appendChild(div);
-    }
-  });
+// Real-time listener
+onSnapshot(collection(db,"payments"), (snapshot) => {
+    paymentsData = [];
+    snapshot.forEach(docSnap => {
+        paymentsData.push(docSnap.data());
+    });
+    renderPayments();
 });
+
+function renderPayments(){
+    container.innerHTML = "";
+
+    let filtered = paymentsData.filter(p => {
+        if(currentFilter !== "all" && p.status !== currentFilter) return false;
+        const searchText = searchInput.value.toLowerCase();
+        if(searchText){
+            return p.reference.toLowerCase().includes(searchText) || 
+                   p.ign.toLowerCase().includes(searchText) || 
+                   p.email.toLowerCase().includes(searchText);
+        }
+        return true;
+    });
+
+    filtered.forEach(data => {
+        const div = document.createElement("div");
+        div.className = "payment";
+        div.innerHTML = 
+            <p><b>Reference:</b> ${data.reference}</p>
+            <p><b>Email:</b> ${data.email}</p>
+            <p><b>IGN:</b> ${data.ign}</p>
+            <p><b>Status:</b> ${data.status}</p>
+            ${data.status==="pending"? '<button class="approve">Approve</button><button class="reject">Reject</button>':''}
+        ;
+
+        if(data.status==="pending"){
+            const approveBtn = div.querySelector(".approve");
+            const rejectBtn = div.querySelector(".reject");
+
+            approveBtn.onclick = async () => {
+                await updateDoc(doc(db,"payments",data.reference), { status:"approved" });
+            };
+
+            rejectBtn.onclick = async () => {
+                await updateDoc(doc(db,"payments",data.reference), { status:"rejected" });
+            };
+        }
+
+        container.appendChild(div);
+    });
+}
+
+// Search
+searchInput.addEventListener("input", renderPayments);
+
+// Filters
+filterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        currentFilter = btn.dataset.filter;
+        renderPayments();
+    });
+});
+
 </script>
+
 </body>
 </html>
