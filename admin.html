@@ -26,14 +26,13 @@
   <button id="paymentsBtn">Payments</button>
 </div>
 
-<div class="main" id="mainContent">
+<div class="main" id="homeFeed">
   <h2>Home Feed</h2>
   <div id="matchesList"></div>
 </div>
 
-<!-- Add Match Form -->
-<div id="addMatchForm" style="display:none;">
-  <h2>Add New Match</h2>
+<div class="main" id="addMatchForm" style="display:none;">
+  <h2>Add/Edit Match</h2>
   <label>Title:</label>
   <input type="text" id="newTitle" placeholder="Match Title">
   <label>Price (₹):</label>
@@ -46,8 +45,7 @@
   <button id="cancelAddMatch" class="btn back">Back</button>
 </div>
 
-<!-- Payments -->
-<div id="paymentsSection" style="display:none;">
+<div class="main" id="paymentsSection" style="display:none;">
   <h2>Pending Payments</h2>
   <div id="paymentsList"></div>
   <button id="backPayments" class="btn back">Back</button>
@@ -55,7 +53,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
@@ -71,46 +69,31 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const main = document.getElementById("mainContent");
-const matchesList = document.getElementById("matchesList");
+const homeFeed = document.getElementById("homeFeed");
 const addMatchForm = document.getElementById("addMatchForm");
 const paymentsSection = document.getElementById("paymentsSection");
+const matchesList = document.getElementById("matchesList");
 const paymentsList = document.getElementById("paymentsList");
 
+// Show sections
+function showSection(section){
+  homeFeed.style.display = "none";
+  addMatchForm.style.display = "none";
+  paymentsSection.style.display = "none";
+  section.style.display = "block";
+}
+
 // Sidebar buttons
-document.getElementById("homeBtn").onclick = () => { showHome(); };
-document.getElementById("addMatchBtn").onclick = () => { showAddMatch(); };
-document.getElementById("paymentsBtn").onclick = () => { showPayments(); };
+document.getElementById("homeBtn").onclick = () => { showSection(homeFeed); loadMatches(); };
+document.getElementById("addMatchBtn").onclick = () => { showSection(addMatchForm); };
+document.getElementById("paymentsBtn").onclick = () => { showSection(paymentsSection); loadPayments(); };
 
 // Back buttons
-document.getElementById("cancelAddMatch").onclick = () => { showHome(); };
-document.getElementById("backPayments").onclick = () => { showHome(); };
-
-// Show Home
-function showHome(){
-  main.style.display = "block";
-  addMatchForm.style.display = "none";
-  paymentsSection.style.display = "none";
-  loadMatches();
-}
-
-// Show Add Match
-function showAddMatch(){
-  main.style.display = "none";
-  addMatchForm.style.display = "block";
-  paymentsSection.style.display = "none";
-}
-    // Show Payments
-function showPayments(){
-  main.style.display = "none";
-  addMatchForm.style.display = "none";
-  paymentsSection.style.display = "block";
-  loadPayments();
-}
-
-// Load Matches List
+document.getElementById("cancelAddMatch").onclick = () => { showSection(homeFeed); loadMatches(); };
+document.getElementById("backPayments").onclick = () => { showSection(homeFeed); loadMatches(); };
+  // Load Matches
 function loadMatches(){
-  matchesList.innerHTML = "";
+  matchesList.innerHTML="";
   onSnapshot(collection(db,"matches"), (snapshot)=>{
     matchesList.innerHTML="";
     snapshot.forEach(docSnap=>{
@@ -122,10 +105,7 @@ function loadMatches(){
         <h3>${data.title}</h3>
         <p>Price: ₹${data.price}</p>
         <p>Rules: ${data.rules}</p>
-        <button class="editMatchBtn btn">Edit</button>
       ;
-      const editBtn = div.querySelector(".editMatchBtn");
-      editBtn.onclick = ()=>{ editMatch(docSnap.id, data); };
       matchesList.appendChild(div);
     });
   });
@@ -155,62 +135,17 @@ function loadPayments(){
         const cutBtn = div.querySelector(".cut");
         approveBtn.onclick = async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"}); };
         rejectBtn.onclick = async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"}); };
-        cutBtn.onclick = ()=>{ showHome(); };
+        cutBtn.onclick = ()=>{ showSection(homeFeed); loadMatches(); };
         paymentsList.appendChild(div);
       }
     });
   });
 }
 
-// Add Match
-document.getElementById("saveMatchBtn").onclick = async ()=>{
-  const title = document.getElementById("newTitle").value;
-  const price = document.getElementById("newPrice").value;
-  const rules = document.getElementById("newRules").value;
-  const thumbFile = document.getElementById("newThumbnail").files[0];
+// Initialize home feed
+showSection(homeFeed);
+loadMatches();
 
-  if(!title!price!rules||!thumbFile){ alert("Fill all fields"); return; }
-
-  const storageRef = ref(storage, match_thumbnails/${Date.now()}_${thumbFile.name});
-  await uploadBytes(storageRef, thumbFile);
-  const thumbURL = await getDownloadURL(storageRef);
-
-  const newDoc = doc(db,"matches", Date.now().toString());
-  await setDoc(newDoc,{ title, price, rules, thumbnail: thumbURL });
-  alert("Match added successfully");
-  showHome();
-}
-
-// Edit Match
-function editMatch(id,data){
-  main.style.display="none";
-  addMatchForm.style.display="block";
-  paymentsSection.style.display="none";
-
-  document.getElementById("newTitle").value = data.title;
-  document.getElementById("newPrice").value = data.price;
-  document.getElementById("newRules").value = data.rules;
-
-  document.getElementById("saveMatchBtn").onclick = async ()=>{
-    const title = document.getElementById("newTitle").value;
-    const price = document.getElementById("newPrice").value;
-    const rules = document.getElementById("newRules").value;
-    const thumbFile = document.getElementById("newThumbnail").files[0];
-
-    let thumbURL = data.thumbnail;
-    if(thumbFile){
-      const storageRef = ref(storage, match_thumbnails/${Date.now()}_${thumbFile.name});
-      await uploadBytes(storageRef, thumbFile);
-      thumbURL = await getDownloadURL(storageRef);
-    }
-
-    await setDoc(doc(db,"matches",id),{ title, price, rules, thumbnail: thumbURL });
-    alert("Match updated successfully");
-    showHome();
-  }
-}
-
-showHome();
 </script>
 </body>
 </html>
