@@ -67,12 +67,12 @@ const data = docSnap.data();
 if(data.status === "pending"){
 
 const div = document.createElement("div");
-
 div.className="payment";
 
 div.innerHTML = 
-<p><b>Reference:</b> ${docSnap.id}</p>
-<p>Status: ${data.status}</p>
+<p><b>IGN:</b> ${data.ign || "Not Provided"}</p>
+<p><b>Email:</b> ${data.email || "Not Provided"}</p>
+<p><b>Reference:</b> ${data.reference}</p>
 
 <button class="approve">Approve</button>
 <button class="reject">Reject</button>
