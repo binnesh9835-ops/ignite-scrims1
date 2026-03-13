@@ -4,145 +4,165 @@
 <title>IGNITE SCRIMS ADMIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin:0; font-family:sans-serif; background:#0f0f0f; color:white; }
-.sidebar { width:200px; background:#1e1e1e; height:100vh; position:fixed; left:0; top:0; padding:20px; }
-.sidebar button { display:block; width:100%; margin-bottom:10px; padding:10px; border:none; border-radius:6px; cursor:pointer; background:#ff3c3c; color:white; }
-.main { margin-left:220px; padding:20px; display:none; }
-.main.active { display:block; }
-.match, .payment { background:#1a1a1a; padding:15px; margin-bottom:15px; border-radius:10px; }
-.match img { max-width:100px; display:block; margin-bottom:10px; border-radius:6px; }
-.btn { padding:8px 15px; margin-right:10px; border:none; border-radius:6px; cursor:pointer; }
-.approve { background:green; color:white; }
-.reject { background:red; color:white; }
-.back, .cut { background:#555; color:white; }
-input, textarea { width:100%; padding:10px; margin:5px 0; border-radius:6px; border:none; }
+body{background:#0f0f0f;color:white;font-family:sans-serif;padding:0;margin:0;}
+header{background:#1a1a1a;padding:15px;display:flex;align-items:center;justify-content:space-between;}
+header h1{margin:0;font-size:20px;}
+nav{background:#1e1e1e;padding:10px;display:flex;flex-direction:column;width:150px;height:100vh;position:fixed;}
+nav button{padding:10px;margin-bottom:10px;border:none;border-radius:6px;cursor:pointer;color:white;background:#ff3c3c;}
+main{margin-left:160px;padding:20px;}
+section{display:none;}
+section.active{display:block;}
+input,textarea{width:100%;padding:10px;margin:5px 0;border-radius:6px;border:none;}
+button.submitBtn{background:#00ff90;color:black;}
+.payment, .matchItem{background:#1e1e1e;padding:10px;margin:10px 0;border-radius:10px;}
+.buttonRow button{margin-right:10px;}
+.cutBtn{position:absolute;top:10px;right:10px;background:red;color:white;padding:5px;border:none;border-radius:4px;cursor:pointer;}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <button id="homeBtn">Home Feed</button>
-  <button id="addMatchBtn">Add Match</button>
-  <button id="paymentsBtn">Payments</button>
-</div>
+<header>
+<h1>IGNITE SCRIMS ADMIN</h1>
+</header>
 
-<div class="main active" id="homeFeed">
-  <h2>Home Feed</h2>
-  <div id="matchesList"></div>
-</div>
+<nav>
+<button id="homeBtn">Home Feed</button>
+<button id="addMatchBtn">Add Match</button>
+<button id="paymentsBtn">Payments</button>
+</nav>
 
-<div class="main" id="addMatchForm">
-  <h2>Add/Edit Match</h2>
-  <label>Title:</label>
-  <input type="text" id="newTitle" placeholder="Match Title">
-  <label>Price (₹):</label>
-  <input type="number" id="newPrice" placeholder="Entry Fee">
-  <label>Rules:</label>
-  <textarea id="newRules" placeholder="Match Rules"></textarea>
-  <label>Thumbnail:</label>
-  <input type="file" id="newThumbnail">
-  <button id="saveMatchBtn" class="btn">Save</button>
-  <button id="cancelAddMatch" class="btn back">Back</button>
-</div>
+<main>
+<!-- HOME FEED -->
+<section id="homeSection" class="active">
+<h2>Home Feed</h2>
+<p>Welcome, Admin! Select a section from left.</p>
+<div id="matchesList"></div>
+</section>
 
-<div class="main" id="paymentsSection">
-  <h2>Pending Payments</h2>
-  <div id="paymentsList"></div>
-  <button id="backPayments" class="btn back">Back</button>
-</div>
+<!-- ADD MATCH -->
+<section id="addMatchSection">
+<h2>Add / Edit Match</h2>
+<button class="cutBtn" onclick="goHome()">Cut</button>
+<input id="matchTitle" placeholder="Match Title">
+<input id="matchPrice" placeholder="Entry Fee (₹)">
+<input id="matchPlayers" placeholder="Max Players">
+<input id="matchThumbnail" placeholder="Thumbnail URL">
+<textarea id="matchRules" placeholder="Match Rules"></textarea>
+<button class="submitBtn" id="saveMatchBtn">Save Match</button>
+</section>
+
+<!-- PAYMENTS -->
+<section id="paymentsSection">
+<h2>Pending Payments</h2>
+<button class="cutBtn" onclick="goHome()">Cut</button>
+<div id="paymentsContainer"></div>
+</section>
+</main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims",
-  storageBucket: "ignite-scrims.firebasestorage.app",
-  messagingSenderId: "497561769270",
-  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+apiKey:"AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+authDomain:"ignite-scrims.firebaseapp.com",
+projectId:"ignite-scrims",
+storageBucket:"ignite-scrims.firebasestorage.app",
+messagingSenderId:"497561769270",
+appId:"1:497561769270:web:ef4f215a253e984f2dcf97"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const homeFeed = document.getElementById("homeFeed");
-const addMatchForm = document.getElementById("addMatchForm");
-const paymentsSection = document.getElementById("paymentsSection");
-const matchesList = document.getElementById("matchesList");
-const paymentsList = document.getElementById("paymentsList");
+// NAVIGATION
+const homeBtn=document.getElementById("homeBtn");
+const addMatchBtn=document.getElementById("addMatchBtn");
+const paymentsBtn=document.getElementById("paymentsBtn");
 
-// Show sections
-function showSection(section){
-  [homeFeed, addMatchForm, paymentsSection].forEach(s => s.classList.remove("active"));
-  section.classList.add("active");
+const homeSection=document.getElementById("homeSection");
+const addMatchSection=document.getElementById("addMatchSection");
+const paymentsSection=document.getElementById("paymentsSection");
+
+function hideAll(){homeSection.classList.remove("active");addMatchSection.classList.remove("active");paymentsSection.classList.remove("active");}
+function goHome(){hideAll();homeSection.classList.add("active");}
+
+homeBtn.onclick=()=>{goHome();}
+addMatchBtn.onclick=()=>{hideAll();addMatchSection.classList.add("active");}
+paymentsBtn.onclick=()=>{hideAll();paymentsSection.classList.add("active");}
+
+// REAL-TIME MATCHES LIST
+const matchesList=document.getElementById("matchesList");
+onSnapshot(collection(db,"matches"),snapshot=>{
+matchesList.innerHTML="";
+snapshot.forEach(docSnap=>{
+const data=docSnap.data();
+const div=document.createElement("div");
+div.className="matchItem";
+div.innerHTML=<h3>${data.title}</h3>
+<p>Price: ₹${data.price}</p>
+<p>Players Joined: ${data.players ? data.players.length : 0}/${data.maxPlayers}</p>
+<button onclick="editMatch('${docSnap.id}')">Edit</button>;
+matchesList.appendChild(div);
+});
+});
+
+  // ADD / EDIT MATCH
+const saveMatchBtn=document.getElementById("saveMatchBtn");
+saveMatchBtn.onclick=async ()=>{
+const title=document.getElementById("matchTitle").value;
+const price=document.getElementById("matchPrice").value;
+const maxPlayers=document.getElementById("matchPlayers").value;
+const thumbnail=document.getElementById("matchThumbnail").value;
+const rules=document.getElementById("matchRules").value;
+if(!title  !price  !maxPlayers) {alert("Fill all fields"); return;}
+const matchRef=doc(db,"matches",title.replace(/\s+/g,"_"));
+await setDoc(matchRef,{
+title, price, maxPlayers, thumbnail, rules, players:[]
+});
+alert("Match saved"); goHome();
 }
 
-// Sidebar buttons
-document.getElementById("homeBtn").addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
-document.getElementById("addMatchBtn").addEventListener("click", ()=>{ showSection(addMatchForm); });
-document.getElementById("paymentsBtn").addEventListener("click", ()=>{ showSection(paymentsSection); loadPayments(); });
-
-// Back buttons
-document.getElementById("cancelAddMatch").addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
-document.getElementById("backPayments").addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
-
-// Load Matches
-function loadMatches(){
-  matchesList.innerHTML="";
-  onSnapshot(collection(db,"matches"), snapshot=>{
-    matchesList.innerHTML="";
-    snapshot.forEach(docSnap=>{
-      const data = docSnap.data();
-      const div = document.createElement("div");
-      div.className="match";
-      div.innerHTML = 
-        <img src="${data.thumbnail||''}" alt="thumb">
-        <h3>${data.title}</h3>
-        <p>Price: ₹${data.price}</p>
-        <p>Rules: ${data.rules}</p>
-      ;
-      matchesList.appendChild(div);
-    });
-  });
+window.editMatch=async (id)=>{
+hideAll(); addMatchSection.classList.add("active");
+const matchRef=doc(db,"matches",id);
+const snap=await getDoc(matchRef);
+if(snap.exists()){
+const data=snap.data();
+document.getElementById("matchTitle").value=data.title;
+document.getElementById("matchPrice").value=data.price;
+document.getElementById("matchPlayers").value=data.maxPlayers;
+document.getElementById("matchThumbnail").value=data.thumbnail;
+document.getElementById("matchRules").value=data.rules;
+}
 }
 
-// Load Payments
-function loadPayments(){
-  paymentsList.innerHTML="";
-  onSnapshot(collection(db,"payments"), snapshot=>{
-    paymentsList.innerHTML="";
-    snapshot.forEach(docSnap=>{
-      const data = docSnap.data();
-      if(data.status==="pending"){
-        const div = document.createElement("div");
-        div.className="payment";
-        div.innerHTML = 
-          <p><b>Reference:</b> ${data.reference}</p>
-          <p><b>IGN:</b> ${data.ign||'-'}</p>
-          <p><b>Email:</b> ${data.email||'-'}</p>
-          <p>Status: ${data.status}</p>
-          <button class="approve btn approve">Approve</button>
-          <button class="reject btn reject">Reject</button>
-          <button class="cut btn">Cut</button>
-        ;
-        const approveBtn = div.querySelector(".approve");
-        const rejectBtn = div.querySelector(".reject");
-        const cutBtn = div.querySelector(".cut");
-        approveBtn.addEventListener("click", async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"}); });
-        rejectBtn.addEventListener("click", async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"}); });
-        cutBtn.addEventListener("click", ()=>{ showSection(homeFeed); loadMatches(); });
-        paymentsList.appendChild(div);
-      }
-    });
-  });
+// PAYMENTS
+const paymentsContainer=document.getElementById("paymentsContainer");
+onSnapshot(collection(db,"payments"),snapshot=>{
+paymentsContainer.innerHTML="";
+snapshot.forEach(docSnap=>{
+const data=docSnap.data();
+if(data.status==="pending"){
+const div=document.createElement("div");
+div.className="payment";
+div.innerHTML=<p><b>Reference:</b> ${data.reference}</p>
+<p><b>User UID:</b> ${data.uid}</p>
+<p><b>IGN:</b> ${data.ign || "-"}</p>
+<div class="buttonRow">
+<button class="approveBtn">Approve</button>
+<button class="rejectBtn">Reject</button>
+</div>;
+div.querySelector(".approveBtn").onclick=async ()=>{
+await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"});
+};
+div.querySelector(".rejectBtn").onclick=async ()=>{
+await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"});
+};
+paymentsContainer.appendChild(div);
 }
-
-// Init
-showSection(homeFeed);
-loadMatches();
-
+});
+});
 </script>
+
 </body>
 </html>
