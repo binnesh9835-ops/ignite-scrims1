@@ -1,5 +1,6 @@
-<!DOCTYPE html><html><head>
-<title>Admin Panel</title>
+<!DOCTYPE html><html>
+<head>
+<title>IGNITE SCRIMS ADMIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"><style>
 
 body{
@@ -21,7 +22,7 @@ padding:8px 15px;
 margin-top:10px;
 margin-right:10px;
 border:none;
-border-radius:5px;
+border-radius:6px;
 cursor:pointer;
 }
 
@@ -58,20 +59,19 @@ const container = document.getElementById("payments");
 
 async function loadPayments(){
 
-const querySnapshot = await getDocs(collection(db,"payments"));
+const snapshot = await getDocs(collection(db,"payments"));
 
-querySnapshot.forEach((docSnap)=>{
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
-if(data.status=="pending"){
+if(data.status === "pending"){
 
 const div = document.createElement("div");
-
-div.className="payment";
+div.className = "payment";
 
 div.innerHTML = 
-<p><b>Reference:</b> ${data.reference}</p>
+<p><b>Reference:</b> ${docSnap.id}</p>
 <p>Status: ${data.status}</p>
 
 <button class="approve">Approve</button>
@@ -87,6 +87,8 @@ await updateDoc(doc(db,"payments",docSnap.id),{
 status:"approved"
 });
 
+alert("Payment Approved");
+
 div.remove();
 
 };
@@ -96,6 +98,8 @@ rejectBtn.onclick = async ()=>{
 await updateDoc(doc(db,"payments",docSnap.id),{
 status:"rejected"
 });
+
+alert("Payment Rejected");
 
 div.remove();
 
