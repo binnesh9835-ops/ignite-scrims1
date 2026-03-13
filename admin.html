@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>IGNITE SCRIMS ADMIN</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -54,56 +56,83 @@ display:none;
 display:block;
 }
 
+.matchCard{
+background:#1e1e1e;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
 .payment{
 background:#1e1e1e;
 padding:15px;
-margin-top:15px;
+margin-top:10px;
 border-radius:10px;
 }
 
 button.approve{
 background:green;
-color:white;
-margin-right:10px;
-padding:6px 12px;
 border:none;
+padding:6px 10px;
+margin-right:10px;
+color:white;
 border-radius:6px;
-cursor:pointer;
 }
 
 button.reject{
 background:red;
-color:white;
-padding:6px 12px;
 border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-.cutBtn{
-background:red;
 padding:6px 10px;
-border:none;
+color:white;
 border-radius:6px;
-cursor:pointer;
-margin-bottom:10px;
 }
 
-input,textarea{
+/* popup */
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.popupBox{
+background:#1e1e1e;
+padding:20px;
+border-radius:10px;
+width:320px;
+}
+
+.popupBox input{
 width:100%;
 padding:10px;
-margin:5px 0;
-border-radius:6px;
+margin-bottom:10px;
 border:none;
+border-radius:6px;
 }
 
-.saveBtn{
-background:#00ff9d;
-color:black;
+.popupBox button{
+width:100%;
 padding:10px;
+margin-top:5px;
 border:none;
 border-radius:6px;
 cursor:pointer;
+}
+
+.submitBtn{
+background:#00ff9d;
+color:black;
+}
+
+.cancelBtn{
+background:red;
+color:white;
 }
 
 </style>
@@ -128,38 +157,18 @@ cursor:pointer;
 <div class="content">
 
 <!-- HOME -->
+
 <div id="homeSection" class="section active">
 
-<h3>Welcome, Admin!</h3>
-<p>Select a section from left.</p>
+<h3>Home Feed</h3>
+
+<div id="homeFeed"></div>
 
 </div>
-
-
-<!-- ADD MATCH -->
-<div id="addMatchSection" class="section">
-
-<button class="cutBtn" onclick="goHome()">Cut</button>
-
-<h3>Add Match</h3>
-
-<input id="title" placeholder="Match Title">
-
-<input id="price" placeholder="Entry Price">
-
-<input id="thumbnail" placeholder="Thumbnail URL">
-
-<textarea id="rules" placeholder="Rules"></textarea>
-
-<button class="saveBtn" id="saveMatch">Save Match</button>
-
-</div>
-
 
 <!-- PAYMENTS -->
-<div id="paymentsSection" class="section">
 
-<button class="cutBtn" onclick="goHome()">Cut</button>
+<div id="paymentsSection" class="section">
 
 <h3>Pending Payments</h3>
 
@@ -168,105 +177,183 @@ cursor:pointer;
 </div>
 
 </div>
+
 </div>
 
+<!-- ADD MATCH POPUP -->
 
+<div id="matchPopup" class="popup">
+
+<div class="popupBox">
+
+<h3>Add Match</h3>
+
+<input id="matchTitle" placeholder="Add Title">
+
+<input id="matchPrice" placeholder="Add Price (INR)">
+
+<input id="matchSlots" placeholder="Add Slots">
+
+<input type="date" id="matchDate">
+
+<input type="time" id="matchTime">
+
+<input type="file" id="matchThumb">
+
+<button class="submitBtn" id="submitMatch">Submit</button>
+
+<button class="cancelBtn" id="closePopup">Cancel</button>
+
+</div>
+
+</div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 
 apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+
 authDomain: "ignite-scrims.firebaseapp.com",
+
 projectId: "ignite-scrims",
+
 storageBucket: "ignite-scrims.firebasestorage.app",
+
 messagingSenderId: "497561769270",
+
 appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
 
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
+/* section buttons */
 
+const homeBtn=document.getElementById("homeBtn")
+const addMatchBtn=document.getElementById("addMatchBtn")
+const paymentsBtn=document.getElementById("paymentsBtn")
 
-/* ---------- SECTION SWITCH ---------- */
-
-const homeBtn=document.getElementById("homeBtn");
-const addMatchBtn=document.getElementById("addMatchBtn");
-const paymentsBtn=document.getElementById("paymentsBtn");
-
-const homeSection=document.getElementById("homeSection");
-const addMatchSection=document.getElementById("addMatchSection");
-const paymentsSection=document.getElementById("paymentsSection");
+const homeSection=document.getElementById("homeSection")
+const paymentsSection=document.getElementById("paymentsSection")
 
 function hideAll(){
-homeSection.classList.remove("active");
-addMatchSection.classList.remove("active");
-paymentsSection.classList.remove("active");
+
+homeSection.classList.remove("active")
+paymentsSection.classList.remove("active")
+
 }
 
 homeBtn.onclick=()=>{
-hideAll();
-homeSection.classList.add("active");
-}
 
-addMatchBtn.onclick=()=>{
-hideAll();
-addMatchSection.classList.add("active");
+hideAll()
+homeSection.classList.add("active")
+
 }
 
 paymentsBtn.onclick=()=>{
-hideAll();
-paymentsSection.classList.add("active");
+
+hideAll()
+paymentsSection.classList.add("active")
+
 }
 
-window.goHome=()=>{
-hideAll();
-homeSection.classList.add("active");
+/* popup */
+
+const popup=document.getElementById("matchPopup")
+
+addMatchBtn.onclick=()=>{
+
+popup.style.display="flex"
+
 }
 
+document.getElementById("closePopup").onclick=()=>{
 
+popup.style.display="none"
 
-/* ---------- ADD MATCH ---------- */
+}
 
-document.getElementById("saveMatch").onclick=async()=>{const title=document.getElementById("title").value
-const price=document.getElementById("price").value
-const thumbnail=document.getElementById("thumbnail").value
-const rules=document.getElementById("rules").value
+/* add match */
+
+  document.getElementById("submitMatch").onclick=async()=>{
+
+const title=document.getElementById("matchTitle").value
+const price=document.getElementById("matchPrice").value
+const slots=document.getElementById("matchSlots").value
+const date=document.getElementById("matchDate").value
+const time=document.getElementById("matchTime").value
 
 if(!title || !price){
+
 alert("Fill details")
 return
+
 }
 
-await setDoc(doc(db,"matches",title.replace(/\s/g,"_")),{
+await addDoc(collection(db,"matches"),{
 
 title:title,
 price:price,
-thumbnail:thumbnail,
-rules:rules
+slots:slots,
+date:date,
+time:time
 
 })
 
-alert("Match Added")
+popup.style.display="none"
 
-goHome()
+alert("Match Added")
 
 }
 
+/* home feed */
+
+const feed=document.getElementById("homeFeed")
+
+onSnapshot(collection(db,"matches"),(snapshot)=>{
+
+feed.innerHTML=""
+
+snapshot.forEach((doc)=>{
+
+const m=doc.data()
+
+const div=document.createElement("div")
+
+div.className="matchCard"
+
+div.innerHTML=
+
+<h3>${m.title}</h3>
+
+<p>₹${m.price}</p>
+
+<p>Slots: ${m.slots}</p>
+
+<p>${m.date} | ${m.time}</p>
 
 
-/* ---------- PAYMENTS ---------- */
 
-const container=document.getElementById("paymentsContainer")
+feed.appendChild(div)
+
+})
+
+})
+
+/* payments */
+
+const paymentsContainer=document.getElementById("paymentsContainer")
 
 onSnapshot(collection(db,"payments"),(snapshot)=>{
 
-container.innerHTML=""
+paymentsContainer.innerHTML=""
 
 snapshot.forEach((docSnap)=>{
 
@@ -312,7 +399,7 @@ status:"rejected"
 
 }
 
-container.appendChild(div)
+paymentsContainer.appendChild(div)
 
 }
 
