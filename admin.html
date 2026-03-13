@@ -1,160 +1,216 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>IGNITE SCRIMS ADMIN</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-    background:#0f0f0f;
-    color:white;
-    font-family:sans-serif;
-    padding:20px;
-}
-
-#controls{
-    margin-bottom:20px;
-}
-
-button{
-    padding:8px 15px;
-    margin-right:10px;
-    margin-top:5px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-.filterBtn{
-    background:#444;
-    color:white;
-}
-
-.payment{
-    background:#1e1e1e;
-    padding:15px;
-    margin-top:10px;
-    border-radius:10px;
-}
-
-.approve{
-    background:green;
-    color:white;
-}
-
-.reject{
-    background:red;
-    color:white;
-}
-
-#searchInput{
-    padding:8px 10px;
-    width:250px;
-    border-radius:6px;
-    border:none;
-    margin-right:10px;
-}
-</style>
+  <title>IGNITE SCRIMS ADMIN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; font-family:sans-serif; background:#0f0f0f; color:white; }
+    .sidebar { width:200px; background:#1e1e1e; height:100vh; position:fixed; left:0; top:0; padding:20px; }
+    .sidebar button { display:block; width:100%; margin-bottom:10px; padding:10px; border:none; border-radius:6px; cursor:pointer; background:#ff3c3c; color:white; }
+    .main { margin-left:220px; padding:20px; }
+    h2,h3 { margin:10px 0; }
+    .match, .payment { background:#1a1a1a; padding:15px; margin-bottom:15px; border-radius:10px; }
+    .match img { max-width:100px; display:block; margin-bottom:10px; border-radius:6px; }
+    .btn { padding:8px 15px; margin-right:10px; border:none; border-radius:6px; cursor:pointer; }
+    .approve { background:green; color:white; }
+    .reject { background:red; color:white; }
+    .back, .cut { background:#555; color:white; }
+    input, textarea { width:100%; padding:10px; margin:5px 0; border-radius:6px; border:none; }
+  </style>
 </head>
 <body>
 
-<h2>Payments Dashboard</h2>
-
-<div id="controls">
-    <input type="text" id="searchInput" placeholder="Search by IGN / Email / Ref">
-    <button class="filterBtn" data-filter="all">All</button>
-    <button class="filterBtn" data-filter="pending">Pending</button>
-    <button class="filterBtn" data-filter="approved">Approved</button>
-    <button class="filterBtn" data-filter="rejected">Rejected</button>
+<div class="sidebar">
+  <button id="homeBtn">Home Feed</button>
+  <button id="addMatchBtn">Add Match</button>
+  <button id="paymentsBtn">Payments</button>
 </div>
 
-<div id="payments"></div>
+<div class="main" id="mainContent">
+  <h2>Home Feed</h2>
+  <div id="matchesList"></div>
+</div>
+
+<!-- Add Match Form -->
+<div id="addMatchForm" style="display:none;">
+  <h2>Add New Match</h2>
+  <label>Title:</label>
+  <input type="text" id="newTitle" placeholder="Match Title">
+  <label>Price (₹):</label>
+  <input type="number" id="newPrice" placeholder="Entry Fee">
+  <label>Rules:</label>
+  <textarea id="newRules" placeholder="Match Rules"></textarea>
+  <label>Thumbnail:</label>
+  <input type="file" id="newThumbnail">
+  <button id="saveMatchBtn" class="btn">Save</button>
+  <button id="cancelAddMatch" class="btn back">Back</button>
+</div>
+
+<!-- Payments -->
+<div id="paymentsSection" style="display:none;">
+  <h2>Pending Payments</h2>
+  <div id="paymentsList"></div>
+  <button id="backPayments" class="btn back">Back</button>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-    authDomain: "ignite-scrims.firebaseapp.com",
-    projectId: "ignite-scrims",
-    storageBucket: "ignite-scrims.firebasestorage.app",
-    messagingSenderId: "497561769270",
-    appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain: "ignite-scrims.firebaseapp.com",
+  projectId: "ignite-scrims",
+  storageBucket: "ignite-scrims.firebasestorage.app",
+  messagingSenderId: "497561769270",
+  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-const container = document.getElementById("payments");
-const searchInput = document.getElementById("searchInput");
-const filterBtns = document.querySelectorAll(".filterBtn");
+const main = document.getElementById("mainContent");
+const matchesList = document.getElementById("matchesList");
+const addMatchForm = document.getElementById("addMatchForm");
+const paymentsSection = document.getElementById("paymentsSection");
+const paymentsList = document.getElementById("paymentsList");
 
-let paymentsData = [];
-let currentFilter = "all";
+// Sidebar buttons
+document.getElementById("homeBtn").onclick = () => { showHome(); };
+document.getElementById("addMatchBtn").onclick = () => { showAddMatch(); };
+document.getElementById("paymentsBtn").onclick = () => { showPayments(); };
 
-// Real-time listener
-onSnapshot(collection(db,"payments"), (snapshot) => {
-    paymentsData = [];
-    snapshot.forEach(docSnap => {
-        paymentsData.push(docSnap.data());
-    });
-    renderPayments();
-});
+// Back buttons
+document.getElementById("cancelAddMatch").onclick = () => { showHome(); };
+document.getElementById("backPayments").onclick = () => { showHome(); };
 
-function renderPayments(){
-    container.innerHTML = "";
-
-    let filtered = paymentsData.filter(p => {
-        if(currentFilter !== "all" && p.status !== currentFilter) return false;
-        const searchText = searchInput.value.toLowerCase();
-        if(searchText){
-            return p.reference.toLowerCase().includes(searchText) || 
-                   p.ign.toLowerCase().includes(searchText) || 
-                   p.email.toLowerCase().includes(searchText);
-        }
-        return true;
-    });
-
-    filtered.forEach(data => {
-        const div = document.createElement("div");
-        div.className = "payment";
-        div.innerHTML = 
-            <p><b>Reference:</b> ${data.reference}</p>
-            <p><b>Email:</b> ${data.email}</p>
-            <p><b>IGN:</b> ${data.ign}</p>
-            <p><b>Status:</b> ${data.status}</p>
-            ${data.status==="pending"? '<button class="approve">Approve</button><button class="reject">Reject</button>':''}
-        ;
-
-        if(data.status==="pending"){
-            const approveBtn = div.querySelector(".approve");
-            const rejectBtn = div.querySelector(".reject");
-
-            approveBtn.onclick = async () => {
-                await updateDoc(doc(db,"payments",data.reference), { status:"approved" });
-            };
-
-            rejectBtn.onclick = async () => {
-                await updateDoc(doc(db,"payments",data.reference), { status:"rejected" });
-            };
-        }
-
-        container.appendChild(div);
-    });
+// Show Home
+function showHome(){
+  main.style.display = "block";
+  addMatchForm.style.display = "none";
+  paymentsSection.style.display = "none";
+  loadMatches();
 }
 
-// Search
-searchInput.addEventListener("input", renderPayments);
+// Show Add Match
+function showAddMatch(){
+  main.style.display = "none";
+  addMatchForm.style.display = "block";
+  paymentsSection.style.display = "none";
+}
+    // Show Payments
+function showPayments(){
+  main.style.display = "none";
+  addMatchForm.style.display = "none";
+  paymentsSection.style.display = "block";
+  loadPayments();
+}
 
-// Filters
-filterBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-        currentFilter = btn.dataset.filter;
-        renderPayments();
+// Load Matches List
+function loadMatches(){
+  matchesList.innerHTML = "";
+  onSnapshot(collection(db,"matches"), (snapshot)=>{
+    matchesList.innerHTML="";
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.className="match";
+      div.innerHTML = 
+        <img src="${data.thumbnail||''}" alt="thumb">
+        <h3>${data.title}</h3>
+        <p>Price: ₹${data.price}</p>
+        <p>Rules: ${data.rules}</p>
+        <button class="editMatchBtn btn">Edit</button>
+      ;
+      const editBtn = div.querySelector(".editMatchBtn");
+      editBtn.onclick = ()=>{ editMatch(docSnap.id, data); };
+      matchesList.appendChild(div);
     });
-});
+  });
+}
 
+// Load Payments
+function loadPayments(){
+  paymentsList.innerHTML="";
+  onSnapshot(collection(db,"payments"), (snapshot)=>{
+    paymentsList.innerHTML="";
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+      if(data.status==="pending"){
+        const div = document.createElement("div");
+        div.className="payment";
+        div.innerHTML = 
+          <p><b>Reference:</b> ${data.reference}</p>
+          <p><b>IGN:</b> ${data.ign||'-'}</p>
+          <p><b>Email:</b> ${data.email||'-'}</p>
+          <p>Status: ${data.status}</p>
+          <button class="approve btn approve">Approve</button>
+          <button class="reject btn reject">Reject</button>
+          <button class="cut btn">Cut</button>
+        ;
+        const approveBtn = div.querySelector(".approve");
+        const rejectBtn = div.querySelector(".reject");
+        const cutBtn = div.querySelector(".cut");
+        approveBtn.onclick = async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"approved"}); };
+        rejectBtn.onclick = async ()=>{ await updateDoc(doc(db,"payments",docSnap.id),{status:"rejected"}); };
+        cutBtn.onclick = ()=>{ showHome(); };
+        paymentsList.appendChild(div);
+      }
+    });
+  });
+}
+
+// Add Match
+document.getElementById("saveMatchBtn").onclick = async ()=>{
+  const title = document.getElementById("newTitle").value;
+  const price = document.getElementById("newPrice").value;
+  const rules = document.getElementById("newRules").value;
+  const thumbFile = document.getElementById("newThumbnail").files[0];
+
+  if(!title!price!rules||!thumbFile){ alert("Fill all fields"); return; }
+
+  const storageRef = ref(storage, match_thumbnails/${Date.now()}_${thumbFile.name});
+  await uploadBytes(storageRef, thumbFile);
+  const thumbURL = await getDownloadURL(storageRef);
+
+  const newDoc = doc(db,"matches", Date.now().toString());
+  await setDoc(newDoc,{ title, price, rules, thumbnail: thumbURL });
+  alert("Match added successfully");
+  showHome();
+}
+
+// Edit Match
+function editMatch(id,data){
+  main.style.display="none";
+  addMatchForm.style.display="block";
+  paymentsSection.style.display="none";
+
+  document.getElementById("newTitle").value = data.title;
+  document.getElementById("newPrice").value = data.price;
+  document.getElementById("newRules").value = data.rules;
+
+  document.getElementById("saveMatchBtn").onclick = async ()=>{
+    const title = document.getElementById("newTitle").value;
+    const price = document.getElementById("newPrice").value;
+    const rules = document.getElementById("newRules").value;
+    const thumbFile = document.getElementById("newThumbnail").files[0];
+
+    let thumbURL = data.thumbnail;
+    if(thumbFile){
+      const storageRef = ref(storage, match_thumbnails/${Date.now()}_${thumbFile.name});
+      await uploadBytes(storageRef, thumbFile);
+      thumbURL = await getDownloadURL(storageRef);
+    }
+
+    await setDoc(doc(db,"matches",id),{ title, price, rules, thumbnail: thumbURL });
+    alert("Match updated successfully");
+    showHome();
+  }
+}
+
+showHome();
 </script>
-
 </body>
 </html>
