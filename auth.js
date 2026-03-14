@@ -1,95 +1,29 @@
-import { auth, db } from "./firebase.js";
+// auth.js
 
-import {
-GoogleAuthProvider,
-signInWithPopup,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { auth, provider } from "./firebase.js";
 
-import {
-doc,
-setDoc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
+const googleBtn = document.getElementById("googleLogin");
 
-const provider = new GoogleAuthProvider();
+googleBtn.onclick = async () => {
 
-const profileBtn = document.getElementById("profileBtn");
-
-
-
-// OPEN LOGIN POPUP
-
-profileBtn.onclick = () => {
-
-document.getElementById("loginPopup").style.display="flex";
-
-};
-
-
-
-// CLOSE LOGIN
-
-document.getElementById("closeLogin").onclick=()=>{
-
-document.getElementById("loginPopup").style.display="none";
-
-};
-
-
-
-// GOOGLE LOGIN
-
-document.getElementById("googleLoginBtn").onclick=async()=>{
+try{
 
 const result = await signInWithPopup(auth, provider);
 
 const user = result.user;
 
-await saveUser(user);
+alert("Welcome " + user.displayName);
 
 document.getElementById("loginPopup").style.display="none";
 
+}
+catch(error){
+
+alert(error.message);
+
+}
+
 };
-
-
-
-// SAVE USER
-
-async function saveUser(user){
-
-const userRef = doc(db,"users",user.uid);
-
-const snap = await getDoc(userRef);
-
-if(!snap.exists()){
-
-await setDoc(userRef,{
-
-username:user.displayName,
-email:user.email,
-xp:0,
-matches_played:0,
-role:"user"
-
-});
-
-}
-
-}
-
-
-
-// LOGIN STATE
-
-onAuthStateChanged(auth,(user)=>{
-
-if(user){
-
-profileBtn.innerText=user.displayName;
-
-}
-
-});
