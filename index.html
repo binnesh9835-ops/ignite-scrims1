@@ -1,267 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IGNITE SCRIMS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-<header class="hero">
-<h1>IGNITE SCRIMS</h1>
-<p>Play Fair • Win Big</p>
-<button class="login-btn" id="loginBtn">Login / Register</button>
-<div class="scroll-down">⬇️</div>
+<!-- HEADER -->
+<header class="header">
+    <h1 class="logo">IGNITE SCRIMS</h1>
+
+    <div class="profile-btn" id="profileBtn">
+        Login
+    </div>
 </header>
 
-<section class="matches">
-<h2>Upcoming Matches</h2>
-<div id="matchesContainer"></div>
+
+<!-- MATCH FEED -->
+<section class="matches-section">
+
+    <h2 class="section-title">Upcoming Matches</h2>
+
+    <div id="matchesContainer">
+
+        <!-- Example Match Card -->
+        <div class="match-card">
+
+            <img src="https://via.placeholder.com/120" class="match-thumb">
+
+            <div class="match-info">
+                <h3>DUO SCRIMS</h3>
+                <p>Entry ₹20</p>
+                <p>Slots 12/48</p>
+                <p>Time 8:30 PM</p>
+            </div>
+
+        </div>
+
+        <button class="join-btn">JOIN MATCH</button>
+
+    </div>
+
 </section>
 
-<!-- USERNAME POPUP -->
 
-<div id="usernamePopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
-<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:80%; max-width:320px;">
-<h3 style="color:white;">Choose Your Username</h3>
-<input id="usernameInput" type="text" placeholder="Enter Username" style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
-<button id="saveUsernameBtn" style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">Submit</button>
-</div>
-</div>
 
-<!-- RULES POPUP -->
+<!-- TOP PLAYERS -->
+<section class="leaderboard">
 
-<div id="rulesPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
-<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
-<h3>IGNITE SCRIMS RULES</h3>
-<p style="text-align:left; font-size:14px; margin-top:10px;">
-• No hacking<br>
-• No teaming<br>
-• Entry fee non-refundable<br>
-• Join room 10 minutes before match
-</p>
-<button id="rulesNextBtn" style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">Next</button>
-<button id="rulesCutBtn" style="margin-top:15px; padding:10px 20px; background:#555; border:none; color:white; border-radius:6px;">Cut</button>
-</div>
-</div>
+    <h2 class="section-title">🔥 Top Players</h2>
 
-<!-- IGN POPUP -->
+    <div id="topPlayers">
 
-<div id="ignPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
-<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
-<h3>Enter Free Fire IGN</h3>
-<input id="ignInput" type="text" placeholder="Your In Game Name" style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
-<button id="saveIgnBtn" style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">Next</button>
-<button id="ignBackBtn" style="margin-top:15px; padding:10px 20px; background:#555; border:none; color:white; border-radius:6px;">Back</button>
-</div>
-</div>
+        <div class="player">#1 Aman</div>
+        <div class="player">#2 Rahul</div>
+        <div class="player">#3 Arjun</div>
 
-<!-- PAYMENT POPUP -->
+    </div>
 
-<div id="paymentPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center;">
-<div style="background:#1e1e1e; padding:25px; border-radius:10px; text-align:center; width:85%; max-width:350px; color:white;">
-<h3>Pay Entry Fee</h3>
-<p>Send ₹20 to UPI</p>
-<p style="font-size:18px; color:#00ff90;">9279072936@axl</p>
-<input id="refInput" type="text" placeholder="Enter UPI Reference Number" style="width:100%; padding:10px; margin-top:10px; border:none; border-radius:6px;">
-<button id="submitPaymentBtn" style="margin-top:15px; padding:10px 20px; background:#ff3c3c; border:none; color:white; border-radius:6px;">Submit</button>
-<button id="paymentBackBtn" style="margin-top:15px; padding:10px 20px; background:#555; border:none; color:white; border-radius:6px;">Back</button>
-</div>
+</section>
+
+
+
+<!-- PROFILE POPUP -->
+<div class="profile-modal" id="profileModal">
+
+    <div class="profile-content">
+
+        <span class="close-btn" id="closeProfile">X</span>
+
+        <h2>User Profile</h2>
+
+        <p>Username: Player</p>
+        <p>XP: 0</p>
+        <p>Matches Played: 0</p>
+
+        <hr>
+
+        <h3>Game Info</h3>
+
+        <p>IGN: -</p>
+        <p>Game UID: -</p>
+        <p>Level: -</p>
+        <p>Bio: -</p>
+
+    </div>
+
 </div>
 
-<script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    const firebaseConfig = {
-apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-authDomain: "ignite-scrims.firebaseapp.com",
-projectId: "ignite-scrims",
-storageBucket: "ignite-scrims.firebasestorage.app",
-messagingSenderId: "497561769270",
-appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
-};
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-const db = getFirestore(app);
+<!-- ADMIN PANEL PLACEHOLDER -->
+<div id="adminPanel" style="display:none">
 
-// LOGIN
+<h2>Admin Panel</h2>
 
-document.getElementById("loginBtn").onclick = async () => {
+<button>Add Match</button>
+<button>Approve Payments</button>
 
-try {
+</div>
 
-const result = await signInWithPopup(auth, provider);
-const user = result.user;
 
-alert("Welcome " + user.displayName);
 
-const userRef = doc(db,"users",user.uid);
-const snap = await getDoc(userRef);
+<!-- SUPPORT BUTTON -->
+<div class="support-btn" id="supportBtn">
 
-if(!snap.exists()){
-document.getElementById("usernamePopup").style.display="flex";
-}
+    💬
 
-}catch(e){
+</div>
 
-alert("Login failed");
 
-}
 
-};
-
-// SAVE USERNAME
-
-document.getElementById("saveUsernameBtn").onclick = async () => {
-
-const username = document.getElementById("usernameInput").value.toLowerCase();
-
-if(username.includes(" ")){
-alert("No spaces allowed");
-return;
-}
-
-const user = auth.currentUser;
-
-await setDoc(doc(db,"usernames",username),{ uid:user.uid });
-
-await setDoc(doc(db,"users",user.uid),{
-username,
-email:user.email,
-coins:0,
-matchesPlayed:0
-});
-
-alert("Username saved successfully");
-
-document.getElementById("usernamePopup").style.display="none";
-
-};
-
-// LOAD MATCHES FROM ADMIN
-
-const matchesContainer = document.getElementById("matchesContainer");
-
-onSnapshot(collection(db,"matches"),(snapshot)=>{
-
-matchesContainer.innerHTML="";
-
-snapshot.forEach((docSnap)=>{
-
-const m = docSnap.data();
-
-const div = document.createElement("div");
-
-div.className="match";
-
-div.innerHTML = 
-<h3>${m.title}</h3>
-<p>Entry: ₹${m.price}</p>
-<p>Players: ${m.players || 0} / ${m.slots}</p>
-<button class="joinMatchBtn">Join Match</button>
-;
-
-div.querySelector(".joinMatchBtn").onclick = () => {
-
-if(!auth.currentUser){
-alert("Please login first");
-return;
-}
-
-document.getElementById("rulesPopup").style.display="flex";
-
-};
-
-matchesContainer.appendChild(div);
-
-});
-
-});
-
-// RULES
-
-document.getElementById("rulesNextBtn").onclick = () => {
-document.getElementById("rulesPopup").style.display="none";
-document.getElementById("ignPopup").style.display="flex";
-};
-
-document.getElementById("rulesCutBtn").onclick = () => {
-document.getElementById("rulesPopup").style.display="none";
-};
-
-// IGN
-
-document.getElementById("saveIgnBtn").onclick = () => {
-
-const ign = document.getElementById("ignInput").value;
-
-if(ign==""){
-alert("Enter IGN");
-return;
-}
-
-document.getElementById("ignPopup").style.display="none";
-document.getElementById("paymentPopup").style.display="flex";
-
-};
-
-document.getElementById("ignBackBtn").onclick = () => {
-document.getElementById("ignPopup").style.display="none";
-document.getElementById("rulesPopup").style.display="flex";
-};
-
-// PAYMENT
-
-document.getElementById("submitPaymentBtn").onclick = async () => {
-
-const ref = document.getElementById("refInput").value;
-
-if(ref==""){
-alert("Enter reference number");
-return;
-}
-
-const user = auth.currentUser;
-
-if(!user){
-alert("Please login first");
-return;
-}
-
-try{
-
-await setDoc(doc(db,"payments",ref),{
-uid:user.uid,
-email:user.email,
-ign:document.getElementById("ignInput").value,
-reference:ref,
-status:"pending"
-});
-
-alert("Payment submitted successfully");
-
-document.getElementById("paymentPopup").style.display="none";
-
-}catch(e){
-
-alert("Error submitting payment");
-
-}
-
-};
-
-document.getElementById("paymentBackBtn").onclick = () => {
-
-document.getElementById("paymentPopup").style.display="none";
-document.getElementById("ignPopup").style.display="flex";
-
-};
-
-</script>
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="matches.js"></script>
+<script src="profile.js"></script>
+<script src="admin.js"></script>
+<script src="xp.js"></script>
+<script src="support.js"></script>
 
 </body>
 </html>
