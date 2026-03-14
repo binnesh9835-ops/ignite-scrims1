@@ -2,62 +2,92 @@ import { db } from "./firebase.js";
 
 import {
 collection,
-addDoc
+getDocs,
+updateDoc,
+doc,
+deleteDoc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
-
-const adminPanel = document.getElementById("adminPanel");
+const adminPanel=document.getElementById("adminPanel");
 
 
 
-// ADD MATCH BUTTON
+async function loadRequests(){
 
-adminPanel.innerHTML += 
-<h3>Create Match</h3>
+const querySnapshot=await getDocs(collection(db,"match_requests"));
 
-<input id="matchTitle" placeholder="Match Title">
+querySnapshot.forEach((docSnap)=>{
 
-<input id="matchEntry" placeholder="Entry Fee">
+const data=docSnap.data();
+const id=docSnap.id;
 
-<input id="matchSlots" placeholder="Total Slots">
+if(data.status!=="pending") return;
 
-<input id="matchTime" placeholder="Match Time">
+const box=document.createElement("div");
 
-<input id="matchThumb" placeholder="Thumbnail URL">
+box.innerHTML=
 
-<button id="createMatch">Create Match</button>
+<p><b>IGN:</b> ${data.ign}</p>
+
+<p>UID: ${data.uid}</p>
+
+<p>Ref ID: ${data.ref}</p>
+
+<button onclick="approve('${id}','${data.matchId}')">Approve</button>
+
+<button onclick="reject('${id}','${data.matchId}')">Reject</button>
+
+<hr>
+
 ;
 
+adminPanel.appendChild(box);
 
+});
 
-document.getElementById("createMatch").onclick = async () => {
-
-const title = document.getElementById("matchTitle").value;
-
-const entry = document.getElementById("matchEntry").value;
-
-const slots = document.getElementById("matchSlots").value;
-
-const time = document.getElementById("matchTime").value;
-
-const thumbnail = document.getElementById("matchThumb").value;
+}
 
 
 
-await addDoc(collection(db,"matches"),{
+window.approve=async(id,matchId)=>{
 
-title:title,
-entry:entry,
-slots:Number(slots),
-joined:0,
-time:time,
-thumbnail:thumbnail
+await updateDoc(doc(db,"match_requests",id),{
 
+status:"approved"
+
+});
+
+alert("Payment Approved");
+
+};
+
+
+
+window.reject=async(id,matchId)=>{
+
+const matchRef=doc(db,"matches",matchId);
+
+const matchSnap=await getDoc(matchRef);
+
+const matchData=matchSnap.data();
+
+
+
+// SLOT -1
+
+await updateDoc(matchRef,{
+joined: matchData.joined - 1
 });
 
 
 
-alert("Match Created");
+await deleteDoc(doc(db,"match_requests",id));
+
+alert("Payment Rejected");
 
 };
+
+
+
+loadRequests();
