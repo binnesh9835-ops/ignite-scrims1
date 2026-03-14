@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,40 +8,204 @@
 
 <title>IGNITE SCRIMS</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0c0c0c;
+color:white;
+text-align:center;
+}
+
+/* TOP MENU */
+
+.topmenu{
+display:flex;
+justify-content:center;
+gap:30px;
+padding:15px;
+background:#111;
+font-weight:bold;
+}
+
+.topmenu span{
+cursor:pointer;
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+position:absolute;
+top:15px;
+right:20px;
+background:orange;
+border:none;
+padding:8px 16px;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* TITLE */
+
+.title{
+font-size:40px;
+margin-top:40px;
+font-weight:bold;
+background:linear-gradient(90deg,#ffcc00,#ffffff,#ffcc00);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+/* UPCOMING MATCHES */
+
+.upcoming{
+margin-top:60px;
+font-size:24px;
+position:relative;
+display:inline-block;
+}
+
+.upcoming::before,
+.upcoming::after{
+content:"";
+position:absolute;
+width:120px;
+height:2px;
+top:50%;
+background:linear-gradient(to right,transparent,orange);
+animation:shine 2s infinite;
+}
+
+.upcoming::before{
+right:110%;
+}
+
+.upcoming::after{
+left:110%;
+transform:scaleX(-1);
+}
+
+@keyframes shine{
+0%{opacity:0}
+50%{opacity:1}
+100%{opacity:0}
+}
+
+/* MATCH AREA */
+
+#matchesContainer{
+margin-top:30px;
+}
+
+/* LOGIN POPUP */
+
+.popup{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+align-items:center;
+justify-content:center;
+}
+
+.popup-box{
+background:#1a1a1a;
+padding:30px;
+border-radius:10px;
+}
+
+.popup-box button{
+margin-top:10px;
+padding:10px;
+cursor:pointer;
+}
+
+/* TELEGRAM BUTTON */
+
+.support{
+position:fixed;
+bottom:25px;
+right:25px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:#1da1f2;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+cursor:pointer;
+}
+
+</style>
 
 </head>
+
 
 <body>
 
 
-<!-- HEADER -->
+<!-- TOP MENU -->
 
-<header class="header">
+<div class="topmenu">
 
-<h1 class="logo">IGNITE SCRIMS</h1>
+<span>Home Feed</span>
+<span>My Matches</span>
+<span>Wallet</span>
+<span>Profile</span>
 
-<div class="profile-btn" id="profileBtn">
-Login
 </div>
 
-</header>
+
+<!-- LOGIN BUTTON -->
+
+<button class="login-btn" id="loginBtn">
+Login
+</button>
+
+
+
+<!-- TITLE -->
+
+<div class="title">
+IGNITE SCRIMS
+</div>
+
+
+
+<!-- UPCOMING -->
+
+<div class="upcoming">
+Upcoming Matches
+</div>
+
+
+
+<div id="matchesContainer">
+</div>
+
+
 
 <!-- LOGIN POPUP -->
 
-<div id="loginPopup" class="join-popup">
+<div class="popup" id="loginPopup">
 
-<div class="join-box">
+<div class="popup-box">
 
-<h3>Login</h3>
+<h3>Login to Join Matches</h3>
 
-<p>Login to join matches</p>
-
-<button id="googleLoginBtn">
+<button id="googleLogin">
 Login with Google
 </button>
 
-<button id="closeLogin">
+<br>
+
+<button onclick="closeLogin()">
 Back
 </button>
 
@@ -48,161 +213,45 @@ Back
 
 </div>
 
-<!-- MATCH FEED -->
-
-<section class="matches-section">
-
-<h2 class="section-title">Upcoming Matches</h2>
-
-<div id="matchesContainer"></div>
-
-</section>
 
 
+<!-- TELEGRAM SUPPORT -->
 
-<!-- TOP PLAYERS -->
-
-<section class="leaderboard">
-
-<h2 class="section-title">🔥 Top Players</h2>
-
-<div id="topPlayers"></div>
-
-</section>
-
-
-
-<!-- PROFILE POPUP -->
-
-<div class="profile-modal" id="profileModal">
-
-<div class="profile-content">
-
-<span class="close-btn" id="closeProfile">X</span>
-
-<h2>User Profile</h2>
-
-<p>Username</p>
-
-</div>
-
-</div>
-
-
-
-<!-- ADMIN PANEL -->
-
-<div id="adminPanel" style="display:none">
-
-<h2>Admin Panel</h2>
-
-</div>
-
-
-
-<!-- SUPPORT BUTTON -->
-
-<div class="support-btn" id="supportBtn">
+<div class="support" onclick="openSupport()">
 💬
 </div>
 
 
 
-<!-- JOIN MATCH POPUP SYSTEM -->
+<script>
 
-<div id="joinPopup" class="join-popup">
+/* LOGIN POPUP */
 
-<div class="join-box">
+const loginBtn=document.getElementById("loginBtn");
+const loginPopup=document.getElementById("loginPopup");
 
-<!-- STEP 1 RULES -->
+loginBtn.onclick=()=>{
+loginPopup.style.display="flex";
+}
 
-<div id="stepRules">
-
-<h3>Match Rules</h3>
-
-<p id="matchRulesText">
-Rules will appear here
-</p>
-
-<button id="agreeBtn">YES, I AGREE</button>
-
-</div>
+function closeLogin(){
+loginPopup.style.display="none";
+}
 
 
+/* TELEGRAM SUPPORT */
 
-<!-- STEP 2 PLAYER INFO -->
+function openSupport(){
 
-<div id="stepPlayer" style="display:none">
+window.open(
+"https://t.me/IgniteScrimsFF_Support",
+"_blank"
+);
 
-<button class="backBtn" id="backToRules">← Back</button>
+}
 
-<h3>Player Details</h3>
+</script>
 
-<input id="joinIGN" placeholder="IGN">
-
-<input id="joinUID" placeholder="Game UID">
-
-<input id="joinLevel" placeholder="Level">
-
-<button id="nextToPayment">Next</button>
-
-</div>
-
-
-
-<!-- STEP 3 PAYMENT -->
-
-<div id="stepPayment" style="display:none">
-
-<button class="backBtn" id="backToPlayer">← Back</button>
-
-<h3>Payment</h3>
-
-<p>Send payment to:</p>
-
-<p id="upiId">9279072936@axl</p>
-
-<p>Entry Fee: ₹<span id="entryFee">0</span></p>
-
-<input id="upiRef" placeholder="UPI Reference ID">
-
-<button id="submitJoin">Submit</button>
-
-<p id="joinStatus"></p>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<script src="firebase.js"></script>
-<script src="auth.js"></script>
-<script src="matches.js"></script>
-<script src="profile.js"></script>
-<script src="admin.js"></script>
-<script src="xp.js"></script>
-<script src="support.js"></script>
-
-<!-- ROOM DETAILS POPUP -->
-
-<div id="roomPopup" class="join-popup">
-
-<div class="join-box">
-
-<h3>Match Room Details</h3>
-
-<p><b>Room ID:</b> <span id="roomIdText"></span></p>
-
-<p><b>Password:</b> <span id="roomPassText"></span></p>
-
-<button onclick="closeRoom()">Close</button>
-
-</div>
-
-</div>
 
 </body>
 </html>
