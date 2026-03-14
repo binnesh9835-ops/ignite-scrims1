@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase.js";
 
-import { 
+import {
 GoogleAuthProvider,
 signInWithPopup,
 onAuthStateChanged
@@ -20,11 +20,29 @@ const profileBtn = document.getElementById("profileBtn");
 
 
 
-// LOGIN BUTTON CLICK
+// OPEN LOGIN POPUP
 
-profileBtn.onclick = async () => {
+profileBtn.onclick = () => {
 
-if(profileBtn.innerText === "Login"){
+document.getElementById("loginPopup").style.display="flex";
+
+};
+
+
+
+// CLOSE LOGIN
+
+document.getElementById("closeLogin").onclick=()=>{
+
+document.getElementById("loginPopup").style.display="none";
+
+};
+
+
+
+// GOOGLE LOGIN
+
+document.getElementById("googleLoginBtn").onclick=async()=>{
 
 const result = await signInWithPopup(auth, provider);
 
@@ -32,30 +50,29 @@ const user = result.user;
 
 await saveUser(user);
 
-}
+document.getElementById("loginPopup").style.display="none";
 
 };
 
 
 
-// SAVE USER TO DATABASE
+// SAVE USER
 
 async function saveUser(user){
 
-const userRef = doc(db, "users", user.uid);
+const userRef = doc(db,"users",user.uid);
 
-const docSnap = await getDoc(userRef);
+const snap = await getDoc(userRef);
 
-if(!docSnap.exists()){
+if(!snap.exists()){
 
 await setDoc(userRef,{
 
-username: user.displayName,
-email: user.email,
-xp: 0,
-matches_played: 0,
-wins: 0,
-role: "user"
+username:user.displayName,
+email:user.email,
+xp:0,
+matches_played:0,
+role:"user"
 
 });
 
@@ -65,40 +82,14 @@ role: "user"
 
 
 
-// CHECK LOGIN STATE
+// LOGIN STATE
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth,(user)=>{
 
 if(user){
 
-profileBtn.innerText = user.displayName;
-
-checkRole(user.uid);
+profileBtn.innerText=user.displayName;
 
 }
 
 });
-
-
-
-// ROLE CHECK
-
-async function checkRole(uid){
-
-const userRef = doc(db, "users", uid);
-
-const docSnap = await getDoc(userRef);
-
-if(docSnap.exists()){
-
-const data = docSnap.data();
-
-if(data.role === "admin" || data.role === "owner"){
-
-document.getElementById("adminPanel").style.display = "block";
-
-}
-
-}
-
-}
