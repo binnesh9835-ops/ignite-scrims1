@@ -14,6 +14,9 @@ const result = await signInWithPopup(auth, provider);
 
 const user = result.user;
 
+// 👇 YE IMPORTANT LINE HAI
+console.log("USER UID:", user.uid);
+
 alert("Welcome " + user.displayName);
 
 document.getElementById("loginPopup").style.display = "none";
