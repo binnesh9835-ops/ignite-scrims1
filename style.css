@@ -1,194 +1,357 @@
-body{
+/* RESET */
+
+*{
 margin:0;
-font-family:Arial, Helvetica, sans-serif;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
 background:#0f0f0f;
 color:white;
+overflow-x:hidden;
 }
 
-/* HERO SECTION */
 
-.hero{
-height:250px;
+
+/* HEADER */
+
+.header{
+position:relative;
+height:220px;
 display:flex;
 flex-direction:column;
-justify-content:center;
 align-items:center;
+justify-content:center;
 text-align:center;
-background-size:cover;
-background-position:center;
-position:relative;
-animation:slider 25s infinite;
+overflow:hidden;
 }
 
-.hero::before{
+
+
+/* BACKGROUND SLIDESHOW */
+
+.header::before{
 content:"";
 position:absolute;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.55);
+
+background-size:cover;
+background-position:center;
+
+animation:bgslide 20s infinite;
+opacity:0.35;
 }
 
-.hero h1{
-font-size:60px;
-letter-spacing:4px;
-z-index:1;
-}
 
-.hero p{
-font-size:20px;
-margin-top:10px;
-z-index:1;
-}
+/* CHANGE THESE IMAGES WITH YOUR GALLERY IMAGES */
 
-/* BACKGROUND SLIDER */
-
-@keyframes slider{
+@keyframes bgslide{
 
 0%{
-background-image:url("1.jpg");
+background-image:url("bg1.jpg");
 }
 
-20%{
-background-image:url("2.jpg");
+25%{
+background-image:url("bg2.jpg");
 }
 
-40%{
-background-image:url("3.jpg");
+50%{
+background-image:url("bg3.jpg");
 }
 
-60%{
-background-image:url("4.jpg");
-}
-
-80%{
-background-image:url("5.jpg");
+75%{
+background-image:url("bg4.jpg");
 }
 
 100%{
-background-image:url("1.jpg");
+background-image:url("bg1.jpg");
 }
 
 }
 
-/* MATCHES SECTION */
 
-.matches{
-padding:40px;
-text-align:center;
-}
 
-.matches h2{
-font-size:30px;
-margin-bottom:20px;
-}
+/* IGNITE SCRIMS LOGO */
 
-.match{
-background:#1a1a1a;
-padding:25px;
-border-radius:10px;
-max-width:350px;
-margin:auto;
-}
+.logo{
 
-.match h3{
-font-size:22px;
-}
+font-size:34px;
+font-weight:bold;
+letter-spacing:3px;
 
-.match p{
-margin:8px 0;
-}
+background:linear-gradient(
+120deg,
+#ffffff 20%,
+#ffd700 40%,
+#ffffff 60%
+);
 
-button{
-background:#ff7b3a;
-border:none;
-padding:10px 20px;
-border-radius:6px;
+background-size:200% auto;
 color:white;
-font-size:16px;
-cursor:pointer;
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+animation:shine 4s linear infinite;
+
+z-index:2;
+
 }
 
-/* TEXT ANIMATION */
 
-.hero h1{
-font-size:50px;
-letter-spacing:4px;
-animation:slideDown 1.5s ease;
-}
+/* SHINE ANIMATION */
 
-.hero p{
-font-size:18px;
-margin-top:5px;
-animation:fadeIn 2s ease;
-}
+@keyframes shine{
 
-/* Scroll Arrow */
-
-.scroll-down{
-position:absolute;
-bottom:10px;
-font-size:30px;
-animation:bounce 2s infinite;
-}
-
-@keyframes slideDown{
 0%{
-transform:translateY(-60px);
-opacity:0;
+background-position:-200% center;
 }
+
 100%{
-transform:translateY(0);
-opacity:1;
-}
+background-position:200% center;
 }
 
-@keyframes fadeIn{
-0%{
-opacity:0;
-}
-100%{
-opacity:1;
-}
 }
 
-@keyframes bounce{
-0%,20%,50%,80%,100%{
-transform:translateY(0);
-}
-40%{
-transform:translateY(-10px);
-}
-60%{
-transform:translateY(-5px);
-}
-}
 
-button:hover{
-background:#ff5a0f;
-}
 
-.login-btn{
+/* LOGIN BUTTON */
+
+.profile-btn{
 
 position:absolute;
-
+right:20px;
 top:20px;
 
-right:20px;
-
+background:#ff7a00;
 padding:8px 16px;
-
-background:#ff3c3c;
-
-border:none;
-
-color:white;
-
-border-radius:6px;
-
-font-size:14px;
+border-radius:20px;
 
 cursor:pointer;
+font-weight:bold;
+
+}
+
+
+
+/* SECTION TITLE */
+
+.section-title{
+
+font-size:22px;
+margin:25px 15px;
+
+}
+
+
+
+/* MATCH CARD */
+
+.match-card{
+
+display:flex;
+align-items:center;
+
+background:#1b1b1b;
+margin:10px;
+padding:12px;
+border-radius:10px;
+
+}
+
+
+
+.match-thumb{
+
+width:120px;
+height:120px;
+
+border-radius:10px;
+margin-right:12px;
+
+object-fit:cover;
+
+}
+
+
+
+.match-info h3{
+
+font-size:18px;
+margin-bottom:4px;
+
+}
+
+
+
+.match-info p{
+
+font-size:14px;
+color:#ccc;
+
+}
+
+
+
+/* JOIN BUTTON */
+
+.join-btn{
+
+display:block;
+
+margin:10px auto 20px auto;
+
+background:#ff7a00;
+border:none;
+
+padding:10px 30px;
+
+border-radius:20px;
+
+font-weight:bold;
+cursor:pointer;
+
+}
+
+
+
+/* LEADERBOARD */
+
+.leaderboard{
+
+margin-top:20px;
+
+}
+
+
+
+.player{
+
+padding:10px 15px;
+border-bottom:1px solid #333;
+
+}
+
+
+
+/* PROFILE POPUP */
+
+.profile-modal{
+
+position:fixed;
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.8);
+
+display:none;
+
+align-items:center;
+justify-content:center;
+
+}
+
+
+
+.profile-content{
+
+background:#1b1b1b;
+padding:20px;
+border-radius:12px;
+width:90%;
+max-width:350px;
+
+}
+
+
+
+.close-btn{
+
+position:absolute;
+right:20px;
+top:10px;
+cursor:pointer;
+
+}
+
+
+
+/* SUPPORT BUTTON */
+
+.support-btn{
+
+position:fixed;
+
+bottom:80px;
+right:20px;
+
+width:60px;
+height:60px;
+
+border-radius:50%;
+
+background:#0088cc;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:26px;
+
+cursor:pointer;
+
+box-shadow:0 0 10px rgba(0,0,0,0.5);
+
+animation:pulse 2s infinite;
+
+}
+
+
+
+/* SUPPORT BUTTON PULSE */
+
+@keyframes pulse{
+
+0%{
+transform:scale(1);
+}
+
+50%{
+transform:scale(1.1);
+}
+
+100%{
+transform:scale(1);
+}
+
+}
+
+
+
+/* XP SHINE EFFECT */
+
+.xp-shine{
+
+background:linear-gradient(
+120deg,
+#ffffff 20%,
+#00f7ff 40%,
+#ffffff 60%
+);
+
+background-size:200% auto;
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+animation:shine 3s linear infinite;
 
 }
