@@ -55,6 +55,12 @@ border-radius:10px;
 margin-bottom:10px;
 }
 
+.matchCard img{
+width:100%;
+border-radius:6px;
+margin-bottom:10px;
+}
+
 /* popup */
 
 .popup{
@@ -101,6 +107,11 @@ color:black;
 .cancelBtn{
 background:red;
 color:white;
+}
+
+.editBtn{
+background:#ffaa00;
+margin-top:10px;
 }
 
 </style>
@@ -152,6 +163,12 @@ Add Match
 
 <input type="time" id="matchTime">
 
+<input id="matchThumb" placeholder="Thumbnail Image URL">
+
+<input id="roomId" placeholder="Room ID (optional)">
+
+<input id="roomPass" placeholder="Room Password (optional)">
+
 <button class="submitBtn" id="submitMatch">Submit</button>
 
 <button class="cancelBtn"
@@ -167,7 +184,7 @@ Cancel
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 
@@ -184,35 +201,47 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-/* add match */
+/* ADD MATCH */
 
-document.getElementById("submitMatch").onclick=async()=>{
+document.getElementById("submitMatch").addEventListener("click", async ()=>{
 
 const title=document.getElementById("matchTitle").value
 const price=document.getElementById("matchPrice").value
 const slots=document.getElementById("matchSlots").value
 const date=document.getElementById("matchDate").value
 const time=document.getElementById("matchTime").value
+const thumb=document.getElementById("matchThumb").value
+const roomId=document.getElementById("roomId").value
+const roomPass=document.getElementById("roomPass").value
 
 if(!title || !price){
-alert("Fill details")
+
+alert("Fill required details")
 return
+
 }
 
 await addDoc(collection(db,"matches"),{
+
 title:title,
 price:price,
 slots:slots,
 date:date,
-time:time
+time:time,
+thumb:thumb,
+roomId:roomId,
+roomPass:roomPass
+
 })
 
 document.getElementById("matchPopup").style.display="none"
 
-}
+alert("Match Added")
+
+})
 
 
-/* home feed */
+/* HOME FEED */
 
 const feed=document.getElementById("homeFeed")
 
@@ -220,20 +249,46 @@ onSnapshot(collection(db,"matches"),(snapshot)=>{
 
 feed.innerHTML=""
 
-snapshot.forEach((doc)=>{
+snapshot.forEach((docSnap)=>{
 
-const m=doc.data()
+const m=docSnap.data()
 
 const div=document.createElement("div")
 
 div.className="matchCard"
 
-div.innerHTML=
+div.innerHTML=`
+<img src="${m.thumb || ''}">
+
 <h3>${m.title}</h3>
+
 <p>₹${m.price}</p>
+
 <p>Slots: ${m.slots}</p>
+
 <p>${m.date} | ${m.time}</p>
 
+<p>Room ID: ${m.roomId || "Not Added"}</p>
+
+<p>Password: ${m.roomPass || "Not Added"}</p>
+
+<button class="editBtn">Edit Room ID / Pass</button>
+
+`
+
+div.querySelector(".editBtn").onclick=async()=>{
+
+const newRoom=prompt("Enter Room ID")
+const newPass=prompt("Enter Password")
+
+await updateDoc(doc(db,"matches",docSnap.id),{
+
+roomId:newRoom,
+roomPass:newPass
+
+})
+
+}
 
 feed.appendChild(div)
 
