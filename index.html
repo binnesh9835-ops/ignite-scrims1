@@ -16,12 +16,7 @@
 
 <section class="matches">
 <h2>Upcoming Matches</h2>
-<div class="match">
-<h3>Duo Match</h3>
-<p>Entry: ₹20</p>
-<p>Players: 12 / 48</p>
-<button id="joinBtn">Join Match</button>
-</div>
+<div id="matchesContainer"></div>
 </section>
 
 <!-- USERNAME POPUP -->
@@ -73,9 +68,8 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
+import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    const firebaseConfig = {
 apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
 authDomain: "ignite-scrims.firebaseapp.com",
 projectId: "ignite-scrims",
@@ -91,85 +85,158 @@ const db = getFirestore(app);
 
 // LOGIN
 document.getElementById("loginBtn").onclick = async () => {
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        alert("Welcome " + user.displayName);
+try{
+const result = await signInWithPopup(auth, provider);
+const user = result.user;
+alert("Welcome " + user.displayName);
 
-        const userRef = doc(db,"users",user.uid);
-        const snap = await getDoc(userRef);
-        if(!snap.exists()){
-            document.getElementById("usernamePopup").style.display="flex";
-        }
-    } catch(e) {
-        alert("Login failed");
-    }
+const userRef = doc(db,"users",user.uid);
+const snap = await getDoc(userRef);
+
+if(!snap.exists()){
+document.getElementById("usernamePopup").style.display="flex";
+}
+}catch(e){
+alert("Login failed");
+}
 };
 
 // SAVE USERNAME
 document.getElementById("saveUsernameBtn").onclick = async () => {
-    const username = document.getElementById("usernameInput").value.toLowerCase();
-    if(username.includes(" ")){ alert("No spaces allowed"); return; }
+const username = document.getElementById("usernameInput").value.toLowerCase();
 
-    const user = auth.currentUser;
-    await setDoc(doc(db,"usernames",username), { uid:user.uid });
-    await setDoc(doc(db,"users",user.uid), { username, email:user.email, coins:0, matchesPlayed:0 });
-    alert("Username saved successfully");
-    document.getElementById("usernamePopup").style.display="none";
+if(username.includes(" ")){
+alert("No spaces allowed");
+return;
+}
+
+const user = auth.currentUser;
+
+await setDoc(doc(db,"usernames",username), { uid:user.uid });
+await setDoc(doc(db,"users",user.uid), {
+username,
+email:user.email,
+coins:0,
+matchesPlayed:0
+});
+
+alert("Username saved successfully");
+
+document.getElementById("usernamePopup").style.display="none";
 };
 
-// JOIN MATCH
-document.getElementById("joinBtn").onclick = () => {
-    if(!auth.currentUser){ alert("Please login first"); return; }
-    document.getElementById("rulesPopup").style.display="flex";
+// LOAD MATCHES
+const matchesContainer = document.getElementById("matchesContainer");
+
+onSnapshot(collection(db,"matches"),(snapshot)=>{
+
+matchesContainer.innerHTML="";
+
+snapshot.forEach((docSnap)=>{
+
+const m = docSnap.data();
+const players = m.players || 0;
+
+const div = document.createElement("div");
+
+div.className="match";
+
+div.innerHTML = 
+<div style="display:flex;align-items:center;gap:15px;background:#1e1e1e;padding:15px;border-radius:10px;margin-bottom:15px;">
+<img src="${m.thumb}" style="width:120px;height:80px;object-fit:cover;border-radius:8px;">
+<div>
+<h3>${m.title}</h3>
+<p>Entry: ₹${m.price}</p>
+<p>Players: ${players} / ${m.slots}</p>
+<button class="joinMatchBtn">Join Match</button>
+</div>
+</div>
+;
+
+div.querySelector(".joinMatchBtn").onclick = ()=>{
+if(!auth.currentUser){
+alert("Please login first");
+return;
+}
+document.getElementById("rulesPopup").style.display="flex";
 };
+
+matchesContainer.appendChild(div);
+
+});
+
+});
 
 // RULES NEXT & CUT
 document.getElementById("rulesNextBtn").onclick = () => {
-    document.getElementById("rulesPopup").style.display="none";
-    document.getElementById("ignPopup").style.display="flex";
+document.getElementById("rulesPopup").style.display="none";
+document.getElementById("ignPopup").style.display="flex";
 };
+
 document.getElementById("rulesCutBtn").onclick = () => {
-    document.getElementById("rulesPopup").style.display="none";
+document.getElementById("rulesPopup").style.display="none";
 };
 
 // IGN SAVE & BACK
 document.getElementById("saveIgnBtn").onclick = () => {
-    const ign = document.getElementById("ignInput").value;
-    if(ign==""){ alert("Enter IGN"); return; }
-    document.getElementById("ignPopup").style.display="none";
-    document.getElementById("paymentPopup").style.display="flex";
+const ign = document.getElementById("ignInput").value;
+
+if(ign==""){
+alert("Enter IGN");
+return;
+}
+
+document.getElementById("ignPopup").style.display="none";
+document.getElementById("paymentPopup").style.display="flex";
 };
+
 document.getElementById("ignBackBtn").onclick = () => {
-    document.getElementById("ignPopup").style.display="none";
-    document.getElementById("rulesPopup").style.display="flex";
+document.getElementById("ignPopup").style.display="none";
+document.getElementById("rulesPopup").style.display="flex";
 };
 
-// PAYMENT SUBMIT & BACK
+// PAYMENT SUBMIT
 document.getElementById("submitPaymentBtn").onclick = async () => {
-    const ref = document.getElementById("refInput").value;
-    if(ref==""){ alert("Enter reference number"); return; }
 
-    const user = auth.currentUser;
-    if(!user){ alert("Please login first"); return; }
+const ref = document.getElementById("refInput").value;
 
-    try{
-        await setDoc(doc(db,"payments",ref),{
-            uid:user.uid,
-            email:user.email,
-            ign:document.getElementById("ignInput").value,
-            reference:ref,
-            status:"pending"
-        });
-        alert("Payment submitted successfully");
-        document.getElementById("paymentPopup").style.display="none";
-    }catch(e){
-        alert("Error submitting payment");
-    }
+if(ref==""){
+alert("Enter reference number");
+return;
+}
+
+const user = auth.currentUser;
+
+if(!user){
+alert("Please login first");
+return;
+}
+
+try{
+
+await setDoc(doc(db,"payments",ref),{
+uid:user.uid,
+email:user.email,
+ign:document.getElementById("ignInput").value,
+reference:ref,
+status:"pending"
+});
+
+alert("Payment submitted successfully");
+
+document.getElementById("paymentPopup").style.display="none";
+
+}catch(e){
+
+alert("Error submitting payment");
+
+}
+
 };
+
 document.getElementById("paymentBackBtn").onclick = () => {
-    document.getElementById("paymentPopup").style.display="none";
-    document.getElementById("ignPopup").style.display="flex";
+document.getElementById("paymentPopup").style.display="none";
+document.getElementById("ignPopup").style.display="flex";
 };
 
 </script>
