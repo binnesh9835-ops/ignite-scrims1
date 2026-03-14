@@ -4,7 +4,6 @@
 <head>
 
 <title>IGNITE SCRIMS ADMIN</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -55,6 +54,8 @@ padding:15px;
 border-radius:10px;
 margin-bottom:10px;
 }
+
+/* popup */
 
 .popup{
 position:fixed;
@@ -116,7 +117,9 @@ color:white;
 
 <div class="sidebar">
 
-<button onclick="openPopup()">Add Match</button>
+<button onclick="document.getElementById('matchPopup').style.display='flex'">
+Add Match
+</button>
 
 </div>
 
@@ -129,6 +132,7 @@ color:white;
 </div>
 
 </div>
+
 
 <!-- ADD MATCH POPUP -->
 
@@ -148,18 +152,21 @@ color:white;
 
 <input type="time" id="matchTime">
 
-<button class="submitBtn" onclick="addMatch()">Submit</button>
+<button class="submitBtn" id="submitMatch">Submit</button>
 
-<button class="cancelBtn" onclick="closePopup()">Cancel</button>
+<button class="cancelBtn"
+onclick="document.getElementById('matchPopup').style.display='none'">
+Cancel
+</button>
 
 </div>
 
 </div>
+
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
 import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -174,26 +181,12 @@ appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
-/* popup */
-
-window.openPopup=function(){
-
-document.getElementById("matchPopup").style.display="flex"
-
-}
-
-window.closePopup=function(){
-
-document.getElementById("matchPopup").style.display="none"
-
-}
 
 /* add match */
 
-window.addMatch=async function(){
+document.getElementById("submitMatch").onclick=async()=>{
 
 const title=document.getElementById("matchTitle").value
 const price=document.getElementById("matchPrice").value
@@ -202,25 +195,22 @@ const date=document.getElementById("matchDate").value
 const time=document.getElementById("matchTime").value
 
 if(!title || !price){
-
-alert("Fill all details")
+alert("Fill details")
 return
-
 }
 
 await addDoc(collection(db,"matches"),{
-
 title:title,
 price:price,
 slots:slots,
 date:date,
 time:time
-
 })
 
-closePopup()
+document.getElementById("matchPopup").style.display="none"
 
 }
+
 
 /* home feed */
 
