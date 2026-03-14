@@ -91,7 +91,9 @@ const db = getFirestore(app);
 // LOGIN
 
 document.getElementById("loginBtn").onclick = async () => {
+
 try {
+
 const result = await signInWithPopup(auth, provider);
 const user = result.user;
 
@@ -105,8 +107,11 @@ document.getElementById("usernamePopup").style.display="flex";
 }
 
 }catch(e){
+
 alert("Login failed");
+
 }
+
 };
 
 // SAVE USERNAME
@@ -122,7 +127,7 @@ return;
 
 const user = auth.currentUser;
 
-await setDoc(doc(db,"usernames",username),{uid:user.uid});
+await setDoc(doc(db,"usernames",username),{ uid:user.uid });
 
 await setDoc(doc(db,"users",user.uid),{
 username,
@@ -137,7 +142,7 @@ document.getElementById("usernamePopup").style.display="none";
 
 };
 
-// LOAD MATCHES FROM FIRESTORE
+// LOAD MATCHES FROM ADMIN
 
 const matchesContainer = document.getElementById("matchesContainer");
 
@@ -161,11 +166,14 @@ div.innerHTML =
 ;
 
 div.querySelector(".joinMatchBtn").onclick = () => {
+
 if(!auth.currentUser){
 alert("Please login first");
 return;
 }
+
 document.getElementById("rulesPopup").style.display="flex";
+
 };
 
 matchesContainer.appendChild(div);
@@ -174,7 +182,7 @@ matchesContainer.appendChild(div);
 
 });
 
-// RULES NEXT & CUT
+// RULES
 
 document.getElementById("rulesNextBtn").onclick = () => {
 document.getElementById("rulesPopup").style.display="none";
@@ -185,7 +193,7 @@ document.getElementById("rulesCutBtn").onclick = () => {
 document.getElementById("rulesPopup").style.display="none";
 };
 
-// IGN SAVE & BACK
+// IGN
 
 document.getElementById("saveIgnBtn").onclick = () => {
 
@@ -206,7 +214,7 @@ document.getElementById("ignPopup").style.display="none";
 document.getElementById("rulesPopup").style.display="flex";
 };
 
-// PAYMENT SUBMIT & BACK
+// PAYMENT
 
 document.getElementById("submitPaymentBtn").onclick = async () => {
 
@@ -247,8 +255,10 @@ alert("Error submitting payment");
 };
 
 document.getElementById("paymentBackBtn").onclick = () => {
+
 document.getElementById("paymentPopup").style.display="none";
 document.getElementById("ignPopup").style.display="flex";
+
 };
 
 </script>
