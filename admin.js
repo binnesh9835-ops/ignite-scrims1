@@ -4,39 +4,31 @@ import {
 collection,
 getDocs,
 updateDoc,
-doc,
-deleteDoc,
-getDoc
+doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const adminPanel=document.getElementById("adminPanel");
 
+async function loadMatchesAdmin(){
 
-
-async function loadRequests(){
-
-const querySnapshot=await getDocs(collection(db,"match_requests"));
+const querySnapshot=await getDocs(collection(db,"matches"));
 
 querySnapshot.forEach((docSnap)=>{
 
-const data=docSnap.data();
+const match=docSnap.data();
 const id=docSnap.id;
-
-if(data.status!=="pending") return;
 
 const box=document.createElement("div");
 
 box.innerHTML=
 
-<p><b>IGN:</b> ${data.ign}</p>
+<h4>${match.title}</h4>
 
-<p>UID: ${data.uid}</p>
+<input id="room_${id}" placeholder="Room ID">
 
-<p>Ref ID: ${data.ref}</p>
+<input id="pass_${id}" placeholder="Password">
 
-<button onclick="approve('${id}','${data.matchId}')">Approve</button>
-
-<button onclick="reject('${id}','${data.matchId}')">Reject</button>
+<button onclick="saveRoom('${id}')">Update Room</button>
 
 <hr>
 
@@ -48,46 +40,21 @@ adminPanel.appendChild(box);
 
 }
 
+window.saveRoom=async(id)=>{
 
+const room=document.getElementById("room_"+id).value;
 
-window.approve=async(id,matchId)=>{
+const pass=document.getElementById("pass_"+id).value;
 
-await updateDoc(doc(db,"match_requests",id),{
+await updateDoc(doc(db,"matches",id),{
 
-status:"approved"
+roomId:room,
+roomPass:pass
 
 });
 
-alert("Payment Approved");
+alert("Room Updated");
 
 };
 
-
-
-window.reject=async(id,matchId)=>{
-
-const matchRef=doc(db,"matches",matchId);
-
-const matchSnap=await getDoc(matchRef);
-
-const matchData=matchSnap.data();
-
-
-
-// SLOT -1
-
-await updateDoc(matchRef,{
-joined: matchData.joined - 1
-});
-
-
-
-await deleteDoc(doc(db,"match_requests",id));
-
-alert("Payment Rejected");
-
-};
-
-
-
-loadRequests();
+loadMatchesAdmin();
