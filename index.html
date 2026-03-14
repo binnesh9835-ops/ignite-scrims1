@@ -66,8 +66,9 @@
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     const firebaseConfig = {
 apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
@@ -83,11 +84,16 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// LOGIN
-document.getElementById("loginBtn").onclick = async () => {
-try{
-const result = await signInWithPopup(auth, provider);
+/* LOGIN */
+
+document.getElementById("loginBtn").onclick = () => {
+signInWithRedirect(auth, provider);
+};
+
+getRedirectResult(auth).then(async (result)=>{
+if(result){
 const user = result.user;
+
 alert("Welcome " + user.displayName);
 
 const userRef = doc(db,"users",user.uid);
@@ -96,13 +102,14 @@ const snap = await getDoc(userRef);
 if(!snap.exists()){
 document.getElementById("usernamePopup").style.display="flex";
 }
-}catch(e){
-alert("Login failed");
-}
-};
 
-// SAVE USERNAME
+}
+});
+
+/* SAVE USERNAME */
+
 document.getElementById("saveUsernameBtn").onclick = async () => {
+
 const username = document.getElementById("usernameInput").value.toLowerCase();
 
 if(username.includes(" ")){
@@ -113,6 +120,7 @@ return;
 const user = auth.currentUser;
 
 await setDoc(doc(db,"usernames",username), { uid:user.uid });
+
 await setDoc(doc(db,"users",user.uid), {
 username,
 email:user.email,
@@ -123,9 +131,11 @@ matchesPlayed:0
 alert("Username saved successfully");
 
 document.getElementById("usernamePopup").style.display="none";
+
 };
 
-// LOAD MATCHES
+/* LOAD MATCHES */
+
 const matchesContainer = document.getElementById("matchesContainer");
 
 onSnapshot(collection(db,"matches"),(snapshot)=>{
@@ -135,30 +145,47 @@ matchesContainer.innerHTML="";
 snapshot.forEach((docSnap)=>{
 
 const m = docSnap.data();
+
+const title = m.title || "Match";
+const price = m.price || 0;
+const slots = m.slots || 0;
 const players = m.players || 0;
+
+const thumb = m.thumb  m.thumbnail  "https://i.imgur.com/3ZQ3Z9k.png";
 
 const div = document.createElement("div");
 
-div.className="match";
-
 div.innerHTML = 
-<div style="display:flex;align-items:center;gap:15px;background:#1e1e1e;padding:15px;border-radius:10px;margin-bottom:15px;">
-<img src="${m.thumb}" style="width:120px;height:80px;object-fit:cover;border-radius:8px;">
+
+<div style="display:flex;gap:15px;align-items:center;background:#1e1e1e;padding:15px;border-radius:10px;margin-bottom:15px;">
+
+<img src="${thumb}" style="width:120px;height:80px;object-fit:cover;border-radius:8px;">
+
 <div>
-<h3>${m.title}</h3>
-<p>Entry: ₹${m.price}</p>
-<p>Players: ${players} / ${m.slots}</p>
-<button class="joinMatchBtn">Join Match</button>
+
+<h3>${title}</h3>
+
+<p>Entry: ₹${price}</p>
+
+<p>Players: ${players} / ${slots}</p>
+
+<button class="joinBtn">Join Match</button>
+
 </div>
+
 </div>
+
 ;
 
-div.querySelector(".joinMatchBtn").onclick = ()=>{
+div.querySelector(".joinBtn").onclick = ()=>{
+
 if(!auth.currentUser){
 alert("Please login first");
 return;
 }
+
 document.getElementById("rulesPopup").style.display="flex";
+
 };
 
 matchesContainer.appendChild(div);
@@ -167,7 +194,8 @@ matchesContainer.appendChild(div);
 
 });
 
-// RULES NEXT & CUT
+/* RULES */
+
 document.getElementById("rulesNextBtn").onclick = () => {
 document.getElementById("rulesPopup").style.display="none";
 document.getElementById("ignPopup").style.display="flex";
@@ -177,8 +205,10 @@ document.getElementById("rulesCutBtn").onclick = () => {
 document.getElementById("rulesPopup").style.display="none";
 };
 
-// IGN SAVE & BACK
+/* IGN */
+
 document.getElementById("saveIgnBtn").onclick = () => {
+
 const ign = document.getElementById("ignInput").value;
 
 if(ign==""){
@@ -188,14 +218,18 @@ return;
 
 document.getElementById("ignPopup").style.display="none";
 document.getElementById("paymentPopup").style.display="flex";
+
 };
 
 document.getElementById("ignBackBtn").onclick = () => {
+
 document.getElementById("ignPopup").style.display="none";
 document.getElementById("rulesPopup").style.display="flex";
+
 };
 
-// PAYMENT SUBMIT
+/* PAYMENT */
+
 document.getElementById("submitPaymentBtn").onclick = async () => {
 
 const ref = document.getElementById("refInput").value;
@@ -235,8 +269,10 @@ alert("Error submitting payment");
 };
 
 document.getElementById("paymentBackBtn").onclick = () => {
+
 document.getElementById("paymentPopup").style.display="none";
 document.getElementById("ignPopup").style.display="flex";
+
 };
 
 </script>
