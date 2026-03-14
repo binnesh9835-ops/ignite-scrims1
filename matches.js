@@ -5,14 +5,13 @@ collection,
 getDocs,
 addDoc,
 updateDoc,
-doc
+doc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const matchesContainer = document.getElementById("matchesContainer");
 
-
-const matchesContainer=document.getElementById("matchesContainer");
-
-let currentMatchId=null;
+let currentMatchId = null;
 
 
 
@@ -20,12 +19,12 @@ async function loadMatches(){
 
 matchesContainer.innerHTML="";
 
-const querySnapshot=await getDocs(collection(db,"matches"));
+const querySnapshot = await getDocs(collection(db,"matches"));
 
 querySnapshot.forEach((docSnap)=>{
 
-const match=docSnap.data();
-const matchId=docSnap.id;
+const match = docSnap.data();
+const matchId = docSnap.id;
 
 createMatchCard(match,matchId);
 
@@ -38,7 +37,6 @@ createMatchCard(match,matchId);
 function createMatchCard(match,matchId){
 
 const card=document.createElement("div");
-
 card.className="match-card";
 
 card.innerHTML=
@@ -59,15 +57,9 @@ card.innerHTML=
 
 ;
 
-
-
 const joinBtn=document.createElement("button");
-
 joinBtn.className="join-btn";
-
 joinBtn.innerText="JOIN MATCH";
-
-
 
 if(match.joined>=match.slots){
 
@@ -75,8 +67,6 @@ joinBtn.innerText="MATCH FULL";
 joinBtn.disabled=true;
 
 }
-
-
 
 joinBtn.onclick=()=>{
 
@@ -88,62 +78,14 @@ document.getElementById("joinPopup").style.display="flex";
 
 };
 
-
-
 matchesContainer.appendChild(card);
 matchesContainer.appendChild(joinBtn);
 
 }
 
-
-
 loadMatches();
 
 
-
-// RULES → PLAYER
-
-document.getElementById("agreeBtn").onclick=()=>{
-
-document.getElementById("stepRules").style.display="none";
-document.getElementById("stepPlayer").style.display="block";
-
-};
-
-
-
-// PLAYER → PAYMENT
-
-document.getElementById("nextToPayment").onclick=()=>{
-
-document.getElementById("stepPlayer").style.display="none";
-document.getElementById("stepPayment").style.display="block";
-
-};
-
-
-
-// BACK BUTTONS
-
-document.getElementById("backToRules").onclick=()=>{
-
-document.getElementById("stepPlayer").style.display="none";
-document.getElementById("stepRules").style.display="block";
-
-};
-
-
-
-document.getElementById("backToPlayer").onclick=()=>{
-
-document.getElementById("stepPayment").style.display="none";
-document.getElementById("stepPlayer").style.display="block";
-
-};
-
-
-
-// PAYMENT SUBMIT
 
 document.getElementById("submitJoin").onclick=async()=>{
 
@@ -161,7 +103,34 @@ return;
 
 
 
-// save request
+// get match
+
+const matchRef = doc(db,"matches",currentMatchId);
+const matchSnap = await getDoc(matchRef);
+const matchData = matchSnap.data();
+
+
+
+// check slots
+
+if(matchData.joined >= matchData.slots){
+
+alert("Match Full");
+return;
+
+}
+
+
+
+// TEMP SLOT +1
+
+await updateDoc(matchRef,{
+joined: matchData.joined + 1
+});
+
+
+
+// SAVE REQUEST
 
 await addDoc(collection(db,"match_requests"),{
 
@@ -177,6 +146,6 @@ time:Date.now()
 
 
 
-document.getElementById("joinStatus").innerText="⏳ Slot reserved temporarily. Waiting for admin approval.";
+document.getElementById("joinStatus").innerText="⏳ Temporary slot reserved. Waiting for admin approval.";
 
 };
