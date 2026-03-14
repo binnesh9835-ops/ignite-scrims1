@@ -404,5 +404,27 @@ document.getElementById(tab.dataset.tab).classList.add("activeSection")
 <script type="module" src="firebase.js"></script>
 <script type="module" src="auth.js"></script>
 
+<!-- ADMIN PANEL -->
+
+<div id="adminPanel" style="display:none; margin-top:40px;">
+
+<h2>Admin Match Creator</h2>
+
+<input id="matchTitle" placeholder="Match Title"><br><br>
+
+<input id="entryFee" placeholder="Entry Fee"><br><br>
+
+<input id="prizePool" placeholder="Prize Pool"><br><br>
+
+<input id="matchTime" placeholder="Match Time"><br><br>
+
+<input id="slots" placeholder="Total Slots"><br><br>
+
+<textarea id="rules" placeholder="Match Rules"></textarea><br><br>
+
+<button onclick="createMatch()">Create Match</button>
+
+</div>
+  
 </body>
 </html>
