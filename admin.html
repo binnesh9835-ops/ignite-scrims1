@@ -329,7 +329,7 @@ const div=document.createElement("div")
 
 div.className="matchCard"
 
-div.innerHTML=
+div.innerHTML='
 
 <h3>${m.title}</h3>
 
@@ -338,7 +338,7 @@ div.innerHTML=
 <p>Slots: ${m.slots}</p>
 
 <p>${m.date} | ${m.time}</p>
-
+'
 
 
 feed.appendChild(div)
@@ -365,7 +365,7 @@ const div=document.createElement("div")
 
 div.className="payment"
 
-div.innerHTML=
+div.innerHTML='
 
 <p><b>Reference:</b> ${data.reference}</p>
 
@@ -376,7 +376,7 @@ div.innerHTML=
 <button class="approve">Approve</button>
 
 <button class="reject">Reject</button>
-
+'
 
 
 div.querySelector(".approve").onclick=async()=>{
