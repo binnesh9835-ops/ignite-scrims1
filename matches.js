@@ -3,28 +3,22 @@ import { db } from "./firebase.js";
 import {
 collection,
 getDocs,
-addDoc,
-updateDoc,
 doc,
 getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const matchesContainer = document.getElementById("matchesContainer");
 
-let currentMatchId = null;
-
-
-
 async function loadMatches(){
 
 matchesContainer.innerHTML="";
 
-const querySnapshot = await getDocs(collection(db,"matches"));
+const querySnapshot=await getDocs(collection(db,"matches"));
 
 querySnapshot.forEach((docSnap)=>{
 
-const match = docSnap.data();
-const matchId = docSnap.id;
+const match=docSnap.data();
+const matchId=docSnap.id;
 
 createMatchCard(match,matchId);
 
@@ -32,11 +26,10 @@ createMatchCard(match,matchId);
 
 }
 
-
-
 function createMatchCard(match,matchId){
 
 const card=document.createElement("div");
+
 card.className="match-card";
 
 card.innerHTML=
@@ -57,29 +50,19 @@ card.innerHTML=
 
 ;
 
-const joinBtn=document.createElement("button");
-joinBtn.className="join-btn";
-joinBtn.innerText="JOIN MATCH";
+const roomBtn=document.createElement("button");
 
-if(match.joined>=match.slots){
+roomBtn.innerText="VIEW ROOM";
 
-joinBtn.innerText="MATCH FULL";
-joinBtn.disabled=true;
+roomBtn.onclick=()=>{
 
-}
-
-joinBtn.onclick=()=>{
-
-currentMatchId=matchId;
-
-document.getElementById("entryFee").innerText=match.entry;
-
-document.getElementById("joinPopup").style.display="flex";
+showRoom(matchId);
 
 };
 
 matchesContainer.appendChild(card);
-matchesContainer.appendChild(joinBtn);
+
+matchesContainer.appendChild(roomBtn);
 
 }
 
@@ -87,65 +70,37 @@ loadMatches();
 
 
 
-document.getElementById("submitJoin").onclick=async()=>{
+async function showRoom(matchId){
 
-const ign=document.getElementById("joinIGN").value;
-const uid=document.getElementById("joinUID").value;
-const level=document.getElementById("joinLevel").value;
-const ref=document.getElementById("upiRef").value;
+const matchRef=doc(db,"matches",matchId);
 
-if(!ign!uid!ref){
+const matchSnap=await getDoc(matchRef);
 
-alert("Fill all details");
+const data=matchSnap.data();
+
+
+
+if(!data.roomId){
+
+alert("Room not available yet");
 return;
 
 }
 
 
 
-// get match
+document.getElementById("roomIdText").innerText=data.roomId;
 
-const matchRef = doc(db,"matches",currentMatchId);
-const matchSnap = await getDoc(matchRef);
-const matchData = matchSnap.data();
+document.getElementById("roomPassText").innerText=data.roomPass;
 
-
-
-// check slots
-
-if(matchData.joined >= matchData.slots){
-
-alert("Match Full");
-return;
+document.getElementById("roomPopup").style.display="flex";
 
 }
 
 
 
-// TEMP SLOT +1
+window.closeRoom=()=>{
 
-await updateDoc(matchRef,{
-joined: matchData.joined + 1
-});
-
-
-
-// SAVE REQUEST
-
-await addDoc(collection(db,"match_requests"),{
-
-matchId:currentMatchId,
-ign:ign,
-uid:uid,
-level:level,
-ref:ref,
-status:"pending",
-time:Date.now()
-
-});
-
-
-
-document.getElementById("joinStatus").innerText="⏳ Temporary slot reserved. Waiting for admin approval.";
+document.getElementById("roomPopup").style.display="none";
 
 };
