@@ -1,59 +1,248 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth, db } from "./firebase.js";
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims",
-  storageBucket: "ignite-scrims.firebasestorage.app",
-  messagingSenderId: "497561769270",
-  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
-};
+import {
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import {
+doc,
+getDoc,
+setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+
 const provider = new GoogleAuthProvider();
 
-const loginBtn = document.getElementById("googleLogin");
+const loginBtn = document.getElementById("loginBtn");
 const loginPopup = document.getElementById("loginPopup");
-const usernamePopup = document.getElementById("usernamePopup");
+const googleLogin = document.getElementById("googleLogin");
 
-loginBtn.onclick = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
 
-    // Save basic user info in localStorage
-    localStorage.setItem("userEmail", user.email);
-    localStorage.setItem("displayName", user.displayName);
 
-    // Determine role (for testing: first email is owner, others can be admin/player)
-    let role = "player"; // default
-    const ownerEmail = "vishalpandey25288@gmail.com"; // change to real owner email
-    const adminEmails = ["vmtournament20@gmail.com"]; // real admin emails
+const OWNER_EMAIL = "vishalpandey25288@gmail.com";
 
-    if (user.email === ownerEmail) role = "owner";
-    else if (adminEmails.includes(user.email)) role = "admin";
+const ADMIN_EMAIL = "vmtournament20@gmail.com";
 
-    localStorage.setItem("userRole", role);
 
-    // Update top-right login button
-    const topLoginBtn = document.getElementById("loginBtn");
-    topLoginBtn.textContent = role === "player" ? "Player" : user.displayName;
-    topLoginBtn.style.pointerEvents = "none";
 
-    loginPopup.style.display = "none";
+loginBtn.onclick = () => {
 
-    // If player and username not set, show username popup
-    if (role === "player" && !localStorage.getItem("username")) {
-      usernamePopup.style.display = "flex";
-    }
+loginPopup.style.display = "flex";
 
-    alert(Welcome ${user.displayName}! Role: ${role});
-  } catch (error) {
-    console.error(error);
-    alert("Login failed. Please try again.");
-  }
+};
+
+
+
+googleLogin.onclick = async () => {
+
+try{
+
+const result = await signInWithPopup(auth, provider);
+
+const user = result.user;
+
+const email = user.email;
+
+const uid = user.uid;
+
+
+
+let role = "user";
+
+
+
+if(email === OWNER_EMAIL){
+
+role = "owner";
+
+}
+
+else if(email === ADMIN_EMAIL){
+
+role = "admin";
+
+}
+
+
+
+const userRef = doc(db,"users",uid);
+
+const userSnap = await getDoc(userRef);
+
+
+
+if(!userSnap.exists()){
+
+await setDoc(userRef,{
+
+email:email,
+
+role:role,
+
+username:"",
+
+wallet:0,
+
+created:Date.now()
+
+});
+
+}
+
+
+
+localStorage.setItem("uid",uid);
+
+localStorage.setItem("email",email);
+
+localStorage.setItem("role",role);
+
+
+
+loginPopup.style.display="none";
+
+
+
+checkUsername(uid);
+
+
+
+}catch(e){
+
+alert("Login Failed");
+
+console.error(e);
+
+}
+
+};
+
+
+
+
+
+async function checkUsername(uid){
+
+const userRef = doc(db,"users",uid);
+
+const snap = await getDoc(userRef);
+
+
+
+const data = snap.data();
+
+
+
+if(!data.username){
+
+document.getElementById("usernamePopup").style.display="flex";
+
+}
+
+else{
+
+loginBtn.innerText = data.username;
+
+loginBtn.disabled = true;
+
+}
+
+}
+
+
+
+
+
+window.saveUsername = async function(){
+
+const username = document.getElementById("newUsername").value.trim();
+
+
+
+if(username.length < 3){
+
+alert("Username too short");
+
+return;
+
+}
+
+
+
+const uid = localStorage.getItem("uid");
+
+
+
+const userRef = doc(db,"users",uid);
+
+
+
+await setDoc(userRef,{
+
+username:username
+
+},{merge:true});
+
+
+
+document.getElementById("usernamePopup").style.display="none";
+
+
+
+loginBtn.innerText = username;
+
+loginBtn.disabled = true;
+
+};
+
+
+
+
+
+onAuthStateChanged(auth, async (user)=>{
+
+if(user){
+
+const uid = user.uid;
+
+localStorage.setItem("uid",uid);
+
+
+
+const userRef = doc(db,"users",uid);
+
+const snap = await getDoc(userRef);
+
+
+
+if(snap.exists()){
+
+const data = snap.data();
+
+loginBtn.innerText = data.username || "Account";
+
+loginBtn.disabled = true;
+
+}
+
+}
+
+});
+
+
+
+
+
+window.logoutUser = async function(){
+
+await signOut(auth);
+
+localStorage.clear();
+
+location.reload();
+
 };
