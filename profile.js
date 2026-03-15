@@ -1,101 +1,182 @@
-import { auth, db } from "./firebase.js";
+import { auth } from "./firebase.js";
 
 import {
+getFirestore,
 doc,
+setDoc,
 getDoc,
-updateDoc
+collection,
+query,
+where,
+getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const db = getFirestore();
 
 
 
-const profileModal = document.getElementById("profileModal");
-const profileBtn = document.getElementById("profileBtn");
-const closeProfile = document.getElementById("closeProfile");
+/* SAVE USERNAME FIRST TIME */
+
+window.saveUsername = async function(){
+
+const user = auth.currentUser;
+
+if(!user){
+
+alert("Login required");
+
+return;
+
+}
+
+let username =
+document.getElementById("newUsername").value.trim();
 
 
 
-// OPEN PROFILE
+/* VALIDATION */
 
-profileBtn.addEventListener("click", () => {
+if(username.includes(" ") || username !== username.toLowerCase()){
 
-profileModal.style.display = "flex";
+alert("Username must be small letters without spaces");
 
-});
+return;
 
-
-
-// CLOSE PROFILE
-
-closeProfile.addEventListener("click", () => {
-
-profileModal.style.display = "none";
-
-});
+}
 
 
 
-// LOAD PROFILE DATA
+/* UNIQUE USERNAME CHECK */
 
-onAuthStateChanged(auth, async (user) => {
+const q = query(
+collection(db,"users"),
+where("username","==",username)
+);
 
-if(user){
+const querySnapshot = await getDocs(q);
 
-const userRef = doc(db,"users",user.uid);
+if(!querySnapshot.empty){
 
-const docSnap = await getDoc(userRef);
+alert("Username already taken");
 
-if(docSnap.exists()){
+return;
 
-const data = docSnap.data();
-
-document.querySelector(".profile-content").innerHTML = 
-
-<span class="close-btn" id="closeProfile">X</span>
-
-<h2>${data.username}</h2>
-
-<p>XP: ${data.xp}</p>
-<p>Matches Played: ${data.matches_played}</p>
-
-<hr>
-
-<h3>Game Profile</h3>
-
-<input id="ign" placeholder="IGN" value="${data.ign || ""}">
-
-<input id="gameuid" placeholder="Game UID" value="${data.game_uid || ""}">
-
-<input id="level" placeholder="Level" value="${data.ign_level || ""}">
-
-<textarea id="bio" maxlength="60" placeholder="Bio (max 60 chars)">${data.bio || ""}</textarea>
-
-<button id="saveProfile">Save</button>
-
-;
+}
 
 
 
-document.getElementById("saveProfile").onclick = async () => {
+/* SAVE USER */
 
-await updateDoc(userRef,{
+await setDoc(doc(db,"users",user.uid),{
 
-ign: document.getElementById("ign").value,
-game_uid: document.getElementById("gameuid").value,
-ign_level: document.getElementById("level").value,
-bio: document.getElementById("bio").value
+username:username,
+ign:"",
+ffuid:"",
+fflevel:"",
+xp:0
 
 });
 
-alert("Profile Updated");
+
+
+document.getElementById("usernamePopup").style.display="none";
+
+alert("Username created successfully");
+
+
+
+location.reload();
 
 };
 
-}
+
+
+/* SAVE PROFILE */
+
+window.saveProfile = async function(){
+
+const user = auth.currentUser;
+
+if(!user){
+
+alert("Login required");
+
+return;
 
 }
+
+let username =
+document.getElementById("username").value.trim();
+
+let ign =
+document.getElementById("ign").value.trim();
+
+let ffuid =
+document.getElementById("ffuid").value.trim();
+
+let fflevel =
+document.getElementById("fflevel").value.trim();
+
+
+
+const ref = doc(db,"users",user.uid);
+
+const snap = await getDoc(ref);
+
+
+
+let oldData = snap.data();
+
+
+
+await setDoc(ref,{
+
+username:username,
+ign:ign,
+ffuid:ffuid,
+fflevel:fflevel,
+xp:oldData.xp
+
+});
+
+
+
+alert("Profile updated successfully");
+
+};
+
+
+
+/* LOAD PROFILE DATA */
+
+auth.onAuthStateChanged(async (user)=>{
+
+if(!user) return;
+
+
+
+const ref = doc(db,"users",user.uid);
+
+const snap = await getDoc(ref);
+
+
+
+if(!snap.exists()) return;
+
+
+
+let data = snap.data();
+
+
+
+document.getElementById("username").value = data.username || "";
+
+document.getElementById("ign").value = data.ign || "";
+
+document.getElementById("ffuid").value = data.ffuid || "";
+
+document.getElementById("fflevel").value = data.fflevel || "";
+
+document.getElementById("xpLevel").innerText = data.xp || 0;
 
 });
