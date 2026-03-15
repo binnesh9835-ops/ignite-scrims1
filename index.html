@@ -47,12 +47,6 @@ cursor:pointer;
 font-weight:bold;
 }
 
-/* VERIFIED BADGE */
-.verified{
-color:#4da6ff;
-margin-left:6px;
-}
-
 /* MENU */
 .menu{
 margin-top:20px;
@@ -177,28 +171,16 @@ Login
 
 <!-- MENU -->
 <div class="menu">
-<span class="tab active" data-tab="home">
-Home Feed
-</span>
-<span class="tab" data-tab="matches">
-My Matches
-</span>
-<span class="tab" data-tab="wallet">
-Wallet
-</span>
-<span class="tab" data-tab="profile">
-Profile
-</span>
+<span class="tab active" data-tab="home">Home Feed</span>
+<span class="tab" data-tab="matches">My Matches</span>
+<span class="tab" data-tab="wallet">Wallet</span>
+<span class="tab" data-tab="profile">Profile</span>
 </div>
 
 <!-- HOME -->
 <div id="home" class="section activeSection">
-<div class="upcoming">
-Upcoming Matches
-</div>
-<div style="margin-top:30px">
-No matches yet
-</div>
+<div class="upcoming">Upcoming Matches</div>
+<div style="margin-top:30px">No matches yet</div>
 </div>
 
 <!-- MATCHES -->
@@ -216,9 +198,7 @@ No matches yet
 <!-- PROFILE -->
 <div id="profile" class="section profileLocked">
 <h2>Player Profile</h2>
-<p id="profileWarning">
-Login to edit your profile
-</p>
+<p id="profileWarning">Login to edit your profile</p>
 <br>
 <input id="username" placeholder="Username (small letters)">
 <br><br>
@@ -228,78 +208,60 @@ Login to edit your profile
 <br><br>
 <input id="fflevel" placeholder="Free Fire Level (Optional)">
 <br><br>
-<p>
-XP Level: <span id="xpLevel">0</span>
-</p>
+<p>XP Level: <span id="xpLevel">0</span></p>
 <br>
-<button onclick="saveProfile()">
-Save Changes
-</button>
+<button onclick="saveProfile()">Save Changes</button>
 <br><br>
-<button onclick="logoutUser()">
-Logout
-</button>
+<button onclick="logoutUser()">Logout</button>
 </div>
 
 <!-- LOGIN POPUP -->
 <div class="popup" id="loginPopup">
 <div class="popupBox">
 <h3>Login to Continue</h3>
-<button id="googleLogin">
-Login with Google
-</button>
+<button id="googleLogin">Login with Google</button>
 <br>
-<button onclick="closeLogin()">
-Back
-</button>
+<button onclick="closeLogin()">Back</button>
 </div>
 </div>
 
- <!-- USERNAME POPUP -->
+<!-- USERNAME POPUP -->
 <div id="usernamePopup" class="popup">
-  <div class="popupBox">
-    <h3>Create Username</h3>
-    <input id="newUsername" placeholder="small letters only">
-    <br><br>
-    <button id="confirmUsernameBtn">
-      Confirm
-    </button>
-  </div>
+<div class="popupBox">
+<h3>Create Username</h3>
+<input id="newUsername" placeholder="small letters only">
+<br><br>
+<button id="confirmUsernameBtn">Confirm</button>
+</div>
 </div>
 
-<!-- SUPPORT -->
-<div class="support" onclick="openSupport()">
-💬
-</div>
+ <!-- SUPPORT -->
+<div class="support" onclick="openSupport()">💬</div>
 
 <script>
 /* LOGIN POPUP */
-const loginBtn=document.getElementById("loginBtn");
-loginBtn.onclick=()=>{
-document.getElementById("loginPopup").style.display="flex";
+const loginBtn = document.getElementById("loginBtn");
+loginBtn.onclick = () => {
+  document.getElementById("loginPopup").style.display = "flex";
 }
-
-function closeLogin(){
-document.getElementById("loginPopup").style.display="none";
+function closeLogin() {
+  document.getElementById("loginPopup").style.display = "none";
 }
 
 /* TELEGRAM */
-function openSupport(){
-window.open(
-"https://t.me/IgniteScrimsFF_Support",
-"_blank"
-);
+function openSupport() {
+  window.open("https://t.me/IgniteScrimsFF_Support", "_blank");
 }
 
 /* TAB SWITCH */
-const tabs=document.querySelectorAll(".tab");
-tabs.forEach(tab=>{
-tab.onclick=()=>{
-document.querySelector(".active").classList.remove("active");
-tab.classList.add("active");
-document.querySelector(".activeSection").classList.remove("activeSection");
-document.getElementById(tab.dataset.tab).classList.add("activeSection");
-}
+const tabs = document.querySelectorAll(".tab");
+tabs.forEach(tab => {
+  tab.onclick = () => {
+    document.querySelector(".active").classList.remove("active");
+    tab.classList.add("active");
+    document.querySelector(".activeSection").classList.remove("activeSection");
+    document.getElementById(tab.dataset.tab).classList.add("activeSection");
+  }
 });
 </script>
 
