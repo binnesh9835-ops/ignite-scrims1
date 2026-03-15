@@ -1,5 +1,3 @@
-import { logoutUser } from "./auth.js";
-
 window.addEventListener("DOMContentLoaded", () => {
   const usernamePopup = document.getElementById("usernamePopup");
   const newUsernameInput = document.getElementById("newUsername");
@@ -11,33 +9,29 @@ window.addEventListener("DOMContentLoaded", () => {
   const ffUidInput = document.getElementById("ffuid");
   const ffLevelInput = document.getElementById("fflevel");
   const xpDisplay = document.getElementById("xpLevel");
-  const saveBtn = profileSection.querySelector("button[onclick='saveProfile()']");
+  const madeChangesBtn = profileSection.querySelector("button[onclick='saveProfile()']");
   const logoutBtn = profileSection.querySelector("button[onclick='logoutUser()']");
 
-  // --- Username creation after login (Player only) ---
+  // Confirm Username popup (1 time for players)
   confirmUsernameBtn.addEventListener("click", () => {
-    const username = newUsernameInput.value.trim();
+    let username = newUsernameInput.value.trim();
 
-    // Validation: lowercase letters, numbers, max 12 chars, no spaces/special chars
-    if (!/^[a-z0-9]{1,12}$/.test(username)) {
-      alert("Username must be 1-12 characters, lowercase letters & numbers only, no spaces/special chars");
+    if (username === ""  username.includes(" ")  /[^a-z0-9]/.test(username) || username.length > 12) {
+      alert("Username must be lowercase letters & numbers only, no spaces, max 12 chars");
       return;
     }
 
-    // Save in localStorage
     localStorage.setItem("username", username);
 
-    // Update top-right display
+    // Update top-right login button
     const loginBtn = document.getElementById("loginBtn");
     loginBtn.textContent = username;
     loginBtn.style.pointerEvents = "none";
 
     usernamePopup.style.display = "none";
-
-    // Unlock profile section
     profileSection.classList.remove("profileLocked");
 
-    // Pre-fill profile fields
+    // Pre-fill profile inputs
     usernameInput.value = username;
     ignInput.value = "";
     ffUidInput.value = "";
@@ -45,16 +39,16 @@ window.addEventListener("DOMContentLoaded", () => {
     xpDisplay.textContent = "0";
   });
 
-  // --- Save profile changes ---
-  saveBtn.addEventListener("click", () => {
+  // Save profile changes
+  madeChangesBtn.addEventListener("click", () => {
     const username = usernameInput.value.trim();
     const ign = ignInput.value.trim();
     const ffuid = ffUidInput.value.trim();
     const fflevel = ffLevelInput.value.trim();
     let xp = parseInt(localStorage.getItem("xp")) || 0;
 
-    if (!/^[a-z0-9]{1,12}$/.test(username)) {
-      alert("Username must be 1-12 characters, lowercase letters & numbers only, no spaces/special chars");
+    if (username === ""  username.includes(" ")  /[^a-z0-9]/.test(username) || username.length > 12) {
+      alert("Username must be lowercase letters & numbers only, no spaces, max 12 chars");
       return;
     }
 
@@ -64,27 +58,45 @@ window.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("fflevel", fflevel);
     localStorage.setItem("xp", xp);
 
-    // Update top-right display
     const loginBtn = document.getElementById("loginBtn");
     loginBtn.textContent = username;
     loginBtn.style.pointerEvents = "none";
 
     alert("Profile updated successfully!");
 
-    // XP shine effect if >=7000
-    if (xp >= 7000) {
-      usernameInput.classList.add("shine-effect");
-    } else {
-      usernameInput.classList.remove("shine-effect");
-    }
+    // XP shine effect
+    if (xp >= 7000) usernameInput.classList.add("shine-effect");
+    else usernameInput.classList.remove("shine-effect");
   });
 
-  // --- Logout button ---
+  // Logout
   logoutBtn.addEventListener("click", () => {
-    logoutUser(); // calls auth.js logout
+    if (!confirm("Are you sure you want to logout?")) return;
+
+    // Clear localStorage
+    const keys = ["username","ign","ffuid","fflevel","xp","userEmail","userRole","displayName"];
+    keys.forEach(k => localStorage.removeItem(k));
+
+    // Reset profile inputs
+    usernameInput.value = "";
+    ignInput.value = "";
+    ffUidInput.value = "";
+    ffLevelInput.value = "";
+    xpDisplay.textContent = "0";
+    profileSection.classList.add("profileLocked");
+
+    // Reset top-right display
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.textContent = "Login";
+    loginBtn.style.pointerEvents = "auto";
+
+    // Hide username popup if open
+    usernamePopup.style.display = "none";
+
+    alert("You have been logged out");
   });
 
-  // --- Pre-fill profile if user reloads page ---
+  // Pre-fill profile on reload
   const role = localStorage.getItem("userRole");
   if (role === "player") {
     const username = localStorage.getItem("username");
@@ -96,15 +108,11 @@ window.addEventListener("DOMContentLoaded", () => {
       xpDisplay.textContent = localStorage.getItem("xp") || "0";
       profileSection.classList.remove("profileLocked");
 
-      if ((parseInt(localStorage.getItem("xp")) || 0) >= 7000) {
+    if ((parseInt(localStorage.getItem("xp")) || 0) >= 7000) {
         usernameInput.classList.add("shine-effect");
       }
-    } else {
-      // username not set yet → show popup
-      usernamePopup.style.display = "flex";
-}
+    }
   } else if (role === "admin" || role === "owner") {
-    // Admin/Owner: only displayName top-right, profile locked
     const displayName = localStorage.getItem("displayName");
     const loginBtn = document.getElementById("loginBtn");
     loginBtn.textContent = displayName;
