@@ -1,60 +1,53 @@
 import { auth, db } from "./firebase.js";
 
 import {
-doc,
-getDoc,
-updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
+GoogleAuthProvider,
+signInWithPopup,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+doc,
+getDoc,
+setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-const profileSection = document.getElementById("profile");
+const provider = new GoogleAuthProvider();
+
+const googleBtn = document.getElementById("googleLogin");
 
 
+googleBtn.onclick = async () => {
 
-profileSection.innerHTML = 
+try{
 
-<h2>Player Profile</h2>
+const result = await signInWithPopup(auth, provider);
 
-<input id="profileUsername" placeholder="Username" disabled>
+const user = result.user;
 
-<br><br>
+const userRef = doc(db,"users",user.uid);
 
-<input id="profileIGN" placeholder="In Game Name">
-
-<br><br>
-
-<input id="profileUID" placeholder="Free Fire UID">
-
-<br><br>
-
-<input id="profileLevel" placeholder="Free Fire Level">
-
-<br><br>
-
-<button id="saveProfileBtn">
-Save Profile
-</button>
-
-<br><br>
-
-<button onclick="logoutUser()">
-Logout
-</button>
-
-;
+const snap = await getDoc(userRef);
 
 
+if(!snap.exists()){
 
-const usernameInput = document.getElementById("profileUsername");
-const ignInput = document.getElementById("profileIGN");
-const uidInput = document.getElementById("profileUID");
-const levelInput = document.getElementById("profileLevel");
-const saveBtn = document.getElementById("saveProfileBtn");
+document.getElementById("usernamePopup").style.display="flex";
+
+}else{
+
+location.reload();
+
+}
+
+}catch(err){
+
+alert(err.message);
+
+}
+
+};
 
 
 
@@ -62,27 +55,14 @@ onAuthStateChanged(auth, async (user)=>{
 
 if(!user) return;
 
-const uid = user.uid;
-
-const userRef = doc(db,"users",uid);
+const userRef = doc(db,"users",user.uid);
 
 const snap = await getDoc(userRef);
 
 
+if(!snap.exists()){
 
-if(snap.exists()){
-
-const data = snap.data();
-
-
-
-usernameInput.value = data.username || "";
-
-ignInput.value = data.ign || "";
-
-uidInput.value = data.ffuid || "";
-
-levelInput.value = data.level || "";
+document.getElementById("usernamePopup").style.display="flex";
 
 }
 
@@ -90,26 +70,34 @@ levelInput.value = data.level || "";
 
 
 
-saveBtn.onclick = async ()=>{
+window.saveUsername = async function(){
 
-const uid = auth.currentUser.uid;
+const username = document.getElementById("newUsername").value.trim();
 
-const userRef = doc(db,"users",uid);
+const user = auth.currentUser;
 
 
+if(!username){
 
-await updateDoc(userRef,{
+alert("Enter username");
 
-ign: ignInput.value.trim(),
+return;
 
-ffuid: uidInput.value.trim(),
+}
 
-level: levelInput.value.trim()
+
+await setDoc(doc(db,"users",user.uid),{
+
+username:username,
+wallet:0,
+ign:"",
+ffuid:"",
+level:0,
+role:"user"
 
 });
 
 
+location.reload();
 
-alert("Profile Saved");
-
-};
+}
