@@ -2,14 +2,11 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>IGNITE SCRIMS</title>
 
 <style>
-
 body{
 margin:0;
 background:#0b0b0b;
@@ -20,7 +17,6 @@ overflow-x:hidden;
 }
 
 /* TITLE */
-
 .title{
 font-size:42px;
 margin-top:20px;
@@ -39,7 +35,6 @@ animation:shine 4s linear infinite;
 }
 
 /* LOGIN BUTTON */
-
 .loginBtn{
 position:absolute;
 top:20px;
@@ -52,27 +47,13 @@ cursor:pointer;
 font-weight:bold;
 }
 
-/* USERNAME DISPLAY */
-
-#usernameDisplay{
-position:absolute;
-top:20px;
-right:20px;
-padding:8px 16px;
-border-radius:20px;
-background:#333;
-display:none;
-}
-
 /* VERIFIED BADGE */
-
 .verified{
 color:#4da6ff;
 margin-left:6px;
 }
 
 /* MENU */
-
 .menu{
 margin-top:20px;
 display:flex;
@@ -99,42 +80,18 @@ color:black;
 }
 
 /* UPCOMING */
-
 .upcoming{
 margin-top:50px;
 font-size:26px;
 position:relative;
 display:inline-block;
-}
-
-.upcoming::before,
-.upcoming::after{
-content:"Upcoming Matches";
-position:absolute;
-top:50%;
-width:120px;
-height:2px;
-background:linear-gradient(to right,transparent,orange);
-animation:line 2s infinite;
-}
-
-.upcoming::before{
-right:110%;
-}
-
-.upcoming::after{
-left:110%;
-transform:scaleX(-1);
-}
-
-@keyframes line{
-0%{opacity:0}
-50%{opacity:1}
-100%{opacity:0}
+background: linear-gradient(to right, #ffcc00, #ffffff, #ffcc00);
+-webkit-background-clip: text;
+color: transparent;
+animation:shine 2.5s linear infinite;
 }
 
 /* SECTIONS */
-
 .section{
 display:none;
 margin-top:40px;
@@ -151,7 +108,6 @@ to{opacity:1;transform:translateY(0)}
 }
 
 /* POPUP */
-
 .popup{
 display:none;
 position:fixed;
@@ -169,7 +125,6 @@ background:#1a1a1a;
 padding:30px;
 border-radius:10px;
 width:260px;
-text-align:center;
 }
 
 .popupBox button{
@@ -179,7 +134,6 @@ cursor:pointer;
 }
 
 /* SUPPORT */
-
 .support{
 position:fixed;
 bottom:25px;
@@ -196,7 +150,6 @@ cursor:pointer;
 }
 
 /* INPUT */
-
 input{
 padding:10px;
 border:none;
@@ -210,7 +163,6 @@ pointer-events:none;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -223,169 +175,106 @@ IGNITE SCRIMS
 Login
 </button>
 
-<span id="usernameDisplay"></span>
-
 <!-- MENU -->
-
 <div class="menu">
-
 <span class="tab active" data-tab="home">
 Home Feed
 </span>
-
 <span class="tab" data-tab="matches">
 My Matches
 </span>
-
 <span class="tab" data-tab="wallet">
 Wallet
 </span>
-
 <span class="tab" data-tab="profile">
 Profile
 </span>
-
 </div>
 
-
 <!-- HOME -->
-
 <div id="home" class="section activeSection">
-
 <div class="upcoming">
 Upcoming Matches
 </div>
-
 <div style="margin-top:30px">
 No matches yet
 </div>
-
 </div>
-
 
 <!-- MATCHES -->
-
 <div id="matches" class="section">
-
 <h2>My Matches</h2>
-
 <p>No joined matches</p>
-
 </div>
-
 
 <!-- WALLET -->
-
 <div id="wallet" class="section">
-
 <h2>Wallet</h2>
-
 <p>Balance ₹0</p>
-
 </div>
 
-
 <!-- PROFILE -->
-
 <div id="profile" class="section profileLocked">
-
 <h2>Player Profile</h2>
-
 <p id="profileWarning">
-You must login to edit your profile.
+Login to edit your profile
 </p>
-
 <br>
-
-<input id="username" placeholder="Username (small letters, no spaces)">
+<input id="username" placeholder="Username (small letters)">
 <br><br>
-
-<input id="ign" placeholder="In-Game Name / Real Name">
+<input id="ign" placeholder="In Game Name / Real Name">
 <br><br>
-
 <input id="ffuid" placeholder="Free Fire UID">
 <br><br>
-
 <input id="fflevel" placeholder="Free Fire Level (Optional)">
 <br><br>
-
 <p>
 XP Level: <span id="xpLevel">0</span>
 </p>
-
 <br>
-
-<button id="saveProfileBtn">
+<button onclick="saveProfile()">
 Save Changes
 </button>
-
 <br><br>
-
-  <button id="logoutBtn">
+<button onclick="logoutUser()">
 Logout
 </button>
-
 </div>
 
-
 <!-- LOGIN POPUP -->
-
 <div class="popup" id="loginPopup">
-
 <div class="popupBox">
-
 <h3>Login to Continue</h3>
-
 <button id="googleLogin">
 Login with Google
 </button>
-
 <br>
-
 <button onclick="closeLogin()">
 Back
 </button>
-
+</div>
 </div>
 
-</div>
-
-
-<!-- USERNAME POPUP -->
-
+  <!-- USERNAME POPUP -->
 <div id="usernamePopup" class="popup">
-
 <div class="popupBox">
-
 <h3>Create Username</h3>
-
 <input id="newUsername" placeholder="small letters only">
-
 <br><br>
-
-<button id="confirmUsernameBtn">
+<button onclick="saveUsername()">
 Confirm
 </button>
-
 </div>
-
 </div>
-
 
 <!-- SUPPORT -->
-
 <div class="support" onclick="openSupport()">
 💬
 </div>
 
-
 <script>
-
 /* LOGIN POPUP */
-
 const loginBtn=document.getElementById("loginBtn");
-const usernameDisplay=document.getElementById("usernameDisplay");
-
 loginBtn.onclick=()=>{
 document.getElementById("loginPopup").style.display="flex";
 }
@@ -395,7 +284,6 @@ document.getElementById("loginPopup").style.display="none";
 }
 
 /* TELEGRAM */
-
 function openSupport(){
 window.open(
 "https://t.me/IgniteScrimsFF_Support",
@@ -404,25 +292,15 @@ window.open(
 }
 
 /* TAB SWITCH */
-
 const tabs=document.querySelectorAll(".tab");
-
 tabs.forEach(tab=>{
-
 tab.onclick=()=>{
-
 document.querySelector(".active").classList.remove("active");
-
 tab.classList.add("active");
-
 document.querySelector(".activeSection").classList.remove("activeSection");
-
 document.getElementById(tab.dataset.tab).classList.add("activeSection");
-
 }
-
 });
-
 </script>
 
 <script type="module" src="firebase.js"></script>
