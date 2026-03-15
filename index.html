@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -18,31 +19,45 @@ text-align:center;
 overflow-x:hidden;
 }
 
-
-/* IGNITE SCRIMS TITLE */
+/* TITLE */
 
 .title{
 font-size:42px;
 margin-top:20px;
 font-weight:bold;
 letter-spacing:3px;
-
 background:linear-gradient(90deg,#ffffff,#ffcc00,#ffffff);
 background-size:200%;
 -webkit-background-clip:text;
 color:transparent;
-
 animation:shine 4s linear infinite;
 }
 
 @keyframes shine{
-
 0%{background-position:-200%}
 100%{background-position:200%}
-
 }
 
+/* LOGIN BUTTON */
 
+.loginBtn{
+position:absolute;
+top:20px;
+right:20px;
+background:orange;
+border:none;
+padding:8px 16px;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* VERIFIED BADGE */
+
+.verified{
+color:#4da6ff;
+margin-left:6px;
+}
 
 /* MENU */
 
@@ -71,8 +86,6 @@ background:orange;
 color:black;
 }
 
-
-
 /* UPCOMING */
 
 .upcoming{
@@ -84,17 +97,13 @@ display:inline-block;
 
 .upcoming::before,
 .upcoming::after{
-
 content:"";
 position:absolute;
 top:50%;
 width:120px;
 height:2px;
-
 background:linear-gradient(to right,transparent,orange);
-
 animation:line 2s infinite;
-
 }
 
 .upcoming::before{
@@ -107,14 +116,10 @@ transform:scaleX(-1);
 }
 
 @keyframes line{
-
 0%{opacity:0}
 50%{opacity:1}
 100%{opacity:0}
-
 }
-
-
 
 /* SECTIONS */
 
@@ -133,27 +138,6 @@ from{opacity:0;transform:translateY(10px)}
 to{opacity:1;transform:translateY(0)}
 }
 
-
-
-/* LOGIN BUTTON */
-
-.loginBtn{
-position:absolute;
-top:20px;
-right:20px;
-
-background:orange;
-border:none;
-
-padding:8px 16px;
-border-radius:20px;
-
-cursor:pointer;
-font-weight:bold;
-}
-
-
-
 /* POPUP */
 
 .popup{
@@ -161,80 +145,73 @@ display:none;
 position:fixed;
 top:0;
 left:0;
-
 width:100%;
 height:100%;
-
 background:rgba(0,0,0,0.7);
-
 align-items:center;
 justify-content:center;
 }
 
 .popupBox{
-
 background:#1a1a1a;
 padding:30px;
 border-radius:10px;
-
+width:260px;
 }
 
 .popupBox button{
-
 margin-top:10px;
 padding:10px;
 cursor:pointer;
-
 }
 
-
-
-/* TELEGRAM BUTTON */
+/* SUPPORT */
 
 .support{
-
 position:fixed;
-
 bottom:25px;
 right:25px;
-
 width:60px;
 height:60px;
-
 border-radius:50%;
 background:#2aa7ff;
-
 display:flex;
 align-items:center;
 justify-content:center;
-
 font-size:26px;
-
 cursor:pointer;
+}
 
+/* INPUT */
+
+input{
+padding:10px;
+border:none;
+border-radius:5px;
+width:220px;
+}
+
+.profileLocked{
+opacity:0.5;
+pointer-events:none;
 }
 
 </style>
 
 </head>
 
-
-
 <body>
-
-
 
 <div class="title">
 IGNITE SCRIMS
 </div>
-
-
 
 <button class="loginBtn" id="loginBtn">
 Login
 </button>
 
 
+<!-- MENU -->
 
 <div class="menu">
 
@@ -257,7 +234,6 @@ Profile
 </div>
 
 
-
 <!-- HOME -->
 
 <div id="home" class="section activeSection">
@@ -273,8 +249,7 @@ No matches yet
 </div>
 
 
-
-<!-- MY MATCHES -->
+<!-- MATCHES -->
 
 <div id="matches" class="section">
 
@@ -283,7 +258,6 @@ No matches yet
 <p>No joined matches</p>
 
 </div>
-
 
 
 <!-- WALLET -->
@@ -297,17 +271,47 @@ No matches yet
 </div>
 
 
-
 <!-- PROFILE -->
 
-<div id="profile" class="section">
+<div id="profile" class="section profileLocked">
 
-<h2>Profile</h2>
+<h2>Player Profile</h2>
 
-<p>Login to see profile</p>
+<p id="profileWarning">
+Login karne ke baad hi profile edit kar paoge
+</p>
+
+<br>
+
+<input id="username" placeholder="Username (small letters)">
+<br><br>
+
+<input id="ign" placeholder="In Game Name / Real Name">
+<br><br>
+
+<input id="ffuid" placeholder="Free Fire UID">
+<br><br>
+
+<input id="fflevel" placeholder="Free Fire Level (Optional)">
+<br><br>
+
+<p>
+XP Level: <span id="xpLevel">0</span>
+</p>
+
+<br>
+
+<button onclick="saveProfile()">
+Made Changes
+</button>
+
+<br><br>
+
+<button onclick="logoutUser()">
+Logout
+</button>
 
 </div>
-
 
 
 <!-- LOGIN POPUP -->
@@ -316,7 +320,7 @@ No matches yet
 
 <div class="popupBox">
 
-<h3>Login to Join Matches</h3>
+<h3>Login to Continue</h3>
 
 <button id="googleLogin">
 Login with Google
@@ -324,7 +328,7 @@ Login with Google
 
 <br>
 
-<button onclick="closeLogin()">
+  <button onclick="closeLogin()">
 Back
 </button>
 
@@ -333,98 +337,85 @@ Back
 </div>
 
 
+<!-- USERNAME POPUP -->
 
-<!-- TELEGRAM SUPPORT -->
+<div id="usernamePopup" class="popup">
+
+<div class="popupBox">
+
+<h3>Create Username</h3>
+
+<input id="newUsername" placeholder="small letters only">
+
+<br><br>
+
+<button onclick="saveUsername()">
+Confirm
+</button>
+
+</div>
+
+</div>
+
+
+<!-- SUPPORT -->
 
 <div class="support" onclick="openSupport()">
 💬
 </div>
 
 
-
 <script>
-
-
 
 /* LOGIN POPUP */
 
-const loginBtn=document.getElementById("loginBtn")
-
-const popup=document.getElementById("loginPopup")
+const loginBtn=document.getElementById("loginBtn");
 
 loginBtn.onclick=()=>{
-popup.style.display="flex"
+document.getElementById("loginPopup").style.display="flex";
 }
 
 function closeLogin(){
-popup.style.display="none"
+document.getElementById("loginPopup").style.display="none";
 }
-
 
 
 /* TELEGRAM */
 
 function openSupport(){
-
 window.open(
 "https://t.me/IgniteScrimsFF_Support",
 "_blank"
-)
-
+);
 }
 
 
+/* TAB SWITCH */
 
-/* MENU SWITCH */
-
-const tabs=document.querySelectorAll(".tab")
+const tabs=document.querySelectorAll(".tab");
 
 tabs.forEach(tab=>{
 
 tab.onclick=()=>{
 
-document.querySelector(".active").classList.remove("active")
+document.querySelector(".active").classList.remove("active");
 
-  tab.classList.add("active")
+tab.classList.add("active");
 
+document.querySelector(".activeSection").classList.remove("activeSection");
 
-
-document.querySelector(".activeSection").classList.remove("activeSection")
-
-document.getElementById(tab.dataset.tab).classList.add("activeSection")
+document.getElementById(tab.dataset.tab).classList.add("activeSection");
 
 }
 
-})
-
-
+});
 
 </script>
 
+
 <script type="module" src="firebase.js"></script>
 <script type="module" src="auth.js"></script>
+<script type="module" src="profile.js"></script>
 
-<!-- ADMIN PANEL -->
-
-<div id="adminPanel" style="display:none; margin-top:40px;">
-
-<h2>Admin Match Creator</h2>
-
-<input id="matchTitle" placeholder="Match Title"><br><br>
-
-<input id="entryFee" placeholder="Entry Fee"><br><br>
-
-<input id="prizePool" placeholder="Prize Pool"><br><br>
-
-<input id="matchTime" placeholder="Match Time"><br><br>
-
-<input id="slots" placeholder="Total Slots"><br><br>
-
-<textarea id="rules" placeholder="Match Rules"></textarea><br><br>
-
-<button onclick="createMatch()">Create Match</button>
-
-</div>
-  
 </body>
 </html>
