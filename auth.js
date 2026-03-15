@@ -1,12 +1,21 @@
-import { auth, provider, db } from "./firebase.js";
+import { auth, provider } from "./firebase.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Emails
-let admins = ["vmtournament20@gmail.com"];
+// Owner & Admin emails
 let owner = "vishalpandey25288@gmail.com";
+let admins = ["vmtournament20@gmail.com"];
 
-// Login button
+// Function to check localStorage for existing username
+function getUsername() {
+  return localStorage.getItem("username") || null;
+}
+
+// Function to save role globally
+function setRole(role) {
+  localStorage.setItem("role", role);
+}
+
+// Google Login
 window.addEventListener("DOMContentLoaded", () => {
   const googleBtn = document.getElementById("googleLogin");
 
@@ -15,87 +24,97 @@ window.addEventListener("DOMContentLoaded", () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const email = user.email;
-
       let role = "player";
 
-      if(email === owner){
-        role = "owner";
-      }
-      else if(admins.includes(email)){
-        role = "admin";
-      }
+      if (email === owner) role = "owner";
+      else if (admins.includes(email)) role = "admin";
 
-      alert("Welcome " + user.displayName + " (" + role + ")");
+      setRole(role); // Save role in localStorage
 
-      document.getElementById("loginPopup").style.display="none";
+      // Hide login popup
+      document.getElementById("loginPopup").style.display = "none";
 
-      /* OWNER PANEL SHOW */
-      if(role === "owner"){
-        showOwnerPanel();
-      }
-      /* ADMIN PANEL SHOW */
-      else if(role === "admin"){
-        showAdminPanel();
-      }
+      // Update login button to show username/email
+      updateLoginButton(user.displayName);
 
-      /* PLAYER → check username */
-      else if(role === "player"){
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-
-        if(!snap.exists() || !snap.data().username){
-          // Show username popup
+      // Show respective panel
+      if (role === "owner") showOwnerPanel(user);
+      else if (role === "admin") showAdminPanel(user);
+      else {
+        // PLAYER
+        if (!getUsername()) {
+          // Show username creation popup
           document.getElementById("usernamePopup").style.display = "flex";
+        } else {
+          showPlayerPanel(user);
         }
       }
 
-    } catch(error){
+    } catch (error) {
       alert(error.message);
     }
   });
 });
 
-/* OWNER FUNCTIONS */
-function showOwnerPanel(){
+// Update login button to show user name
+function updateLoginButton(name) {
+  const btn = document.getElementById("loginBtn");
+  btn.style.display = "none";
+
+  const nameDisplay = document.createElement("span");
+  nameDisplay.id = "userDisplay";
+  nameDisplay.style.position = "absolute";
+  nameDisplay.style.top = "20px";
+  nameDisplay.style.right = "20px";
+  nameDisplay.style.fontWeight = "bold";
+  nameDisplay.textContent = name;
+
+  document.body.appendChild(nameDisplay);
+}
+
+/* OWNER PANEL */
+function showOwnerPanel(user) {
   console.log("Owner Panel Enabled");
+  // Owner profile logic: show only logout button
+  unlockProfile(false);
 }
 
-/* ADMIN FUNCTIONS */
-function showAdminPanel(){
+/* ADMIN PANEL */
+function showAdminPanel(user) {
   console.log("Admin Panel Enabled");
+  // Admin profile logic: show only logout button
+  unlockProfile(false);
 }
 
-/* SAVE USERNAME */
-document.getElementById("saveUsernameBtn").onclick = async () => {
-  const usernameInput = document.getElementById("usernameInput");
-  const username = usernameInput.value.toLowerCase().trim();
+/* PLAYER PANEL */
+function showPlayerPanel(user) {
+  console.log("Player Panel Enabled");
+  // Player profile logic: enable profile fields
+  unlockProfile(true);
+}
 
-  if(username === "" || username.includes(" ")){
-    alert("Username cannot be empty or contain spaces");
-    return;
+// Enable or disable profile fields
+function unlockProfile(isPlayer) {
+  const profileSection = document.getElementById("profile");
+  profileSection.classList.remove("profileLocked");
+
+  if (isPlayer) {
+    profileSection.querySelectorAll("input").forEach(inp => inp.disabled = false);
+    profileSection.querySelector("button[onclick='saveProfile()']").disabled = false;
+  } else {
+    profileSection.querySelectorAll("input").forEach(inp => inp.disabled = true);
+    profileSection.querySelector("button[onclick='saveProfile()']").disabled = true;
   }
+}
 
-  const user = auth.currentUser;
-  if(!user) return alert("Please login first");
+/* Close login popup */
+function closeLogin() {
+  document.getElementById("loginPopup").style.display = "none";
+}
 
-  // Check if username already exists
-  const usernameRef = doc(db, "usernames", username);
-  const snap = await getDoc(usernameRef);
-  if(snap.exists()){
-    alert("This username is already taken. Choose another one.");
-    return;
-  }
-
-  await setDoc(doc(db,"usernames",username), { uid:user.uid });
-  await setDoc(doc(db,"users",user.uid), { username, email:user.email, ign:"", ff_uid:"", ff_level:"", xp:0 });
-
-  alert("Username saved successfully");
-  document.getElementById("usernamePopup").style.display="none";
-
-  // Show username at top right
-  const loginBtn = document.getElementById("googleLogin");
-  loginBtn.style.display = "none";
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  usernameDisplay.textContent = username;
-  usernameDisplay.style.display = "block";
+// LOGOUT function
+window.logoutUser = function() {
+  localStorage.clear();
+  // Reload page to reset
+  location.reload();
 };
