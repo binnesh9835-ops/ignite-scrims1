@@ -1,58 +1,109 @@
 // auth.js
-window.addEventListener("DOMContentLoaded", () => {
-  const loginBtn = document.getElementById("googleLogin");
-  const loginPopup = document.getElementById("loginPopup");
-  const usernamePopup = document.getElementById("usernamePopup");
-  const confirmUsernameBtn = document.getElementById("confirmUsernameBtn");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-  // Simulated Google Login
-  loginBtn.onclick = () => {
-    // Simulate Google login success
-    const fakeUser = {
-      email: "player@example.com",
-      role: "player", // can be "player", "admin", "owner"
-      displayName: "Player123"
-    };
-    localStorage.setItem("userEmail", fakeUser.email);
-    localStorage.setItem("userRole", fakeUser.role);
-    localStorage.setItem("displayName", fakeUser.displayName);
+// Firebase config (replace with your own)
+const firebaseConfig = {
+    apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain: "ignite-scrims.firebaseapp.com",
+  projectId: "ignite-scrims",
+  storageBucket: "ignite-scrims.firebasestorage.app",
+  messagingSenderId: "497561769270",
+  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+};
 
-    loginPopup.style.display = "none";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-    // If player has no username, show username popup
-    if (!localStorage.getItem("username") && fakeUser.role === "player") {
-      usernamePopup.style.display = "flex";
-    } else {
-      updateTopRightDisplay();
+const loginBtn = document.getElementById("googleLogin");
+const loginButtonTop = document.getElementById("loginBtn");
+const loginPopup = document.getElementById("loginPopup");
+const usernamePopup = document.getElementById("usernamePopup");
+
+// Click Google login
+loginBtn.addEventListener("click", async () => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const email = user.email;
+        const displayName = user.displayName;
+
+        // Check user role based on email (example)
+        let userRole = "player"; // default
+        const adminEmails = ["admin@example.com"];
+        const ownerEmails = ["owner@example.com"];
+
+        if (adminEmails.includes(email)) userRole = "admin";
+        if (ownerEmails.includes(email)) userRole = "owner";
+
+        // Save in localStorage
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("displayName", displayName);
+        localStorage.setItem("userRole", userRole);
+
+        loginPopup.style.display = "none";
+
+        if (userRole === "player") {
+            // Check if username already exists
+            let username = localStorage.getItem("username");
+            if (!username) {
+                usernamePopup.style.display = "flex"; // show create username popup
+            } else {
+                // Already have username, update top-right button
+                loginButtonTop.textContent = username;
+                loginButtonTop.style.pointerEvents = "none";
+            }
+        } else {
+            // Admin/Owner: only displayName, profile locked
+            loginButtonTop.textContent = displayName;
+            loginButtonTop.style.pointerEvents = "none";
+        }
+
+    } catch (error) {
+        console.error("Google login error:", error);
+        alert("Login failed. Try again.");
     }
-  };
-
-  // Confirm username creation
-  confirmUsernameBtn.onclick = () => {
-    const newUsernameInput = document.getElementById("newUsername");
-    let username = newUsernameInput.value.trim();
-
-    if (username === ""  username.includes(" ")  /[^a-z0-9]/.test(username) || username.length > 12) {
-      alert("Username must be lowercase letters, numbers allowed, max 12 chars, no spaces or special chars");
-      return;
-    }
-
-    localStorage.setItem("username", username);
-    usernamePopup.style.display = "none";
-    updateTopRightDisplay();
-  };
-
-  function updateTopRightDisplay() {
-    const loginDisplay = document.getElementById("loginBtn");
-    const role = localStorage.getItem("userRole");
-    if (role === "player") {
-      loginDisplay.textContent = localStorage.getItem("username");
-    } else {
-      loginDisplay.textContent = localStorage.getItem("displayName");
-    }
-    loginDisplay.style.pointerEvents = "none";
-  }
-
-  // Initialize top-right display on reload
-  updateTopRightDisplay();
 });
+
+// Logout function
+export function logoutUser() {
+    if (!confirm("Are you sure you want to logout?")) return;
+
+    signOut(auth).then(() => {
+        // Clear localStorage
+        localStorage.removeItem("username");
+        localStorage.removeItem("ign");
+        localStorage.removeItem("ffuid");
+        localStorage.removeItem("fflevel");
+        localStorage.removeItem("xp");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("displayName");
+
+        // Reset top-right button
+        loginButtonTop.textContent = "Login";
+        loginButtonTop.style.pointerEvents = "auto";
+
+        // Hide popups if open
+        loginPopup.style.display = "none";
+        usernamePopup.style.display = "none";
+
+        // Reset profile section visually
+        const profileSection = document.getElementById("profile");
+        profileSection.classList.add("profileLocked");
+        document.getElementById("username").value = "";
+        document.getElementById("ign").value = "";
+        document.getElementById("ffuid").value = "";
+        document.getElementById("fflevel").value = "";
+        document.getElementById("xpLevel").textContent = "0";
+
+        alert("You have been logged out");
+    }).catch((err) => {
+        console.error("Logout error:", err);
+        alert("Logout failed. Try again.");
+    });
+}
+
+// Export for profile.js usage
+export { auth, provider };
