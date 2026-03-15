@@ -1,9 +1,10 @@
 // profile.js
 window.addEventListener("DOMContentLoaded", () => {
 
+  // Elements
   const usernamePopup = document.getElementById("usernamePopup");
   const newUsernameInput = document.getElementById("newUsername");
-  const confirmUsernameBtn = document.querySelector("#usernamePopup button");
+  const confirmUsernameBtn = document.getElementById("confirmUsernameBtn");
 
   const profileSection = document.getElementById("profile");
   const usernameInput = document.getElementById("username");
@@ -11,25 +12,31 @@ window.addEventListener("DOMContentLoaded", () => {
   const ffUidInput = document.getElementById("ffuid");
   const ffLevelInput = document.getElementById("fflevel");
   const xpDisplay = document.getElementById("xpLevel");
+
   const madeChangesBtn = profileSection.querySelector("button[onclick='saveProfile()']");
   const logoutBtn = profileSection.querySelector("button[onclick='logoutUser()']");
 
-  // Show username popup after Google login if not set (Player only)
+  const loginBtnTop = document.getElementById("loginBtn");
+
+  // -----------------------------
+  // CONFIRM USERNAME (PLAYER)
+  // -----------------------------
   confirmUsernameBtn.addEventListener("click", () => {
     let username = newUsernameInput.value.trim();
-    if(username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
+
+    if(username === ""  username.includes(" ")  /[^a-z]/.test(username)){
       alert("Username must be lowercase letters only and cannot contain spaces");
       return;
     }
 
-    // Save in localStorage
+    // Save username in localStorage
     localStorage.setItem("username", username);
 
     // Update top-right display
-    const loginBtn = document.getElementById("loginBtn");
-    loginBtn.textContent = username;
-    loginBtn.style.pointerEvents = "none"; // disable click
+    loginBtnTop.textContent = username;
+    loginBtnTop.style.pointerEvents = "none";
 
+    // Hide popup
     usernamePopup.style.display = "none";
 
     // Unlock profile section
@@ -43,7 +50,9 @@ window.addEventListener("DOMContentLoaded", () => {
     xpDisplay.textContent = "0";
   });
 
-  // Made Changes button (profile save)
+  // -----------------------------
+  // SAVE PROFILE CHANGES
+  // -----------------------------
   madeChangesBtn.addEventListener("click", () => {
     const username = usernameInput.value.trim();
     const ign = ignInput.value.trim();
@@ -51,34 +60,35 @@ window.addEventListener("DOMContentLoaded", () => {
     const fflevel = ffLevelInput.value.trim();
     let xp = parseInt(localStorage.getItem("xp")) || 0;
 
-    if(username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
+    if(username === ""  username.includes(" ")  /[^a-z]/.test(username)){
       alert("Username must be lowercase letters only and cannot contain spaces");
       return;
     }
 
-    // Save in localStorage
+    // Save all to localStorage
     localStorage.setItem("username", username);
     localStorage.setItem("ign", ign);
     localStorage.setItem("ffuid", ffuid);
     localStorage.setItem("fflevel", fflevel);
     localStorage.setItem("xp", xp);
 
-    // Update top-right display
-    const loginBtn = document.getElementById("loginBtn");
-    loginBtn.textContent = username;
-    loginBtn.style.pointerEvents = "none";
+    // Update top-right
+    loginBtnTop.textContent = username;
+    loginBtnTop.style.pointerEvents = "none";
 
     alert("Profile updated successfully!");
 
-    // Shine effect for XP >= 7000
-    if(xp >= 7000) {
+    // XP shine effect
+    if(xp >= 7000){
       usernameInput.classList.add("shine-effect");
     } else {
       usernameInput.classList.remove("shine-effect");
     }
   });
 
-  // Logout
+  // -----------------------------
+  // LOGOUT
+  // -----------------------------
   logoutBtn.addEventListener("click", () => {
     if(!confirm("Are you sure you want to logout?")) return;
 
@@ -100,41 +110,43 @@ window.addEventListener("DOMContentLoaded", () => {
     xpDisplay.textContent = "0";
     profileSection.classList.add("profileLocked");
 
-    // Reset top-right display
-    const loginBtn = document.getElementById("loginBtn");
-    loginBtn.textContent = "Login";
-    loginBtn.style.pointerEvents = "auto";
+    // Reset top-right button
+    loginBtnTop.textContent = "Login";
+    loginBtnTop.style.pointerEvents = "auto";
 
-    // Hide username popup if open
+    // Hide username popup
     usernamePopup.style.display = "none";
 
     alert("You have been logged out");
   });
 
-                        // Pre-fill profile if user reloads page
+  // -----------------------------
+  // PRE-FILL PROFILE ON PAGE LOAD
+  // -----------------------------
   const role = localStorage.getItem("userRole");
-  if(role === "player") {
+  if(role === "player"){
     const username = localStorage.getItem("username");
-    if(username) {
+    if(username){
       usernameInput.value = username;
       ignInput.value = localStorage.getItem("ign") || "";
       ffUidInput.value = localStorage.getItem("ffuid") || "";
       ffLevelInput.value = localStorage.getItem("fflevel") || "";
       xpDisplay.textContent = localStorage.getItem("xp") || "0";
+
       profileSection.classList.remove("profileLocked");
 
-      // Shine effect for XP >= 7000
-      if(parseInt(localStorage.getItem("xp")) >= 7000) {
+      // XP shine effect
+      if(parseInt(localStorage.getItem("xp") || 0) >= 7000){
         usernameInput.classList.add("shine-effect");
       }
     }
-  } else if(role === "admin" || role === "owner") {
-    // Admin/Owner: only show displayName in top-right, profile locked
-    const displayName = localStorage.getItem("displayName");
-    const loginBtn = document.getElementById("loginBtn");
-    loginBtn.textContent = displayName;
-    loginBtn.style.pointerEvents = "none";
+  } else if(role === "admin" || role === "owner"){
+    // Admin/Owner: profile locked, show displayName
+    const displayName = localStorage.getItem("displayName") || "Admin";
+    loginBtnTop.textContent = displayName;
+    loginBtnTop.style.pointerEvents = "none";
     profileSection.classList.add("profileLocked");
   }
 
 });
+                  
