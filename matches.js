@@ -1,106 +1,40 @@
-import { db } from "./firebase.js";
+// matches.js
+window.addEventListener("DOMContentLoaded", () => {
+  const matchesSection = document.getElementById("matches");
 
-import {
-collection,
-getDocs,
-doc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  function renderJoinedMatches() {
+    const joinedMatches = JSON.parse(localStorage.getItem("joinedMatches")) || [];
+    matchesSection.innerHTML = "<h2>My Matches</h2>";
 
-const matchesContainer = document.getElementById("matchesContainer");
+    if (joinedMatches.length === 0) {
+      matchesSection.innerHTML += "<p>No joined matches</p>";
+      return;
+    }
 
-async function loadMatches(){
+    joinedMatches.forEach(match => {
+      const div = document.createElement("div");
+      div.style.margin = "15px";
+      div.style.padding = "10px";
+      div.style.border = "1px solid #444";
+      div.innerHTML = 
+        <strong>Time:</strong> ${match.time} &nbsp;
+        <strong>Entry Fee:</strong> ₹${match.entryFee} &nbsp;
+        <strong>Prize:</strong> ₹${match.prize}
+        <button>View Details</button>
+      ;
+      div.querySelector("button").onclick = () => {
+        alert(
+Match Details:
+Time: ${match.time}
+Entry Fee: ₹${match.entryFee}
+Prize: ₹${match.prize}
+Kills: ${match.kills}
+Reward Collected: ${match.rewardCollected ? "Yes" : "No"}
+        );
+      };
+      matchesSection.appendChild(div);
+    });
+  }
 
-matchesContainer.innerHTML="";
-
-const querySnapshot=await getDocs(collection(db,"matches"));
-
-querySnapshot.forEach((docSnap)=>{
-
-const match=docSnap.data();
-const matchId=docSnap.id;
-
-createMatchCard(match,matchId);
-
+  renderJoinedMatches();
 });
-
-}
-
-function createMatchCard(match,matchId){
-
-const card=document.createElement("div");
-
-card.className="match-card";
-
-card.innerHTML=
-
-<img src="${match.thumbnail}" class="match-thumb">
-
-<div class="match-info">
-
-<h3>${match.title}</h3>
-
-<p>Entry ₹${match.entry}</p>
-
-<p>Slots ${match.joined}/${match.slots}</p>
-
-<p>Time ${match.time}</p>
-
-</div>
-
-;
-
-const roomBtn=document.createElement("button");
-
-roomBtn.innerText="VIEW ROOM";
-
-roomBtn.onclick=()=>{
-
-showRoom(matchId);
-
-};
-
-matchesContainer.appendChild(card);
-
-matchesContainer.appendChild(roomBtn);
-
-}
-
-loadMatches();
-
-
-
-async function showRoom(matchId){
-
-const matchRef=doc(db,"matches",matchId);
-
-const matchSnap=await getDoc(matchRef);
-
-const data=matchSnap.data();
-
-
-
-if(!data.roomId){
-
-alert("Room not available yet");
-return;
-
-}
-
-
-
-document.getElementById("roomIdText").innerText=data.roomId;
-
-document.getElementById("roomPassText").innerText=data.roomPass;
-
-document.getElementById("roomPopup").style.display="flex";
-
-}
-
-
-
-window.closeRoom=()=>{
-
-document.getElementById("roomPopup").style.display="none";
-
-};
