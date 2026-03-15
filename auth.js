@@ -16,13 +16,10 @@ setDoc
 const provider = new GoogleAuthProvider();
 
 
-window.addEventListener("DOMContentLoaded", () => {
+// LOGIN BUTTON
+document.addEventListener("click", async (e)=>{
 
-const googleBtn = document.getElementById("googleLogin");
-
-if(googleBtn){
-
-googleBtn.addEventListener("click", async () => {
+if(e.target && e.target.id==="googleLogin"){
 
 try{
 
@@ -51,14 +48,12 @@ alert(err.message);
 
 }
 
-});
-
 }
 
 });
 
 
-
+// USER STATE
 onAuthStateChanged(auth, async (user)=>{
 
 if(!user) return;
@@ -77,6 +72,7 @@ document.getElementById("usernamePopup").style.display="flex";
 
 
 
+// SAVE USERNAME
 window.saveUsername = async function(){
 
 const username = document.getElementById("newUsername").value.trim();
