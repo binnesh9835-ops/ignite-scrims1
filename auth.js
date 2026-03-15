@@ -1,77 +1,70 @@
 // auth.js
 import { auth, provider } from "./firebase.js";
-import { signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-let admins = [
-  "vmtournament20@gmail.com"
-];
+const loginBtn = document.getElementById("googleLogin");
+const loginButtonTop = document.getElementById("loginBtn");
+const usernamePopup = document.getElementById("usernamePopup");
 
-let owner = "vishalpandey25288@gmail.com";
+// LOGIN WITH GOOGLE
+loginBtn.addEventListener("click", async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-window.addEventListener("DOMContentLoaded", () => {
+    // Save email and displayName
+    localStorage.setItem("userEmail", user.email);
+    localStorage.setItem("displayName", user.displayName);
 
-  const googleBtn = document.getElementById("googleLogin");
+    // Determine role: simple logic, if email includes "admin" => admin, else player
+    let role = "player";
+    if(user.email.includes("admin")) role = "admin";
+    if(user.email.includes("owner")) role = "owner";
+    localStorage.setItem("userRole", role);
 
-  googleBtn.addEventListener("click", async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const email = user.email;
-      let role = "player";
-
-      if (email === owner) role = "owner";
-      else if (admins.includes(email)) role = "admin";
-
-      // Save basic info in localStorage
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", role);
-      localStorage.setItem("displayName", user.displayName || "Player");
-
-      // Hide login popup
-      document.getElementById("loginPopup").style.display = "none";
-
-      // Owner/Admin panel display
-      if (role === "owner") {
-        showOwnerPanel();
-        showUsernameTop(); // just show displayName
-      } else if (role === "admin") {
-        showAdminPanel();
-        showUsernameTop(); // just show displayName
+    // Update top-right button
+    if(role === "player"){
+      // Show username popup if not set
+      const username = localStorage.getItem("username");
+      if(!username){
+        usernamePopup.style.display = "flex";
       } else {
-        // Player: show username popup if not set
-        const username = localStorage.getItem("username");
-        if (!username) {
-          document.getElementById("usernamePopup").style.display = "flex";
-        } else {
-          showUsernameTop();
-        }
+        loginButtonTop.textContent = username;
+        loginButtonTop.style.pointerEvents = "none";
       }
-
-    } catch (error) {
-      alert(error.message);
+    } else {
+      // Admin/Owner
+      loginButtonTop.textContent = user.displayName;
+      loginButtonTop.style.pointerEvents = "none";
     }
-  });
 
+    // Close login popup
+    document.getElementById("loginPopup").style.display = "none";
+
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Login failed. Try again!");
+  }
 });
 
-/* OWNER FUNCTIONS */
-function showOwnerPanel() {
-  console.log("Owner Panel Enabled");
-}
-
-/* ADMIN FUNCTIONS */
-function showAdminPanel() {
-  console.log("Admin Panel Enabled");
-}
-
-/* SHOW USERNAME TOP-RIGHT */
-function showUsernameTop() {
-  const usernameDisplay = document.getElementById("loginBtn");
-  const role = localStorage.getItem("userRole");
-  if (role === "player") {
-    usernameDisplay.textContent = localStorage.getItem("username") || localStorage.getItem("displayName");
+// Maintain login state on reload
+onAuthStateChanged(auth, (user) => {
+  if(user){
+    const role = localStorage.getItem("userRole");
+    if(role === "player"){
+      const username = localStorage.getItem("username");
+      if(username){
+        loginButtonTop.textContent = username;
+        loginButtonTop.style.pointerEvents = "none";
+      } else {
+        usernamePopup.style.display = "flex";
+      }
+    } else {
+      loginButtonTop.textContent = user.displayName;
+      loginButtonTop.style.pointerEvents = "none";
+    }
   } else {
-    usernameDisplay.textContent = localStorage.getItem("displayName");
+    loginButtonTop.textContent = "Login";
+    loginButtonTop.style.pointerEvents = "auto";
   }
-  usernameDisplay.style.pointerEvents = "none"; // disable click
-}
+});
