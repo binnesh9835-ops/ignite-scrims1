@@ -52,6 +52,18 @@ cursor:pointer;
 font-weight:bold;
 }
 
+/* USERNAME DISPLAY */
+
+#usernameDisplay{
+position:absolute;
+top:20px;
+right:20px;
+padding:8px 16px;
+border-radius:20px;
+background:#333;
+display:none;
+}
+
 /* VERIFIED BADGE */
 
 .verified{
@@ -97,7 +109,7 @@ display:inline-block;
 
 .upcoming::before,
 .upcoming::after{
-content:"";
+content:"Upcoming Matches";
 position:absolute;
 top:50%;
 width:120px;
@@ -157,6 +169,7 @@ background:#1a1a1a;
 padding:30px;
 border-radius:10px;
 width:260px;
+text-align:center;
 }
 
 .popupBox button{
@@ -210,6 +223,7 @@ IGNITE SCRIMS
 Login
 </button>
 
+<span id="usernameDisplay"></span>
 
 <!-- MENU -->
 
@@ -278,15 +292,15 @@ No matches yet
 <h2>Player Profile</h2>
 
 <p id="profileWarning">
-Login karne ke baad hi profile edit kar paoge
+You must login to edit your profile.
 </p>
 
 <br>
 
-<input id="username" placeholder="Username (small letters)">
+<input id="username" placeholder="Username (small letters, no spaces)">
 <br><br>
 
-<input id="ign" placeholder="In Game Name / Real Name">
+<input id="ign" placeholder="In-Game Name / Real Name">
 <br><br>
 
 <input id="ffuid" placeholder="Free Fire UID">
@@ -301,13 +315,13 @@ XP Level: <span id="xpLevel">0</span>
 
 <br>
 
-<button onclick="saveProfile()">
-Made Changes
+<button id="saveProfileBtn">
+Save Changes
 </button>
 
 <br><br>
 
-<button onclick="logoutUser()">
+  <button id="logoutBtn">
 Logout
 </button>
 
@@ -328,7 +342,7 @@ Login with Google
 
 <br>
 
-  <button onclick="closeLogin()">
+<button onclick="closeLogin()">
 Back
 </button>
 
@@ -349,7 +363,7 @@ Back
 
 <br><br>
 
-<button onclick="saveUsername()">
+<button id="confirmUsernameBtn">
 Confirm
 </button>
 
@@ -370,6 +384,7 @@ Confirm
 /* LOGIN POPUP */
 
 const loginBtn=document.getElementById("loginBtn");
+const usernameDisplay=document.getElementById("usernameDisplay");
 
 loginBtn.onclick=()=>{
 document.getElementById("loginPopup").style.display="flex";
@@ -379,7 +394,6 @@ function closeLogin(){
 document.getElementById("loginPopup").style.display="none";
 }
 
-
 /* TELEGRAM */
 
 function openSupport(){
@@ -388,7 +402,6 @@ window.open(
 "_blank"
 );
 }
-
 
 /* TAB SWITCH */
 
@@ -411,7 +424,6 @@ document.getElementById(tab.dataset.tab).classList.add("activeSection");
 });
 
 </script>
-
 
 <script type="module" src="firebase.js"></script>
 <script type="module" src="auth.js"></script>
