@@ -1,113 +1,140 @@
-import { auth } from "./firebase.js";
-
+// profile.js
 window.addEventListener("DOMContentLoaded", () => {
+
+  const usernamePopup = document.getElementById("usernamePopup");
+  const newUsernameInput = document.getElementById("newUsername");
+  const confirmUsernameBtn = document.querySelector("#usernamePopup button");
 
   const profileSection = document.getElementById("profile");
   const usernameInput = document.getElementById("username");
   const ignInput = document.getElementById("ign");
-  const uidInput = document.getElementById("ffuid");
-  const levelInput = document.getElementById("fflevel");
-  const xpSpan = document.getElementById("xpLevel");
+  const ffUidInput = document.getElementById("ffuid");
+  const ffLevelInput = document.getElementById("fflevel");
+  const xpDisplay = document.getElementById("xpLevel");
+  const madeChangesBtn = profileSection.querySelector("button[onclick='saveProfile()']");
+  const logoutBtn = profileSection.querySelector("button[onclick='logoutUser()']");
 
-  const usernamePopup = document.getElementById("usernamePopup");
-  const newUsernameInput = document.getElementById("newUsername");
+  // Show username popup after Google login if not set (Player only)
+  confirmUsernameBtn.addEventListener("click", () => {
+    let username = newUsernameInput.value.trim();
+    if (username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
+      alert("Username must be lowercase letters only and cannot contain spaces");
+      return;
+    }
 
-  const role = localStorage.getItem("role");
-  const displayName = localStorage.getItem("displayName");
+    // Save in localStorage
+    localStorage.setItem("username", username);
 
-  // Show profile section only if logged in
-  if(role){
+    // Update top-right display
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.textContent = username;
+    loginBtn.style.pointerEvents = "none"; // disable click
+
+    usernamePopup.style.display = "none";
+
+    // Unlock profile section
     profileSection.classList.remove("profileLocked");
 
-    // If user is normal player
-    if(role === "player"){
+    // Pre-fill profile inputs
+    usernameInput.value = username;
+    ignInput.value = "";
+    ffUidInput.value = "";
+    ffLevelInput.value = "";
+    xpDisplay.textContent = "0";
+  });
 
-      // Show username popup if not set
-      const storedUsername = localStorage.getItem("username");
-      if(!storedUsername){
-        usernamePopup.style.display = "flex";
-      } else {
-        usernameInput.value = storedUsername;
-        ignInput.value = localStorage.getItem("ign") || "";
-        uidInput.value = localStorage.getItem("ffuid") || "";
-        levelInput.value = localStorage.getItem("fflevel") || "";
-        xpSpan.textContent = localStorage.getItem("xp") || 0;
-      }
+  // Made Changes button (profile save)
+  madeChangesBtn.addEventListener("click", () => {
+    const username = usernameInput.value.trim();
+    const ign = ignInput.value.trim();
+    const ffuid = ffUidInput.value.trim();
+    const fflevel = ffLevelInput.value.trim();
+    let xp = parseInt(localStorage.getItem("xp")) || 0;
 
-    } 
-    // If admin or owner, hide username/ign/uid fields
-    else if(role === "admin" || role === "owner"){
-      usernameInput.style.display = "none";
-      ignInput.style.display = "none";
-      uidInput.style.display = "none";
-      levelInput.style.display = "none";
-      xpSpan.textContent = localStorage.getItem("xp") || 0;
-
-      // Change heading
-      document.querySelector("#profile h2").textContent = 
-        role === "owner" ? Welcome ${displayName} (Owner) : Welcome ${displayName} (Admin);
+    if (username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
+      alert("Username must be lowercase letters only and cannot contain spaces");
+      return;
     }
-  }
 
+    // Save in localStorage
+    localStorage.setItem("username", username);
+    localStorage.setItem("ign", ign);
+    localStorage.setItem("ffuid", ffuid);
+    localStorage.setItem("fflevel", fflevel);
+    localStorage.setItem("xp", xp);
+
+    // Update top-right display
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.textContent = username;
+    loginBtn.style.pointerEvents = "none";
+
+    alert("Profile updated successfully!");
+
+    // Shine effect for XP >= 7000
+    if (xp >= 7000) {
+      usernameInput.classList.add("shine-effect");
+    } else {
+      usernameInput.classList.remove("shine-effect");
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    if (!confirm("Are you sure you want to logout?")) return;
+
+    // Clear localStorage
+    localStorage.removeItem("username");
+    localStorage.removeItem("ign");
+    localStorage.removeItem("ffuid");
+    localStorage.removeItem("fflevel");
+    localStorage.removeItem("xp");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("displayName");
+
+    // Reset profile section
+    usernameInput.value = "";
+    ignInput.value = "";
+    ffUidInput.value = "";
+    ffLevelInput.value = "";
+    xpDisplay.textContent = "0";
+    profileSection.classList.add("profileLocked");
+
+    // Reset top-right display
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.textContent = "Login";
+    loginBtn.style.pointerEvents = "auto";
+
+    // Hide username popup if open
+    usernamePopup.style.display = "none";
+
+    alert("You have been logged out");
+  });
+
+                        // Pre-fill profile if user reloads page
+  const role = localStorage.getItem("userRole");
+  if (role === "player") {
+    const username = localStorage.getItem("username");
+    if (username) {
+      usernameInput.value = username;
+      ignInput.value = localStorage.getItem("ign") || "";
+      ffUidInput.value = localStorage.getItem("ffuid") || "";
+      ffLevelInput.value = localStorage.getItem("fflevel") || "";
+      xpDisplay.textContent = localStorage.getItem("xp") || "0";
+      profileSection.classList.remove("profileLocked");
+
+      // Shine effect for XP >= 7000
+      if ((parseInt(localStorage.getItem("xp")) || 0) >= 7000) {
+        usernameInput.classList.add("shine-effect");
+      }
+    }
+  } else if (role === "admin" || role === "owner") {
+    // Admin/Owner: only show displayName in top-right, profile locked
+    const displayName = localStorage.getItem("displayName");
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.textContent = displayName;
+    loginBtn.style.pointerEvents = "none";
+    profileSection.classList.add("profileLocked");
+  }
 
 });
-
-// SAVE USERNAME FROM POPUP
-window.saveUsername = function(){
-  const username = document.getElementById("newUsername").value.trim();
-
-  if(username === "" || !/^[a-z]+$/.test(username)){
-    alert("Enter valid username (small letters only, no spaces).");
-    return;
-  }
-
-  if(localStorage.getItem("allUsernames")){
-    const allUsernames = JSON.parse(localStorage.getItem("allUsernames"));
-    if(allUsernames.includes(username)){
-      alert("Username already taken, choose another.");
-      return;
-    } else {
-      allUsernames.push(username);
-      localStorage.setItem("allUsernames", JSON.stringify(allUsernames));
-    }
-  } else {
-    localStorage.setItem("allUsernames", JSON.stringify([username]));
-  }
-
-  localStorage.setItem("username", username);
-  document.getElementById("username").value = username;
-  document.getElementById("usernamePopup").style.display = "none";
-
-  alert("Username set successfully!");
-}
-
-
-// SAVE PROFILE CHANGES
-window.saveProfile = function(){
-  const username = document.getElementById("username").value.trim();
-  const ign = document.getElementById("ign").value.trim();
-  const ffuid = document.getElementById("ffuid").value.trim();
-  const fflevel = document.getElementById("fflevel").value.trim();
-
-  if(!username  !ign  !ffuid){
-    alert("Username, IGN and UID are required!");
-    return;
-  }
-
-  localStorage.setItem("username", username);
-  localStorage.setItem("ign", ign);
-  localStorage.setItem("ffuid", ffuid);
-  localStorage.setItem("fflevel", fflevel);
-  localStorage.setItem("xp", localStorage.getItem("xp") || 0);
-
-  alert("Profile changes saved successfully!");
-}
-
-
-// LOGOUT FUNCTION
-window.logoutUser = function(){
-  if(confirm("Are you sure you want to logout?")){
-    localStorage.clear();
-    location.reload();
-  }
-}
