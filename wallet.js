@@ -1,4 +1,3 @@
-// wallet.js
 window.addEventListener("DOMContentLoaded", () => {
   const walletSection = document.getElementById("wallet");
   walletSection.innerHTML = 
@@ -23,6 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const historyDiv = document.getElementById("walletHistory");
   const notifyToggle = document.getElementById("notifyToggle");
 
+  // Load wallet data
   let walletBalance = parseInt(localStorage.getItem("walletBalance")) || 0;
   let walletHistory = JSON.parse(localStorage.getItem("walletHistory")) || [];
   let notifications = localStorage.getItem("notifications") === "true";
@@ -34,31 +34,48 @@ window.addEventListener("DOMContentLoaded", () => {
     historyDiv.innerHTML = "";
     walletHistory.forEach(tx => {
       const div = document.createElement("div");
-      div.textContent = ${tx.type} ₹${tx.amount} on ${tx.date} ${tx.status ? "(Completed)" : "(Pending)"};
+      div.textContent = ${tx.type} ₹${tx.amount} on ${tx.date} ${tx.status ? "(Completed)" : "(Pending)"}${tx.upi ? " | UPI: " + tx.upi : ""};
       historyDiv.appendChild(div);
     });
   }
 
   renderHistory();
 
-  document.getElementById("addBtn").onclick = () => {
+  // --- Add Money ---
+  addBtn.onclick = () => {
     const amt = parseInt(addInput.value);
     if (isNaN(amt) || amt < 20) {
       alert("Minimum add amount is ₹20");
       return;
     }
-    walletBalance += amt;
-    balanceSpan.textContent = walletBalance;
-    walletHistory.push({ type: "Add", amount: amt, date: new Date().toLocaleString(), status: true });
-    localStorage.setItem("walletBalance", walletBalance);
+
+    const username = localStorage.getItem("username");
+    if (!username) {
+      alert("Please set your username first!");
+      return;
+    }
+
+    // For now, mark as pending; Admin/Owner approval will update status
+    walletHistory.push({
+      type: "Add",
+      amount: amt,
+      date: new Date().toLocaleString(),
+      status: false, // pending
+      username: username
+    });
     localStorage.setItem("walletHistory", JSON.stringify(walletHistory));
+
+    alert(🎉 Your Add Money request of ₹${amt} has been sent for admin approval. Please wait.);
+
+    addInput.value = "";
     renderHistory();
-    alert("Money added successfully!");
   };
 
-  document.getElementById("withdrawBtn").onclick = () => {
+  // --- Withdraw Money ---
+  withdrawBtn.onclick = () => {
     const amt = parseInt(withdrawInput.value);
     const upi = upiInput.value.trim();
+
     if (isNaN(amt)  amt < 200  amt > 1000) {
       alert("Withdraw amount must be ₹200 - ₹1000");
       return;
@@ -71,15 +88,35 @@ window.addEventListener("DOMContentLoaded", () => {
       alert("Enter your UPI ID");
       return;
     }
+
+    const username = localStorage.getItem("username");
+    if (!username) {
+      alert("Please set your username first!");
+      return;
+    }
+
+    // Deduct temporarily, final completion after admin approval
     walletBalance -= amt;
     balanceSpan.textContent = walletBalance;
-    walletHistory.push({ type: "Withdraw", amount: amt, date: new Date().toLocaleString(), status: false, upi });
+
+    walletHistory.push({
+      type: "Withdraw",
+      amount: amt,
+      date: new Date().toLocaleString(),
+      status: false, // pending
+      upi: upi,
+      username: username
+    });
     localStorage.setItem("walletBalance", walletBalance);
     localStorage.setItem("walletHistory", JSON.stringify(walletHistory));
+
+    alert(🎉 Your Withdraw request of ₹${amt} has been sent for admin verification.);
+    withdrawInput.value = "";
+    upiInput.value = "";
     renderHistory();
-    alert("Withdrawal request submitted! Admin will verify payment.");
   };
 
+  // --- Notifications toggle ---
   notifyToggle.onchange = () => {
     localStorage.setItem("notifications", notifyToggle.checked);
   };
