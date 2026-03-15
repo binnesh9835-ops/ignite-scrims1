@@ -24,47 +24,41 @@ font-size:44px;
 margin-top:20px;
 letter-spacing:5px;
 font-weight:bold;
-position:relative;
-color:#ffffff;
-text-shadow:
-0 0 10px #ff0000,
-0 0 20px #ff7300,
-0 0 30px #ff0000;
-}
-
-.title::after{
-content:"IGNITE SCRIMS";
-position:absolute;
-top:0;
-left:-100%;
-width:100%;
-color:transparent;
 
 background:linear-gradient(
-120deg,
-transparent,
-rgba(255,255,255,0.9),
-transparent
+90deg,
+#ff0000,
+#ff7300,
+#ffd000,
+#ffffff,
+#ffd000,
+#ff7300,
+#ff0000
 );
 
--webkit-background-clip:text;
-background-clip:text;
+background-size:300%;
 
-animation:shineMove 3s infinite;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+animation:titleMove 4s ease-in-out infinite;
 }
 
-@keyframes shineMove{
+@keyframes titleMove{
 
 0%{
-left:-100%;
+background-position:0% 50%;
+}
+
+50%{
+background-position:100% 50%;
 }
 
 100%{
-left:120%;
+background-position:0% 50%;
 }
 
 }
-
 .loginBtn{
 position:absolute;
 top:20px;
