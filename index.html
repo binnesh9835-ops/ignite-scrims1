@@ -20,9 +20,46 @@ text-align:center;
 }
 
 .title{
-font-size:38px;
+font-size:44px;
 margin-top:20px;
-letter-spacing:3px;
+letter-spacing:5px;
+font-weight:bold;
+
+background:linear-gradient(
+90deg,
+#ff0000,
+#ff7b00,
+#ffe600,
+#ffffff,
+#ffe600,
+#ff7b00,
+#ff0000
+);
+
+background-size:300%;
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+animation:shine 5s linear infinite;
+
+text-shadow:
+0 0 10px #ff0000,
+0 0 20px #ff7300,
+0 0 30px #ff0000,
+0 0 40px #ff7300;
+}
+
+@keyframes shine{
+
+0%{
+background-position:0%;
+}
+
+100%{
+background-position:300%;
+}
+
 }
 
 .loginBtn{
