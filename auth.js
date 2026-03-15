@@ -1,193 +1,101 @@
-import { auth, provider } from "./firebase.js";
+import { auth, provider, db } from "./firebase.js";
+import { signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-signInWithPopup,
-onAuthStateChanged,
-signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-getFirestore,
-doc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const db = getFirestore();
-
-
-/* OWNER & ADMIN EMAIL */
-
+// Emails
+let admins = ["vmtournament20@gmail.com"];
 let owner = "vishalpandey25288@gmail.com";
 
-let admins = [
-"vmtournament20@gmail.com"
-];
+// Login button
+window.addEventListener("DOMContentLoaded", () => {
+  const googleBtn = document.getElementById("googleLogin");
 
+  googleBtn.addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const email = user.email;
 
-/* LOGIN BUTTON */
+      let role = "player";
 
-const loginBtn = document.getElementById("loginBtn");
+      if(email === owner){
+        role = "owner";
+      }
+      else if(admins.includes(email)){
+        role = "admin";
+      }
 
+      alert("Welcome " + user.displayName + " (" + role + ")");
 
-/* LOGIN CLICK */
+      document.getElementById("loginPopup").style.display="none";
 
-loginBtn.onclick = () => {
+      /* OWNER PANEL SHOW */
+      if(role === "owner"){
+        showOwnerPanel();
+      }
+      /* ADMIN PANEL SHOW */
+      else if(role === "admin"){
+        showAdminPanel();
+      }
 
-document.getElementById("loginPopup").style.display="flex";
+      /* PLAYER → check username */
+      else if(role === "player"){
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
 
-};
+        if(!snap.exists() || !snap.data().username){
+          // Show username popup
+          document.getElementById("usernamePopup").style.display = "flex";
+        }
+      }
 
-
-/* GOOGLE LOGIN */
-
-document.getElementById("googleLogin").onclick = async ()=>{
-
-try{
-
-const result = await signInWithPopup(auth, provider);
-
-const user = result.user;
-
-checkUserProfile(user);
-
-document.getElementById("loginPopup").style.display="none";
-
-}
-
-catch(err){
-
-alert(err.message);
-
-}
-
-};
-
-
-/* AUTO LOGIN CHECK */
-
-onAuthStateChanged(auth, async (user)=>{
-
-if(user){
-
-checkUserProfile(user);
-
-unlockProfile();
-
-}
-
-else{
-
-lockProfile();
-
-}
-
+    } catch(error){
+      alert(error.message);
+    }
+  });
 });
 
-
-/* CHECK PROFILE */
-
-async function checkUserProfile(user){
-
-const ref = doc(db,"users",user.uid);
-
-const snap = await getDoc(ref);
-
-let role = "player";
-
-if(user.email === owner){
-
-role="owner";
-
+/* OWNER FUNCTIONS */
+function showOwnerPanel(){
+  console.log("Owner Panel Enabled");
 }
 
-else if(admins.includes(user.email)){
-
-role="admin";
-
+/* ADMIN FUNCTIONS */
+function showAdminPanel(){
+  console.log("Admin Panel Enabled");
 }
 
+/* SAVE USERNAME */
+document.getElementById("saveUsernameBtn").onclick = async () => {
+  const usernameInput = document.getElementById("usernameInput");
+  const username = usernameInput.value.toLowerCase().trim();
 
-/* USERNAME NOT CREATED */
+  if(username === "" || username.includes(" ")){
+    alert("Username cannot be empty or contain spaces");
+    return;
+  }
 
-if(!snap.exists()){
+  const user = auth.currentUser;
+  if(!user) return alert("Please login first");
 
-document.getElementById("usernamePopup").style.display="flex";
+  // Check if username already exists
+  const usernameRef = doc(db, "usernames", username);
+  const snap = await getDoc(usernameRef);
+  if(snap.exists()){
+    alert("This username is already taken. Choose another one.");
+    return;
+  }
 
-return;
+  await setDoc(doc(db,"usernames",username), { uid:user.uid });
+  await setDoc(doc(db,"users",user.uid), { username, email:user.email, ign:"", ff_uid:"", ff_level:"", xp:0 });
 
-}
+  alert("Username saved successfully");
+  document.getElementById("usernamePopup").style.display="none";
 
-
-/* USERNAME EXISTS */
-
-let data = snap.data();
-
-showLoggedUser(data.username,role);
-
-}
-
-
-/* SHOW USERNAME */
-
-function showLoggedUser(username,role){
-
-let badge="";
-
-if(role==="admin"){
-
-badge=" ✔";
-
-}
-
-if(role==="owner"){
-
-badge=" ⭐";
-
-}
-
-loginBtn.innerText = username + badge;
-
-loginBtn.onclick = ()=>{
-
-document.querySelector('[data-tab="profile"]').click();
-
-};
-
-}
-
-
-/* PROFILE LOCK */
-
-function lockProfile(){
-
-document
-.getElementById("profile")
-.classList.add("profileLocked");
-
-}
-
-
-/* PROFILE UNLOCK */
-
-function unlockProfile(){
-
-document
-.getElementById("profile")
-.classList.remove("profileLocked");
-
-}
-
-
-/* LOGOUT */
-
-window.logoutUser = async function(){
-
-let confirmLogout = confirm("Are you sure you want to logout?");
-
-if(!confirmLogout) return;
-
-await signOut(auth);
-
-location.reload();
-
+  // Show username at top right
+  const loginBtn = document.getElementById("googleLogin");
+  loginBtn.style.display = "none";
+  const usernameDisplay = document.getElementById("usernameDisplay");
+  usernameDisplay.textContent = username;
+  usernameDisplay.style.display = "block";
 };
