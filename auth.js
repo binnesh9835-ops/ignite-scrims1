@@ -1,22 +1,15 @@
+// auth.js
 import { auth, provider } from "./firebase.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Owner & Admin emails
+let admins = [
+  "vmtournament20@gmail.com"
+];
+
 let owner = "vishalpandey25288@gmail.com";
-let admins = ["vmtournament20@gmail.com"];
 
-// Function to check localStorage for existing username
-function getUsername() {
-  return localStorage.getItem("username") || null;
-}
-
-// Function to save role globally
-function setRole(role) {
-  localStorage.setItem("role", role);
-}
-
-// Google Login
 window.addEventListener("DOMContentLoaded", () => {
+
   const googleBtn = document.getElementById("googleLogin");
 
   googleBtn.addEventListener("click", async () => {
@@ -29,24 +22,28 @@ window.addEventListener("DOMContentLoaded", () => {
       if (email === owner) role = "owner";
       else if (admins.includes(email)) role = "admin";
 
-      setRole(role); // Save role in localStorage
+      // Save basic info in localStorage
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userRole", role);
+      localStorage.setItem("displayName", user.displayName || "Player");
 
       // Hide login popup
       document.getElementById("loginPopup").style.display = "none";
 
-      // Update login button to show username/email
-      updateLoginButton(user.displayName);
-
-      // Show respective panel
-      if (role === "owner") showOwnerPanel(user);
-      else if (role === "admin") showAdminPanel(user);
-      else {
-        // PLAYER
-        if (!getUsername()) {
-          // Show username creation popup
+      // Owner/Admin panel display
+      if (role === "owner") {
+        showOwnerPanel();
+        showUsernameTop(); // just show displayName
+      } else if (role === "admin") {
+        showAdminPanel();
+        showUsernameTop(); // just show displayName
+      } else {
+        // Player: show username popup if not set
+        const username = localStorage.getItem("username");
+        if (!username) {
           document.getElementById("usernamePopup").style.display = "flex";
         } else {
-          showPlayerPanel(user);
+          showUsernameTop();
         }
       }
 
@@ -54,67 +51,27 @@ window.addEventListener("DOMContentLoaded", () => {
       alert(error.message);
     }
   });
+
 });
 
-// Update login button to show user name
-function updateLoginButton(name) {
-  const btn = document.getElementById("loginBtn");
-  btn.style.display = "none";
-
-  const nameDisplay = document.createElement("span");
-  nameDisplay.id = "userDisplay";
-  nameDisplay.style.position = "absolute";
-  nameDisplay.style.top = "20px";
-  nameDisplay.style.right = "20px";
-  nameDisplay.style.fontWeight = "bold";
-  nameDisplay.textContent = name;
-
-  document.body.appendChild(nameDisplay);
-}
-
-/* OWNER PANEL */
-function showOwnerPanel(user) {
+/* OWNER FUNCTIONS */
+function showOwnerPanel() {
   console.log("Owner Panel Enabled");
-  // Owner profile logic: show only logout button
-  unlockProfile(false);
 }
 
-/* ADMIN PANEL */
-function showAdminPanel(user) {
+/* ADMIN FUNCTIONS */
+function showAdminPanel() {
   console.log("Admin Panel Enabled");
-  // Admin profile logic: show only logout button
-  unlockProfile(false);
 }
 
-/* PLAYER PANEL */
-function showPlayerPanel(user) {
-  console.log("Player Panel Enabled");
-  // Player profile logic: enable profile fields
-  unlockProfile(true);
-}
-
-// Enable or disable profile fields
-function unlockProfile(isPlayer) {
-  const profileSection = document.getElementById("profile");
-  profileSection.classList.remove("profileLocked");
-
-  if (isPlayer) {
-    profileSection.querySelectorAll("input").forEach(inp => inp.disabled = false);
-    profileSection.querySelector("button[onclick='saveProfile()']").disabled = false;
+/* SHOW USERNAME TOP-RIGHT */
+function showUsernameTop() {
+  const usernameDisplay = document.getElementById("loginBtn");
+  const role = localStorage.getItem("userRole");
+  if (role === "player") {
+    usernameDisplay.textContent = localStorage.getItem("username") || localStorage.getItem("displayName");
   } else {
-    profileSection.querySelectorAll("input").forEach(inp => inp.disabled = true);
-    profileSection.querySelector("button[onclick='saveProfile()']").disabled = true;
+    usernameDisplay.textContent = localStorage.getItem("displayName");
   }
+  usernameDisplay.style.pointerEvents = "none"; // disable click
 }
-
-/* Close login popup */
-function closeLogin() {
-  document.getElementById("loginPopup").style.display = "none";
-}
-
-// LOGOUT function
-window.logoutUser = function() {
-  localStorage.clear();
-  // Reload page to reset
-  location.reload();
-};
