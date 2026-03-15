@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // Show username popup after Google login if not set (Player only)
   confirmUsernameBtn.addEventListener("click", () => {
     let username = newUsernameInput.value.trim();
-    if (username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
+    if(username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
       alert("Username must be lowercase letters only and cannot contain spaces");
       return;
     }
@@ -51,7 +51,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const fflevel = ffLevelInput.value.trim();
     let xp = parseInt(localStorage.getItem("xp")) || 0;
 
-    if (username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
+    if(username === ""  username.includes(" ")  /[^a-z]/.test(username)) {
       alert("Username must be lowercase letters only and cannot contain spaces");
       return;
     }
@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", () => {
     alert("Profile updated successfully!");
 
     // Shine effect for XP >= 7000
-    if (xp >= 7000) {
+    if(xp >= 7000) {
       usernameInput.classList.add("shine-effect");
     } else {
       usernameInput.classList.remove("shine-effect");
@@ -80,7 +80,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Logout
   logoutBtn.addEventListener("click", () => {
-    if (!confirm("Are you sure you want to logout?")) return;
+    if(!confirm("Are you sure you want to logout?")) return;
 
     // Clear localStorage
     localStorage.removeItem("username");
@@ -113,9 +113,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
                         // Pre-fill profile if user reloads page
   const role = localStorage.getItem("userRole");
-  if (role === "player") {
+  if(role === "player") {
     const username = localStorage.getItem("username");
-    if (username) {
+    if(username) {
       usernameInput.value = username;
       ignInput.value = localStorage.getItem("ign") || "";
       ffUidInput.value = localStorage.getItem("ffuid") || "";
@@ -124,11 +124,11 @@ window.addEventListener("DOMContentLoaded", () => {
       profileSection.classList.remove("profileLocked");
 
       // Shine effect for XP >= 7000
-      if ((parseInt(localStorage.getItem("xp")) || 0) >= 7000) {
+      if(parseInt(localStorage.getItem("xp")) >= 7000) {
         usernameInput.classList.add("shine-effect");
       }
     }
-  } else if (role === "admin" || role === "owner") {
+  } else if(role === "admin" || role === "owner") {
     // Admin/Owner: only show displayName in top-right, profile locked
     const displayName = localStorage.getItem("displayName");
     const loginBtn = document.getElementById("loginBtn");
