@@ -1,123 +1,230 @@
-window.addEventListener("DOMContentLoaded", () => {
-  const walletSection = document.getElementById("wallet");
-  walletSection.innerHTML = 
-    <h2>Wallet</h2>
-    <p>Balance: ₹<span id="walletBalance">0</span></p>
-    <input type="number" id="addAmount" placeholder="Amount to Add">
-    <button id="addBtn">Add Money</button>
-    <br><br>
-    <input type="number" id="withdrawAmount" placeholder="Amount to Withdraw">
-    <input type="text" id="upiId" placeholder="Your UPI ID">
-    <button id="withdrawBtn">Withdraw</button>
-    <h3>Transaction History</h3>
-    <div id="walletHistory"></div>
-    <br>
-    <label><input type="checkbox" id="notifyToggle"> Enable Notifications</label>
-  ;
+import { auth, db } from "./firebase.js";
 
-  const balanceSpan = document.getElementById("walletBalance");
-  const addInput = document.getElementById("addAmount");
-  const withdrawInput = document.getElementById("withdrawAmount");
-  const upiInput = document.getElementById("upiId");
-  const historyDiv = document.getElementById("walletHistory");
-  const notifyToggle = document.getElementById("notifyToggle");
+import {
+doc,
+getDoc,
+collection,
+addDoc,
+query,
+where,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // Load wallet data
-  let walletBalance = parseInt(localStorage.getItem("walletBalance")) || 0;
-  let walletHistory = JSON.parse(localStorage.getItem("walletHistory")) || [];
-  let notifications = localStorage.getItem("notifications") === "true";
+import {
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  balanceSpan.textContent = walletBalance;
-  notifyToggle.checked = notifications;
 
-  function renderHistory() {
-    historyDiv.innerHTML = "";
-    walletHistory.forEach(tx => {
-      const div = document.createElement("div");
-      div.textContent = ${tx.type} ₹${tx.amount} on ${tx.date} ${tx.status ? "(Completed)" : "(Pending)"}${tx.upi ? " | UPI: " + tx.upi : ""};
-      historyDiv.appendChild(div);
-    });
-  }
+const walletSection = document.getElementById("wallet");
 
-  renderHistory();
 
-  // --- Add Money ---
-  addBtn.onclick = () => {
-    const amt = parseInt(addInput.value);
-    if (isNaN(amt) || amt < 20) {
-      alert("Minimum add amount is ₹20");
-      return;
-    }
+walletSection.innerHTML = 
 
-    const username = localStorage.getItem("username");
-    if (!username) {
-      alert("Please set your username first!");
-      return;
-    }
+<h2>Wallet</h2>
 
-    // For now, mark as pending; Admin/Owner approval will update status
-    walletHistory.push({
-      type: "Add",
-      amount: amt,
-      date: new Date().toLocaleString(),
-      status: false, // pending
-      username: username
-    });
-    localStorage.setItem("walletHistory", JSON.stringify(walletHistory));
+<p>
+Balance: ₹<span id="walletBalance">0</span>
+</p>
 
-    alert(🎉 Your Add Money request of ₹${amt} has been sent for admin approval. Please wait.);
+<br>
 
-    addInput.value = "";
-    renderHistory();
-  };
+<input id="addAmount" placeholder="Amount to Add">
 
-  // --- Withdraw Money ---
-  withdrawBtn.onclick = () => {
-    const amt = parseInt(withdrawInput.value);
-    const upi = upiInput.value.trim();
+<button id="addMoneyBtn">
+Add Money
+</button>
 
-    if (isNaN(amt)  amt < 200  amt > 1000) {
-      alert("Withdraw amount must be ₹200 - ₹1000");
-      return;
-    }
-    if (amt > walletBalance) {
-      alert("Insufficient balance");
-      return;
-    }
-    if (!upi) {
-      alert("Enter your UPI ID");
-      return;
-    }
+<br><br>
 
-    const username = localStorage.getItem("username");
-    if (!username) {
-      alert("Please set your username first!");
-      return;
-    }
+<input id="withdrawAmount" placeholder="Withdraw Amount">
 
-    // Deduct temporarily, final completion after admin approval
-    walletBalance -= amt;
-    balanceSpan.textContent = walletBalance;
+<input id="withdrawUpi" placeholder="Your UPI ID">
 
-    walletHistory.push({
-      type: "Withdraw",
-      amount: amt,
-      date: new Date().toLocaleString(),
-      status: false, // pending
-      upi: upi,
-      username: username
-    });
-    localStorage.setItem("walletBalance", walletBalance);
-    localStorage.setItem("walletHistory", JSON.stringify(walletHistory));
+<button id="withdrawBtn">
+Withdraw
+</button>
 
-    alert(🎉 Your Withdraw request of ₹${amt} has been sent for admin verification.);
-    withdrawInput.value = "";
-    upiInput.value = "";
-    renderHistory();
-  };
+<br><br>
 
-  // --- Notifications toggle ---
-  notifyToggle.onchange = () => {
-    localStorage.setItem("notifications", notifyToggle.checked);
-  };
+<h3>Transactions</h3>
+
+<div id="transactionList"></div>
+
+;
+
+
+let currentUID = null;
+
+
+
+onAuthStateChanged(auth, async (user)=>{
+
+if(!user) return;
+
+currentUID = user.uid;
+
+loadWallet();
+
+loadTransactions();
+
 });
+
+
+
+async function loadWallet(){
+
+const userRef = doc(db,"users",currentUID);
+
+const snap = await getDoc(userRef);
+
+
+
+if(snap.exists()){
+
+const data = snap.data();
+
+document.getElementById("walletBalance").innerText = data.wallet || 0;
+
+}
+
+}
+
+
+
+document.getElementById("addMoneyBtn").onclick = async ()=>{
+
+const amount = Number(document.getElementById("addAmount").value);
+
+if(amount < 20){
+
+alert("Minimum add ₹20");
+
+return;
+
+}
+
+await addDoc(collection(db,"transactions"),{
+
+uid: currentUID,
+
+type: "add",
+
+amount: amount,
+
+status: "pending",
+
+time: Date.now()
+
+});
+
+alert("Add money request sent to admin");
+
+};
+
+
+
+document.getElementById("withdrawBtn").onclick = async ()=>{
+
+const amount = Number(document.getElementById("withdrawAmount").value);
+
+const upi = document.getElementById("withdrawUpi").value.trim();
+
+
+
+if(amount < 200){
+
+alert("Minimum withdraw ₹200");
+
+return;
+
+}
+
+
+
+if(amount > 1000){
+
+alert("Max withdraw ₹1000");
+
+return;
+
+}
+
+
+
+await addDoc(collection(db,"transactions"),{
+
+uid: currentUID,
+
+type: "withdraw",
+
+amount: amount,
+
+upi: upi,
+
+status: "pending",
+
+time: Date.now()
+
+});
+
+
+
+alert("Withdraw request sent to admin");
+
+};
+
+
+
+async function loadTransactions(){
+
+const q = query(
+
+collection(db,"transactions"),
+
+where("uid","==",currentUID)
+
+);
+
+
+
+const snap = await getDocs(q);
+
+const list = document.getElementById("transactionList");
+
+list.innerHTML = "";
+
+
+
+snap.forEach(docu=>{
+
+const d = docu.data();
+
+
+
+const div = document.createElement("div");
+
+div.style.border="1px solid gray";
+
+div.style.margin="10px";
+
+div.style.padding="10px";
+
+
+
+div.innerHTML = 
+
+Type: ${d.type} <br>
+
+Amount: ₹${d.amount} <br>
+
+Status: ${d.status}
+
+;
+
+
+
+list.appendChild(div);
+
+});
+
+}
