@@ -1,57 +1,97 @@
-// home.js
-window.addEventListener("DOMContentLoaded", () => {
-  const homeSection = document.getElementById("home");
+import { db } from "./firebase.js";
 
-  // Example matches schedule (for testing, admin will set real matches)
-  const matches = [
-    { id: 1, time: "15:30", entryFee: 50, prize: 500 },
-    { id: 2, time: "16:00", entryFee: 100, prize: 1000 },
-  ];
+import {
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  function getNextMatch() {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+import { joinMatch } from "./matches.js";
 
-    for (let match of matches) {
-      const [h, m] = match.time.split(":").map(Number);
-      const matchMinutes = h * 60 + m;
-      if (matchMinutes > currentMinutes) return match;
-    }
-    return null;
-  }
 
-  function renderNextMatch() {
-    homeSection.innerHTML = 
-      <div class="upcoming">Upcoming Matches</div>
-    ;
-    const nextMatch = getNextMatch();
-    const container = document.createElement("div");
-    container.style.marginTop = "20px";
+const homeSection = document.getElementById("home");
 
-    if (!nextMatch) {
-      container.textContent = "No upcoming matches";
-    } else {
-      container.innerHTML = 
-        <div>
-          <strong>Time:</strong> ${nextMatch.time} &nbsp; 
-          <strong>Entry Fee:</strong> ₹${nextMatch.entryFee} &nbsp; 
-          <strong>Prize:</strong> ₹${nextMatch.prize} 
-          <button id="joinBtn">Join</button>
-        </div>
-      ;
-      container.querySelector("#joinBtn").onclick = () => {
-        let joinedMatches = JSON.parse(localStorage.getItem("joinedMatches")) || [];
-        if (joinedMatches.find(m => m.id === nextMatch.id)) {
-          alert("Already joined this match");
-          return;
-        }
-        joinedMatches.push({ ...nextMatch, kills: 0, rewardCollected: false });
-        localStorage.setItem("joinedMatches", JSON.stringify(joinedMatches));
-        alert("Successfully joined match!");
-      };
-    }
-    homeSection.appendChild(container);
-  }
 
-  renderNextMatch();
+homeSection.innerHTML = 
+
+<h2>Upcoming Matches</h2>
+
+<div id="matchList">
+Loading matches...
+</div>
+
+;
+
+
+async function loadMatches(){
+
+const snap = await getDocs(collection(db,"matches"));
+
+const list = document.getElementById("matchList");
+
+list.innerHTML = "";
+
+
+if(snap.empty){
+
+list.innerHTML = "No matches available";
+
+return;
+
+}
+
+
+snap.forEach(docu=>{
+
+const data = docu.data();
+
+const matchId = docu.id;
+
+
+const div = document.createElement("div");
+
+div.style.border = "1px solid gray";
+
+div.style.margin = "10px";
+
+div.style.padding = "10px";
+
+
+div.innerHTML = 
+
+<b>Time:</b> ${data.time}
+
+<br>
+
+<b>Entry Fee:</b> ₹${data.entryFee}
+
+<br>
+
+<b>Prize:</b> ₹${data.prize}
+
+<br><br>
+
+<button id="join_${matchId}">
+Join Match
+</button>
+
+;
+
+
+list.appendChild(div);
+
+
+document
+.getElementById(join_${matchId})
+.onclick = ()=>{
+
+joinMatch(matchId);
+
+};
+
 });
+
+
+}
+
+
+loadMatches();
