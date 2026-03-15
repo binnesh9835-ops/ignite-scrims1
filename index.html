@@ -8,152 +8,158 @@
 
 <style>
 body{
-margin:0;
-background:#0b0b0b;
-font-family:Arial;
-color:white;
-text-align:center;
-overflow-x:hidden;
+  margin:0;
+  background:#0b0b0b;
+  font-family:Arial;
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
 }
 
 /* TITLE */
 .title{
-font-size:42px;
-margin-top:20px;
-font-weight:bold;
-letter-spacing:3px;
-background:linear-gradient(90deg,#ffffff,#ffcc00,#ffffff);
-background-size:200%;
--webkit-background-clip:text;
-color:transparent;
-animation:shine 4s linear infinite;
+  font-size:42px;
+  margin-top:20px;
+  font-weight:bold;
+  letter-spacing:3px;
+  background:linear-gradient(90deg,#ffffff,#ffcc00,#ffffff);
+  background-size:200%;
+  -webkit-background-clip:text;
+  color:transparent;
+  animation:shine 4s linear infinite;
 }
 
 @keyframes shine{
-0%{background-position:-200%}
-100%{background-position:200%}
+  0%{background-position:-200%}
+  100%{background-position:200%}
 }
 
 /* LOGIN BUTTON */
 .loginBtn{
-position:absolute;
-top:20px;
-right:20px;
-background:orange;
-border:none;
-padding:8px 16px;
-border-radius:20px;
-cursor:pointer;
-font-weight:bold;
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:orange;
+  border:none;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* VERIFIED BADGE */
+.verified{
+  color:#4da6ff;
+  margin-left:6px;
 }
 
 /* MENU */
 .menu{
-margin-top:20px;
-display:flex;
-justify-content:center;
-gap:35px;
-font-size:16px;
-font-weight:bold;
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:35px;
+  font-size:16px;
+  font-weight:bold;
 }
 
 .menu span{
-cursor:pointer;
-padding:6px 12px;
-border-radius:20px;
-transition:0.3s;
+  cursor:pointer;
+  padding:6px 12px;
+  border-radius:20px;
+  transition:0.3s;
 }
 
 .menu span:hover{
-background:#222;
+  background:#222;
 }
 
 .active{
-background:orange;
-color:black;
+  background:orange;
+  color:black;
 }
 
 /* UPCOMING */
 .upcoming{
-margin-top:50px;
-font-size:26px;
-position:relative;
-display:inline-block;
-background: linear-gradient(to right, #ffcc00, #ffffff, #ffcc00);
--webkit-background-clip: text;
-color: transparent;
-animation:shine 2.5s linear infinite;
+  margin-top:50px;
+  font-size:26px;
+  position:relative;
+  display:inline-block;
+  background: linear-gradient(to right, #ffcc00, #ffffff, #ffcc00);
+  -webkit-background-clip: text;
+  color: transparent;
+  animation:shine 2.5s linear infinite;
 }
 
 /* SECTIONS */
 .section{
-display:none;
-margin-top:40px;
-animation:fade 0.4s;
+  display:none;
+  margin-top:40px;
+  animation:fade 0.4s;
 }
 
 .section.activeSection{
-display:block;
+  display:block;
 }
 
 @keyframes fade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1;transform:translateY(0)}
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
 /* POPUP */
 .popup{
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.7);
-align-items:center;
-justify-content:center;
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+  align-items:center;
+  justify-content:center;
 }
 
 .popupBox{
-background:#1a1a1a;
-padding:30px;
-border-radius:10px;
-width:260px;
+  background:#1a1a1a;
+  padding:30px;
+  border-radius:10px;
+  width:260px;
 }
 
 .popupBox button{
-margin-top:10px;
-padding:10px;
-cursor:pointer;
+  margin-top:10px;
+  padding:10px;
+  cursor:pointer;
 }
 
 /* SUPPORT */
 .support{
-position:fixed;
-bottom:25px;
-right:25px;
-width:60px;
-height:60px;
-border-radius:50%;
-background:#2aa7ff;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:26px;
-cursor:pointer;
+  position:fixed;
+  bottom:25px;
+  right:25px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:#2aa7ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  cursor:pointer;
 }
 
 /* INPUT */
 input{
-padding:10px;
-border:none;
-border-radius:5px;
-width:220px;
+  padding:10px;
+  border:none;
+  border-radius:5px;
+  width:220px;
 }
 
 .profileLocked{
-opacity:0.5;
-pointer-events:none;
+  opacity:0.5;
+  pointer-events:none;
 }
 
 </style>
@@ -162,101 +168,105 @@ pointer-events:none;
 <body>
 
 <div class="title">
-IGNITE SCRIMS
+  IGNITE SCRIMS
 </div>
 
 <button class="loginBtn" id="loginBtn">
-Login
+  Login
 </button>
 
 <!-- MENU -->
 <div class="menu">
-<span class="tab active" data-tab="home">Home Feed</span>
-<span class="tab" data-tab="matches">My Matches</span>
-<span class="tab" data-tab="wallet">Wallet</span>
-<span class="tab" data-tab="profile">Profile</span>
+  <span class="tab active" data-tab="home">Home Feed</span>
+  <span class="tab" data-tab="matches">My Matches</span>
+  <span class="tab" data-tab="wallet">Wallet</span>
+  <span class="tab" data-tab="profile">Profile</span>
 </div>
 
 <!-- HOME -->
 <div id="home" class="section activeSection">
-<div class="upcoming">Upcoming Matches</div>
-<div style="margin-top:30px">No matches yet</div>
+  <div class="upcoming">
+    Upcoming Matches
+  </div>
+  <div style="margin-top:30px">
+    No matches yet
+  </div>
 </div>
 
 <!-- MATCHES -->
 <div id="matches" class="section">
-<h2>My Matches</h2>
-<p>No joined matches</p>
+  <h2>My Matches</h2>
+  <p>No joined matches</p>
 </div>
 
 <!-- WALLET -->
 <div id="wallet" class="section">
-<h2>Wallet</h2>
-<p>Balance ₹0</p>
+  <!-- Wallet content will be dynamically added from wallet.js -->
 </div>
 
 <!-- PROFILE -->
 <div id="profile" class="section profileLocked">
-<h2>Player Profile</h2>
-<p id="profileWarning">Login to edit your profile</p>
-<br>
-<input id="username" placeholder="Username (small letters)">
-<br><br>
-<input id="ign" placeholder="In Game Name / Real Name">
-<br><br>
-<input id="ffuid" placeholder="Free Fire UID">
-<br><br>
-<input id="fflevel" placeholder="Free Fire Level (Optional)">
-<br><br>
-<p>XP Level: <span id="xpLevel">0</span></p>
-<br>
-<button onclick="saveProfile()">Save Changes</button>
-<br><br>
-<button onclick="logoutUser()">Logout</button>
+  <h2>Player Profile</h2>
+  <p id="profileWarning">Login to edit your profile</p>
+  <br>
+  <input id="username" placeholder="Username (small letters)">
+  <br><br>
+  <input id="ign" placeholder="In Game Name / Real Name">
+  <br><br>
+  <input id="ffuid" placeholder="Free Fire UID">
+  <br><br>
+  <input id="fflevel" placeholder="Free Fire Level (Optional)">
+  <br><br>
+  <p>XP Level: <span id="xpLevel">0</span></p>
+  <br>
+  <button onclick="saveProfile()">Save Changes</button>
+  <br><br>
+  <button onclick="logoutUser()">Logout</button>
 </div>
 
-<!-- LOGIN POPUP -->
+ <!-- LOGIN POPUP -->
 <div class="popup" id="loginPopup">
-<div class="popupBox">
-<h3>Login to Continue</h3>
-<button id="googleLogin">Login with Google</button>
-<br>
-<button onclick="closeLogin()">Back</button>
-</div>
+  <div class="popupBox">
+    <h3>Login to Continue</h3>
+    <button id="googleLogin">Login with Google</button>
+    <br>
+    <button onclick="closeLogin()">Back</button>
+  </div>
 </div>
 
 <!-- USERNAME POPUP -->
 <div id="usernamePopup" class="popup">
-<div class="popupBox">
-<h3>Create Username</h3>
-<input id="newUsername" placeholder="small letters only">
-<br><br>
-<button id="confirmUsernameBtn">Confirm</button>
-</div>
+  <div class="popupBox">
+    <h3>Create Username</h3>
+    <input id="newUsername" placeholder="small letters only">
+    <br><br>
+    <button id="confirmUsernameBtn">Confirm</button>
+  </div>
 </div>
 
- <!-- SUPPORT -->
+<!-- SUPPORT -->
 <div class="support" onclick="openSupport()">💬</div>
 
 <script>
 /* LOGIN POPUP */
-const loginBtn = document.getElementById("loginBtn");
-loginBtn.onclick = () => {
-  document.getElementById("loginPopup").style.display = "flex";
+const loginBtn=document.getElementById("loginBtn");
+loginBtn.onclick=()=>{
+  document.getElementById("loginPopup").style.display="flex";
 }
-function closeLogin() {
-  document.getElementById("loginPopup").style.display = "none";
+
+function closeLogin(){
+  document.getElementById("loginPopup").style.display="none";
 }
 
 /* TELEGRAM */
-function openSupport() {
-  window.open("https://t.me/IgniteScrimsFF_Support", "_blank");
+function openSupport(){
+  window.open("https://t.me/IgniteScrimsFF_Support","_blank");
 }
 
 /* TAB SWITCH */
-const tabs = document.querySelectorAll(".tab");
-tabs.forEach(tab => {
-  tab.onclick = () => {
+const tabs=document.querySelectorAll(".tab");
+tabs.forEach(tab=>{
+  tab.onclick=()=>{
     document.querySelector(".active").classList.remove("active");
     tab.classList.add("active");
     document.querySelector(".activeSection").classList.remove("activeSection");
@@ -265,9 +275,13 @@ tabs.forEach(tab => {
 });
 </script>
 
+<!-- JS MODULES -->
 <script type="module" src="firebase.js"></script>
 <script type="module" src="auth.js"></script>
 <script type="module" src="profile.js"></script>
+<script type="module" src="home.js"></script>
+<script type="module" src="matches.js"></script>
+<script type="module" src="wallet.js"></script>
 
 </body>
 </html>
