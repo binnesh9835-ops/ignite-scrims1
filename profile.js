@@ -1,95 +1,113 @@
-import { auth, db } from "./firebase.js";
-import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { auth } from "./firebase.js";
 
 window.addEventListener("DOMContentLoaded", () => {
-  const profileBtn = document.getElementById("profileBtn");
-  const profilePopup = document.getElementById("profilePopup");
 
-  profileBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if(!user){
-      alert("Please login first");
-      return;
-    }
+  const profileSection = document.getElementById("profile");
+  const usernameInput = document.getElementById("username");
+  const ignInput = document.getElementById("ign");
+  const uidInput = document.getElementById("ffuid");
+  const levelInput = document.getElementById("fflevel");
+  const xpSpan = document.getElementById("xpLevel");
 
-    // Show profile popup
-    profilePopup.style.display = "flex";
+  const usernamePopup = document.getElementById("usernamePopup");
+  const newUsernameInput = document.getElementById("newUsername");
 
-    // Load profile data
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-    if(snap.exists()){
-      const data = snap.data();
-      document.getElementById("profileUsername").value = data.username || "";
-      document.getElementById("profileIGN").value = data.ign || "";
-      document.getElementById("profileUID").value = data.ff_uid || "";
-      document.getElementById("profileLevel").value = data.ff_level || "";
-      document.getElementById("profileXP").textContent = data.xp || 0;
+  const role = localStorage.getItem("role");
+  const displayName = localStorage.getItem("displayName");
 
-      // Shine effect if XP >= 7000
-      if(data.xp >= 7000){
-        document.getElementById("profileUsername").classList.add("shine-effect");
+  // Show profile section only if logged in
+  if(role){
+    profileSection.classList.remove("profileLocked");
+
+    // If user is normal player
+    if(role === "player"){
+
+      // Show username popup if not set
+      const storedUsername = localStorage.getItem("username");
+      if(!storedUsername){
+        usernamePopup.style.display = "flex";
       } else {
-        document.getElementById("profileUsername").classList.remove("shine-effect");
+        usernameInput.value = storedUsername;
+        ignInput.value = localStorage.getItem("ign") || "";
+        uidInput.value = localStorage.getItem("ffuid") || "";
+        levelInput.value = localStorage.getItem("fflevel") || "";
+        xpSpan.textContent = localStorage.getItem("xp") || 0;
       }
+
+    } 
+    // If admin or owner, hide username/ign/uid fields
+    else if(role === "admin" || role === "owner"){
+      usernameInput.style.display = "none";
+      ignInput.style.display = "none";
+      uidInput.style.display = "none";
+      levelInput.style.display = "none";
+      xpSpan.textContent = localStorage.getItem("xp") || 0;
+
+      // Change heading
+      document.querySelector("#profile h2").textContent = 
+        role === "owner" ? Welcome ${displayName} (Owner) : Welcome ${displayName} (Admin);
     }
-  });
+  }
 
-  // Save profile changes
-  document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if(!user) return alert("Please login first");
-
-    const username = document.getElementById("profileUsername").value.toLowerCase().trim();
-    const ign = document.getElementById("profileIGN").value.trim();
-    const ff_uid = document.getElementById("profileUID").value.trim();
-    const ff_level = document.getElementById("profileLevel").value.trim();
-
-    if(username === "" || username.includes(" ")){
-      alert("Username cannot be empty or contain spaces");
-      return;
-    }
-
-    // Update Firestore
-    const userRef = doc(db, "users", user.uid);
-    await updateDoc(userRef, { username, ign, ff_uid, ff_level });
-
-    alert("Profile updated successfully!");
-
-    // Update top-right username display
-    const usernameDisplay = document.getElementById("usernameDisplay");
-    usernameDisplay.textContent = username;
-    usernameDisplay.style.display = "block";
-
-    // Close popup
-    document.getElementById("profilePopup").style.display = "none";
-  });
-
-  // Logout
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    const confirmLogout = confirm("Are you sure you want to logout?");
-    if(!confirmLogout) return;
-
-    await signOut(auth);
-    alert("You have been logged out");
-
-    // Reset top-right username display
-    const usernameDisplay = document.getElementById("usernameDisplay");
-    usernameDisplay.style.display = "none";
-
-    // Show login button again
-    document.getElementById("googleLogin").style.display = "block";
-
-    // Clear profile inputs
-    document.getElementById("profileUsername").value = "";
-    document.getElementById("profileIGN").value = "";
-    document.getElementById("profileUID").value = "";
-    document.getElementById("profileLevel").value = "";
-    document.getElementById("profileXP").textContent = "0";
-
-    // Hide profile popup
-    document.getElementById("profilePopup").style.display = "none";
-  });
 
 });
+
+// SAVE USERNAME FROM POPUP
+window.saveUsername = function(){
+  const username = document.getElementById("newUsername").value.trim();
+
+  if(username === "" || !/^[a-z]+$/.test(username)){
+    alert("Enter valid username (small letters only, no spaces).");
+    return;
+  }
+
+  if(localStorage.getItem("allUsernames")){
+    const allUsernames = JSON.parse(localStorage.getItem("allUsernames"));
+    if(allUsernames.includes(username)){
+      alert("Username already taken, choose another.");
+      return;
+    } else {
+      allUsernames.push(username);
+      localStorage.setItem("allUsernames", JSON.stringify(allUsernames));
+    }
+  } else {
+    localStorage.setItem("allUsernames", JSON.stringify([username]));
+  }
+
+  localStorage.setItem("username", username);
+  document.getElementById("username").value = username;
+  document.getElementById("usernamePopup").style.display = "none";
+
+  alert("Username set successfully!");
+}
+
+
+// SAVE PROFILE CHANGES
+window.saveProfile = function(){
+  const username = document.getElementById("username").value.trim();
+  const ign = document.getElementById("ign").value.trim();
+  const ffuid = document.getElementById("ffuid").value.trim();
+  const fflevel = document.getElementById("fflevel").value.trim();
+
+  if(!username  !ign  !ffuid){
+    alert("Username, IGN and UID are required!");
+    return;
+  }
+
+  localStorage.setItem("username", username);
+  localStorage.setItem("ign", ign);
+  localStorage.setItem("ffuid", ffuid);
+  localStorage.setItem("fflevel", fflevel);
+  localStorage.setItem("xp", localStorage.getItem("xp") || 0);
+
+  alert("Profile changes saved successfully!");
+}
+
+
+// LOGOUT FUNCTION
+window.logoutUser = function(){
+  if(confirm("Are you sure you want to logout?")){
+    localStorage.clear();
+    location.reload();
+  }
+}
