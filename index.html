@@ -8,66 +8,33 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#0b0f1a;color:#fff;}
-
 .container{max-width:420px;margin:auto;}
 
-/* HEADER */
 .header{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:14px;
-  background:#020617;
+  display:flex;justify-content:center;align-items:center;
+  gap:10px;padding:14px;background:#020617;
 }
-
 .brand{
-  font-size:18px;
-  font-weight:bold;
-  background:linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+  font-size:18px;font-weight:bold;
+  background:linear-gradient(90deg,red,orange,yellow,green,cyan,blue,violet);
   background-size:300%;
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   animation:shine 4s linear infinite;
 }
-
-@keyframes shine{
-  0%{background-position:0%}
-  100%{background-position:300%}
-}
+@keyframes shine{0%{background-position:0%}100%{background-position:300%}}
 
 .line{
   height:2px;width:60px;
-  background:linear-gradient(90deg, transparent, #22c55e, transparent);
+  background:linear-gradient(90deg,transparent,#22c55e,transparent);
   animation:glow 2s infinite;
 }
+@keyframes glow{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
 
-@keyframes glow{
-  0%{opacity:0.3;}
-  50%{opacity:1;}
-  100%{opacity:0.3;}
-}
-
-/* MENU */
-.menu{
-  display:flex;
-  overflow-x:auto;
-  gap:8px;
-  padding:10px;
-  align-items:center;
-}
-
-.tab{
-  padding:10px 14px;
-  border:none;
-  background:#1e293b;
-  color:white;
-  border-radius:8px;
-}
-
+.menu{display:flex;gap:8px;padding:10px;align-items:center;overflow-x:auto;}
+.tab{padding:10px;border:none;background:#1e293b;color:white;border-radius:8px;cursor:pointer;}
 .tab.active{background:#22c55e;}
 
-/* LOGIN BTN */
 .auth-btn{
   margin-left:auto;
   padding:8px 12px;
@@ -75,61 +42,35 @@ body{background:#0b0f1a;color:#fff;}
   border-radius:6px;
   background:#22c55e;
   color:white;
-  font-size:12px;
+  cursor:pointer;
 }
 
-/* SECTION */
 .section{display:none;padding:15px;}
 .section.active{display:block;}
 
 .card{
-  background:#111827;
-  padding:15px;
-  border-radius:12px;
+  background:#111827;padding:15px;border-radius:12px;
   box-shadow:0 0 12px rgba(34,197,94,0.3);
 }
 
 .btn{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:8px;
-  background:#22c55e;
-  color:white;
-  font-weight:bold;
+  width:100%;padding:12px;margin-top:10px;
+  border:none;border-radius:8px;background:#22c55e;color:white;
 }
 
 .input{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:6px;
+  width:100%;padding:10px;margin-top:10px;
+  border:none;border-radius:6px;
 }
 
 /* POPUP */
 .popup{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
+  position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0.8);
-  display:none;
-  justify-content:center;
-  align-items:center;
+  display:none;justify-content:center;align-items:center;
 }
-
 .popup-box{
-  background:#111827;
-  padding:20px;
-  border-radius:12px;
-  width:90%;
-  max-width:350px;
-}
-
-/* DESKTOP */
-@media(min-width:768px){
-  body{display:flex;justify-content:center;}
+  background:#111827;padding:20px;border-radius:12px;width:90%;
 }
 </style>
 </head>
@@ -151,190 +92,114 @@ body{background:#0b0f1a;color:#fff;}
   <button class="tab" data-tab="matches">Matches</button>
   <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
-
-  <!-- LOGIN BUTTON -->
-  <button class="auth-btn" id="authBtn" onclick="openLogin()">Login</button>
+  <button class="auth-btn" id="authBtn">Login</button>
 </div>
 
-<!-- HOME -->
-<div id="home" class="section active">
-  <div class="card">
-    <h2>🔥 Welcome Gamer</h2>
-    <p style="margin-top:10px;">Join matches & win rewards</p>
-  </div>
-</div>
+<!-- SECTIONS -->
+<div id="home" class="section active"><div class="card"><h2>🔥 Welcome Gamer</h2></div></div>
 
-<!-- MATCHES -->
 <div id="matches" class="section">
-  <div class="card">
-    <h3>🎮 Available Matches</h3>
-    <button class="btn">Join Match (₹10)</button>
-    <button class="btn">Join Match (₹20)</button>
-  </div>
+  <div class="card"><h3>🎮 Matches</h3><button class="btn">Join Match</button></div>
 </div>
 
-<!-- WALLET -->
 <div id="wallet" class="section">
-  <div class="card">
-    <h3>💰 Wallet</h3>
-    <p style="margin-top:10px;">Balance: ₹100</p>
-    <button class="btn">Add Money</button>
-    <button class="btn">Withdraw</button>
-  </div>
+  <div class="card"><h3>💰 Wallet</h3></div>
 </div>
 
-<!-- PROFILE -->
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
-
-    <div id="profileData">
-      <p>Login karke details fill karo</p>
-    </div>
-
-    <button class="btn" onclick="editProfile()">Update Profile</button>
+    <div id="profileData">Login karo</div>
   </div>
 </div>
 
 </div>
 
-<!-- LOGIN POPUP -->
-<div class="popup" id="loginPopup">
-  <div class="popup-box">
-    <h3>Select Login</h3>
-    <button class="btn" onclick="googleStep()">Continue with Google</button>
-    <button class="btn" onclick="closePopup()">Back</button>
-  </div>
-</div>
-
-  <!-- GOOGLE SELECT -->
-<div class="popup" id="googlePopup">
-  <div class="popup-box">
-    <h3>Select Email</h3>
-    <button class="btn" onclick="confirmEmail('user1@gmail.com')">user1@gmail.com</button>
-    <button class="btn" onclick="confirmEmail('user2@gmail.com')">user2@gmail.com</button>
-    <button class="btn" onclick="googleStep()">Choose Another Email</button>
-    <button class="btn" onclick="closePopup()">Back</button>
-  </div>
-</div>
-
-<!-- CONFIRM -->
-<div class="popup" id="confirmPopup">
-  <div class="popup-box">
-    <h3 id="confirmText"></h3>
-    <button class="btn" onclick="finalDetails()">Confirm</button>
-    <button class="btn" onclick="googleStep()">Choose Another Email</button>
-  </div>
-</div>
-
-<!-- DETAILS -->
+<!-- DETAILS POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
-    <h3>Enter Details</h3>
+    <h3>Complete Profile</h3>
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
-    <input class="input" id="email" placeholder="Email" readonly>
+    <input class="input" id="email" readonly>
     <button class="btn" onclick="saveDetails()">Save</button>
-    <button class="btn" onclick="closePopup()">Back</button>
   </div>
 </div>
 
-<script>
+<!-- FIREBASE -->
+<script type="module">
 
-let selectedEmail = "";
+// 🔥 IMPORTANT: APNA CONFIG YAHA DAAL
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* TAB */
+const firebaseConfig = {
+  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain: "ignite-scrims.firebaseapp.com",
+  projectId: "ignite-scrims",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+  /* TAB FIX */
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.onclick=()=>{
+  tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
 
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(tab.dataset.tab).classList.add("active");
-  }
+  });
 });
 
-/* LOGIN FLOW */
-function openLogin(){
-  document.getElementById("loginPopup").style.display="flex";
-}
+/* LOGIN BUTTON */
+const authBtn = document.getElementById("authBtn");
 
-function googleStep(){
-  closePopup();
-  document.getElementById("googlePopup").style.display="flex";
-}
+authBtn.addEventListener("click", async ()=>{
 
-function confirmEmail(email){
-  selectedEmail=email;
-  closePopup();
-  document.getElementById("confirmText").innerText=email;
-  document.getElementById("confirmPopup").style.display="flex";
-}
-
-function finalDetails(){
-  closePopup();
-  document.getElementById("detailsPopup").style.display="flex";
-  document.getElementById("email").value=selectedEmail;
-}
-
-/* SAVE */
-function saveDetails(){
-  let name=document.getElementById("name").value;
-  let phone=document.getElementById("phone").value;
-  let email=document.getElementById("email").value;
-
-  if(!name!phone!email){
-    alert("All fields required!");
+  if(authBtn.innerText === "Logout"){
+    location.reload();
     return;
   }
 
-  let user={name,phone,email};
-  localStorage.setItem("user",JSON.stringify(user));
+  try{
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-  document.getElementById("authBtn").innerText="Logout";
-  updateProfile();
+    document.getElementById("email").value = user.email;
+    document.getElementById("detailsPopup").style.display="flex";
 
-  closePopup();
-}
-
-/* PROFILE UPDATE */
-function updateProfile(){
-  let user=JSON.parse(localStorage.getItem("user"));
-  if(user){
-    document.getElementById("profileData").innerHTML=
-      <p>Name: ${user.name}</p>
-       <p>Phone: ${user.phone}</p>
-       <p>Email: ${user.email}</p>;
+  }catch(err){
+    alert("Login Failed");
   }
-}
+});
 
-function editProfile(){
-  let user=JSON.parse(localStorage.getItem("user"));
-  if(!user)return;
+/* SAVE DETAILS */
+window.saveDetails = async function(){
 
-  document.getElementById("detailsPopup").style.display="flex";
-  document.getElementById("name").value=user.name;
-  document.getElementById("phone").value=user.phone;
-  document.getElementById("email").value=user.email;
-}
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const email = document.getElementById("email").value;
 
-/* LOGOUT */
-document.getElementById("authBtn").onclick=function(){
-  if(this.innerText==="Logout"){
-    localStorage.removeItem("user");
-    this.innerText="Login";
-    location.reload();
-  }else{
-    openLogin();
+  if(!name || !phone){
+    alert("Fill all fields");
+    return;
   }
+
+  await setDoc(doc(db,"users",email),{
+    name, phone, email
+  });
+
+  document.getElementById("profileData").innerHTML =
+    <p>${name}</p><p>${phone}</p><p>${email}</p>;
+
+  authBtn.innerText="Logout";
+  document.getElementById("detailsPopup").style.display="none";
 };
-
-function closePopup(){
-  document.querySelectorAll(".popup").forEach(p=>p.style.display="none");
-}
-
-/* INIT */
-updateProfile();
 
 </script>
 
