@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaming Scrims Panel</title>
+<title>Ignite Scrims</title>
 
 <style>
 *{
@@ -18,13 +18,40 @@ body{
   color:#fff;
 }
 
-/* MENU (Mobile First) */
+/* CONTAINER */
+.container{
+  max-width:420px;
+  margin:auto;
+}
+
+/* HEADER (LOGO AREA) */
+.header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  background:#020617;
+  border-bottom:1px solid #1e293b;
+}
+
+.logo{
+  width:35px;
+  height:35px;
+  border-radius:8px;
+}
+
+.brand{
+  font-size:18px;
+  font-weight:bold;
+  color:#22c55e;
+}
+
+/* MENU */
 .menu{
   display:flex;
   overflow-x:auto;
   gap:8px;
   padding:10px;
-  background:#020617;
 }
 
 .tab{
@@ -35,15 +62,13 @@ body{
   color:white;
   border-radius:8px;
   font-size:14px;
-  cursor:pointer;
 }
 
-/* ACTIVE TAB */
 .tab.active{
   background:#22c55e;
 }
 
-/* SECTIONS */
+/* SECTION */
 .section{
   display:none;
   padding:15px;
@@ -58,7 +83,7 @@ body{
   background:#111827;
   padding:15px;
   border-radius:12px;
-  box-shadow:0 0 10px rgba(0,255,255,0.2);
+  box-shadow:0 0 12px rgba(34,197,94,0.3);
 }
 
 /* BUTTON */
@@ -71,21 +96,14 @@ body{
   background:#22c55e;
   color:white;
   font-weight:bold;
-  font-size:14px;
 }
 
-/* DESKTOP VIEW */
+/* DESKTOP */
 @media(min-width:768px){
-
   body{
     display:flex;
     justify-content:center;
   }
-
-  .container{
-    width:420px;
-  }
-
 }
 </style>
 </head>
@@ -94,57 +112,53 @@ body{
 
 <div class="container">
 
+<!-- 🔥 HEADER WITH LOGO -->
+<div class="header">
+  <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="logo">
+  <div class="brand">Ignite Scrims</div>
+</div>
+
 <!-- MENU -->
 <div class="menu">
   <button class="tab active" data-tab="home">Home</button>
+  <button class="tab" data-tab="matches">Matches</button>
+  <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
-
-  <button class="tab" id="adminTab" data-tab="admin" style="display:none;">
-    Admin
-  </button>
-
-  <button class="tab" id="ownerTab" data-tab="owner" style="display:none;">
-    Owner
-  </button>
 </div>
 
 <!-- HOME -->
 <div id="home" class="section active">
   <div class="card">
-    <h2>🎮 Welcome Gamer</h2>
-    <p style="margin-top:10px;">Scrims system ready hai 🔥</p>
+    <h2>🔥 Welcome Gamer</h2>
+    <p style="margin-top:10px;">Join matches & win rewards</p>
+  </div>
+</div>
+
+<!-- MATCHES -->
+<div id="matches" class="section">
+  <div class="card">
+    <h3>🎮 Available Matches</h3>
+    <button class="btn">Join Match (₹10)</button>
+    <button class="btn">Join Match (₹20)</button>
+  </div>
+</div>
+
+<!-- WALLET -->
+<div id="wallet" class="section">
+  <div class="card">
+    <h3>💰 Wallet</h3>
+    <p style="margin-top:10px;">Balance: ₹100</p>
+    <button class="btn">Add Money</button>
+    <button class="btn">Withdraw</button>
   </div>
 </div>
 
 <!-- PROFILE -->
 <div id="profile" class="section">
   <div class="card">
-    <h3>Profile</h3>
+    <h3>👤 Profile</h3>
     <p style="margin-top:10px;">Name: Vishal</p>
-    <p>Coins: 100</p>
-  </div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="admin" class="section">
-  <div class="card">
-    <h3>Admin Panel</h3>
-
-    <button class="btn">Approve Add Money</button>
-    <button class="btn">Approve Withdraw</button>
-    <button class="btn">Create Match</button>
-    <button class="btn">View Users</button>
-  </div>
-</div>
-
-<!-- OWNER PANEL -->
-<div id="owner" class="section">
-  <div class="card">
-    <h3>Owner Panel</h3>
-
-    <button class="btn">Full Control</button>
-    <button class="btn">Manage Admins</button>
-    <button class="btn">All Transactions</button>
+    <p>UID: 12345</p>
   </div>
 </div>
 
@@ -168,32 +182,6 @@ tabs.forEach(tab=>{
     document.getElementById(target).classList.add("active");
   });
 });
-
-/* ROLE SYSTEM */
-function updateRoleUI(){
-
-  const role = localStorage.getItem("userRole");
-
-  const adminTab = document.getElementById("adminTab");
-  const ownerTab = document.getElementById("ownerTab");
-
-  if(role === "admin"){
-    adminTab.style.display="block";
-  }
-
-  if(role === "owner"){
-    adminTab.style.display="block";
-    ownerTab.style.display="block";
-  }
-}
-
-updateRoleUI();
-
-/* QUICK TEST BUTTON (optional) */
-function setRole(role){
-  localStorage.setItem("userRole", role);
-  location.reload();
-}
 
 </script>
 
