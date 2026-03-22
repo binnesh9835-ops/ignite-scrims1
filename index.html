@@ -6,25 +6,26 @@
 <title>Ignite Scrims</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial;
-}
-
-body{
-  background:#0b0f1a;
-  color:#fff;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#0b0f1a;color:#fff;}
 
 /* CONTAINER */
-.container{
-  max-width:420px;
-  margin:auto;
+.container{max-width:420px;margin:auto;position:relative;}
+
+/* LOGIN BUTTON */
+.login-btn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  background:#22c55e;
+  color:white;
+  font-size:12px;
 }
 
-/* 🔥 NEW HEADER */
+/* HEADER */
 .header{
   display:flex;
   align-items:center;
@@ -34,7 +35,6 @@ body{
   background:#020617;
 }
 
-/* RGB TEXT */
 .brand{
   font-size:18px;
   font-weight:bold;
@@ -43,7 +43,6 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   animation:shine 4s linear infinite;
-  letter-spacing:1px;
 }
 
 @keyframes shine{
@@ -51,51 +50,26 @@ body{
   100%{background-position:300%}
 }
 
-/* SIDE LINES */
 .line{
-  height:2px;
-  width:60px;
+  height:2px;width:60px;
   background:linear-gradient(90deg, transparent, #22c55e, transparent);
-  animation:glow 2s linear infinite;
+  animation:glow 2s infinite;
 }
 
 @keyframes glow{
-  0%{opacity:0.3; transform:scaleX(0.8);}
-  50%{opacity:1; transform:scaleX(1.2);}
-  100%{opacity:0.3; transform:scaleX(0.8);}
+  0%{opacity:0.3;}
+  50%{opacity:1;}
+  100%{opacity:0.3;}
 }
 
 /* MENU */
-.menu{
-  display:flex;
-  overflow-x:auto;
-  gap:8px;
-  padding:10px;
-}
-
-.tab{
-  flex-shrink:0;
-  padding:10px 14px;
-  border:none;
-  background:#1e293b;
-  color:white;
-  border-radius:8px;
-  font-size:14px;
-}
-
-.tab.active{
-  background:#22c55e;
-}
+.menu{display:flex;overflow-x:auto;gap:8px;padding:10px;}
+.tab{padding:10px 14px;border:none;background:#1e293b;color:white;border-radius:8px;}
+.tab.active{background:#22c55e;}
 
 /* SECTION */
-.section{
-  display:none;
-  padding:15px;
-}
-
-.section.active{
-  display:block;
-}
+.section{display:none;padding:15px;}
+.section.active{display:block;}
 
 /* CARD */
 .card{
@@ -117,12 +91,36 @@ body{
   font-weight:bold;
 }
 
+/* POPUP */
+.popup{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.popup-box{
+  background:#111827;
+  padding:20px;
+  border-radius:12px;
+  width:90%;
+  max-width:350px;
+}
+
+.input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:6px;
+}
+
 /* DESKTOP */
 @media(min-width:768px){
-  body{
-    display:flex;
-    justify-content:center;
-  }
+  body{display:flex;justify-content:center;}
 }
 </style>
 </head>
@@ -131,7 +129,9 @@ body{
 
 <div class="container">
 
-<!-- 🔥 HEADER -->
+<button class="login-btn" onclick="openLogin()">Login</button>
+
+<!-- HEADER -->
 <div class="header">
   <div class="line"></div>
   <div class="brand">IGNITE SCRIMS</div>
@@ -184,6 +184,26 @@ body{
 
 </div>
 
+<!-- LOGIN POPUP -->
+<div class="popup" id="loginPopup">
+  <div class="popup-box">
+    <h3>Login</h3>
+    <button class="btn" onclick="googleLogin()">Login with Google</button>
+    <button class="btn" onclick="closePopup()">Back</button>
+  </div>
+</div>
+
+<!-- DETAILS POPUP -->
+<div class="popup" id="detailsPopup">
+  <div class="popup-box">
+    <h3>Enter Details</h3>
+    <input class="input" id="name" placeholder="Your Full Name">
+    <input class="input" id="phone" placeholder="Phone Number">
+    <input class="input" id="email" placeholder="Email Address">
+    <button class="btn" onclick="saveDetails()">Save</button>
+  </div>
+</div>
+
 <script>
 
 /* TAB SWITCH */
@@ -192,16 +212,46 @@ const sections = document.querySelectorAll(".section");
 
 tabs.forEach(tab=>{
   tab.addEventListener("click",()=>{
-
     tabs.forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
 
     const target = tab.getAttribute("data-tab");
-
     sections.forEach(sec=>sec.classList.remove("active"));
     document.getElementById(target).classList.add("active");
   });
 });
+
+/* LOGIN FLOW */
+function openLogin(){
+  document.getElementById("loginPopup").style.display="flex";
+}
+
+function closePopup(){
+  document.querySelectorAll(".popup").forEach(p=>p.style.display="none");
+}
+
+/* GOOGLE LOGIN (Firebase later) */
+function googleLogin(){
+  closePopup();
+  document.getElementById("detailsPopup").style.display="flex";
+}
+
+/* SAVE DETAILS */
+function saveDetails(){
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const email = document.getElementById("email").value;
+
+  const user = {name, phone, email};
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users.push(user);
+
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Details Saved ✅");
+  closePopup();
+}
 
 </script>
 
