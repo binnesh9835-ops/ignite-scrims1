@@ -24,26 +24,45 @@ body{
   margin:auto;
 }
 
-/* HEADER (LOGO AREA) */
+/* 🔥 NEW HEADER */
 .header{
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:10px;
-  padding:12px;
+  padding:14px;
   background:#020617;
-  border-bottom:1px solid #1e293b;
 }
 
-.logo{
-  width:35px;
-  height:35px;
-  border-radius:8px;
-}
-
+/* RGB TEXT */
 .brand{
   font-size:18px;
   font-weight:bold;
-  color:#22c55e;
+  background:linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+  background-size:300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:shine 4s linear infinite;
+  letter-spacing:1px;
+}
+
+@keyframes shine{
+  0%{background-position:0%}
+  100%{background-position:300%}
+}
+
+/* SIDE LINES */
+.line{
+  height:2px;
+  width:60px;
+  background:linear-gradient(90deg, transparent, #22c55e, transparent);
+  animation:glow 2s linear infinite;
+}
+
+@keyframes glow{
+  0%{opacity:0.3; transform:scaleX(0.8);}
+  50%{opacity:1; transform:scaleX(1.2);}
+  100%{opacity:0.3; transform:scaleX(0.8);}
 }
 
 /* MENU */
@@ -112,10 +131,11 @@ body{
 
 <div class="container">
 
-<!-- 🔥 HEADER WITH LOGO -->
+<!-- 🔥 HEADER -->
 <div class="header">
-  <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="logo">
-  <div class="brand">Ignite Scrims</div>
+  <div class="line"></div>
+  <div class="brand">IGNITE SCRIMS</div>
+  <div class="line"></div>
 </div>
 
 <!-- MENU -->
