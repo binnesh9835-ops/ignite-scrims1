@@ -1,228 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Ignite Scrims</title>
+<title>Gaming Panel</title>
 
 <style>
-
-/* BODY */
 body{
-margin:0;
-background:#0f0f0f;
-font-family:Arial;
-color:white;
-}
-
-/* CONTAINER */
-.container{
-max-width:1200px;
-margin:auto;
-padding:10px;
-}
-
-/* NAVBAR */
-.navbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
-}
-
-/* TITLE */
-.title{
-font-size:28px;
-font-weight:bold;
-
-background:linear-gradient(90deg,#ff0000,#ff7300,#ffd000,#ffffff,#ffd000,#ff7300,#ff0000);
-background-size:300%;
-
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-
-animation:shine 4s ease-in-out infinite;
-}
-
-@keyframes shine{
-0%{background-position:0%}
-50%{background-position:100%}
-100%{background-position:0%}
-}
-
-/* LOGIN BUTTON */
-.loginBtn{
-background:linear-gradient(45deg,#ff7300,#ff0000);
-border:none;
-padding:8px 15px;
-border-radius:20px;
-color:white;
-cursor:pointer;
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
 }
 
 /* MENU */
 .menu{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-top:15px;
-flex-wrap:wrap;
+  display:flex;
+  gap:10px;
+  padding:10px;
+  background:#020617;
+  position:sticky;
+  top:0;
 }
 
-.menu button{
-padding:10px;
-border:none;
-background:#1a1a1a;
-color:white;
-border-radius:20px;
-cursor:pointer;
+.tab{
+  padding:10px 15px;
+  border:none;
+  background:#1e293b;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
 }
 
-.menu button.active{
-background:#ff7300;
-}
-
-/* SECTION */
+/* SECTIONS */
 .section{
-display:none;
-margin-top:20px;
+  display:none;
+  padding:20px;
 }
 
-.section.active{
-display:block;
+.active{
+  display:block;
 }
 
 /* CARD */
 .card{
-background:#1a1a1a;
-padding:15px;
-margin:10px;
-border-radius:10px;
-box-shadow:0 0 10px #ff7300;
+  background:#1e293b;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 0 10px rgba(0,255,255,0.2);
 }
 
 /* BUTTON */
 .btn{
-padding:8px 12px;
-border:none;
-border-radius:10px;
-background:#ff7300;
-color:white;
-cursor:pointer;
+  display:block;
+  width:100%;
+  margin:10px 0;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
-
-/* RESPONSIVE */
-@media(max-width:600px){
-
-.title{
-font-size:20px;
-}
-
-}
-
 </style>
-
 </head>
 
 <body>
 
-<div class="container">
-
-<!-- NAVBAR -->
-<div class="navbar">
-
-<div class="title">
-IGNITE SCRIMS
-</div>
-
-<button class="loginBtn" id="loginBtn">
-Login
-</button>
-
-</div>
-
-
 <!-- MENU -->
 <div class="menu">
+  <button class="tab" data-tab="home">Home</button>
+  <button class="tab" data-tab="profile">Profile</button>
 
-<button class="tab active" data-tab="home">
-Home
-</button>
+  <button class="tab" id="adminTab" data-tab="admin" style="display:none;">
+    Admin Panel
+  </button>
 
-<button class="tab" data-tab="matches">
-Matches
-</button>
-
-<button class="tab" data-tab="wallet">
-Wallet
-</button>
-
-<button class="tab" data-tab="profile">
-Profile
-</button>
-
+  <button class="tab" id="ownerTab" data-tab="owner" style="display:none;">
+    Owner Panel
+  </button>
 </div>
-
 
 <!-- HOME -->
 <div id="home" class="section active">
-
-<div class="card">
-<h3>Upcoming Match</h3>
-<p>Time: 3:30 PM</p>
-<p>Entry: ₹50</p>
-<button class="btn">Join</button>
+  <div class="card">
+    <h2>🎮 Welcome Gamer</h2>
+    <p>Yaha se tu apna scrims system build karega 🔥</p>
+  </div>
 </div>
-
-</div>
-
-
-<!-- MATCHES -->
-<div id="matches" class="section">
-<div class="card">No Matches Joined</div>
-</div>
-
-
-<!-- WALLET -->
-<div id="wallet" class="section">
-<div class="card">Balance ₹0</div>
-</div>
-
 
 <!-- PROFILE -->
 <div id="profile" class="section">
-<div class="card">
-<h3>Profile</h3>
-<p>Username: -</p>
-</div>
-</div>
-
-
+  <div class="card">
+    <h3>Profile</h3>
+    <p>Name: Vishal</p>
+    <p>Coins: 100</p>
+  </div>
 </div>
 
+<!-- ADMIN PANEL -->
+<div id="admin" class="section">
+  <div class="card">
+    <h3>Admin Panel</h3>
+
+    <button class="btn">Approve Add Money</button>
+    <button class="btn">Approve Withdraw</button>
+    <button class="btn">Create Match</button>
+    <button class="btn">View Users</button>
+
+  </div>
+</div>
+
+<!-- OWNER PANEL -->
+<div id="owner" class="section">
+  <div class="card">
+    <h3>Owner Panel</h3>
+
+    <button class="btn">Full Control</button>
+    <button class="btn">Manage Admins</button>
+    <button class="btn">All Transactions</button>
+
+  </div>
+</div>
 
 <script>
 
 /* TAB SWITCH */
-document.querySelectorAll(".tab").forEach(tab=>{
+const tabs = document.querySelectorAll(".tab");
+const sections = document.querySelectorAll(".section");
 
-tab.onclick=()=>{
+tabs.forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    const target = tab.getAttribute("data-tab");
 
-document.querySelector(".active").classList.remove("active");
-tab.classList.add("active");
+    sections.forEach(sec=>sec.classList.remove("active"));
+    document.getElementById(target).classList.add("active");
+  });
+});
 
-document.querySelector(".section.active").classList.remove("active");
-document.getElementById(tab.dataset.tab).classList.add("active");
+/* ROLE SYSTEM */
+function updateRoleUI(){
 
+  const role = localStorage.getItem("userRole");
+
+  const adminTab = document.getElementById("adminTab");
+  const ownerTab = document.getElementById("ownerTab");
+
+  if(role === "admin"){
+    adminTab.style.display="inline-block";
+  }
+
+  if(role === "owner"){
+    adminTab.style.display="inline-block";
+    ownerTab.style.display="inline-block";
+  }
 }
 
-});
+// CALL
+updateRoleUI();
 
 </script>
 
 </body>
-
 </html>
