@@ -119,13 +119,7 @@ document.addEventListener("DOMContentLoaded", function(){
   var auth = firebase.auth();
   var db = firebase.firestore();
 
-  /* TABS */
-  document.querySelectorAll(".tab").forEach(function(tab){
-    tab.addEventListener("click", function(){
-      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-      tab.classList.add("active");
-
-      <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -185,17 +179,9 @@ body{background:#0b0f1a;color:#fff;}
   <button class="auth-btn" id="authBtn">Login</button>
 </div>
 
-<div id="home" class="section active">
-  <div class="card"><h2>🔥 Welcome Gamer</h2></div>
-</div>
-
-<div id="matches" class="section">
-  <div class="card"><h3>🎮 Matches</h3></div>
-</div>
-
-<div id="wallet" class="section">
-  <div class="card"><h3>💰 Wallet</h3></div>
-</div>
+<div id="home" class="section active"><div class="card"><h2>🔥 Welcome Gamer</h2></div></div>
+<div id="matches" class="section"><div class="card"><h3>🎮 Matches</h3></div></div>
+<div id="wallet" class="section"><div class="card"><h3>💰 Wallet</h3></div></div>
 
 <div id="profile" class="section">
   <div class="card">
@@ -206,19 +192,14 @@ body{background:#0b0f1a;color:#fff;}
 
 </div>
 
-<!-- POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
     <h3>Complete Profile</h3>
-
-    <p style="color:red;font-size:12px;">
-      These details can only be updated after 14 days
-    </p>
+    <p style="color:red;font-size:12px;">These details can only be updated after 14 days</p>
 
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
     <input class="input" id="email" readonly>
-
     <input class="input" id="ign" placeholder="IGN">
     <input class="input" id="uid" placeholder="UID">
     <input class="input" id="matchesInput" placeholder="Matches">
@@ -228,7 +209,6 @@ body{background:#0b0f1a;color:#fff;}
   </div>
 </div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -237,145 +217,17 @@ body{background:#0b0f1a;color:#fff;}
 
 document.addEventListener("DOMContentLoaded", function(){
 
-  firebase.initializeApp({
-    apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-    authDomain: "ignite-scrims.firebaseapp.com",
-    projectId: "ignite-scrims"
-  });
-
-  var auth = firebase.auth();
-  var db = firebase.firestore();
-
-  /* TABS */
-  document.querySelectorAll(".tab").forEach(function(tab){
-    tab.addEventListener("click", function(){
-      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-      tab.classList.add("active");
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-      document.getElementById(tab.dataset.tab).classList.add("active");
-    });
-  });
-
-  /* LOGIN */
-  document.getElementById("authBtn").addEventListener("click", function(){
-
-    if(this.innerText === "Logout"){
-      location.reload();
-      return;
-    }
-
-    var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
-
-  });
-
-  /* REDIRECT RESULT */
-  try {
-
-  auth.getRedirectResult().then(function(result){
-
-    if(result.user){
-
-      var email = result.user.email;
-
-      db.collection("users").doc(email).get().then(function(docSnap){
-
-        if(docSnap.exists){
-          var data = docSnap.data();
-          updateProfile(data);
-          document.getElementById("authBtn").innerText="Logout";
-          alert("Welcome back " + data.name + " 🔥");
-        } else {
-          document.getElementById("email").value = email;
-          document.getElementById("detailsPopup").style.display="flex";
-        }
-
-      });
-
-    }
-
-  }).catch(function(e){
-    console.log("Redirect error:", e);
-  });
-
-} catch(err){
-  console.log("Safe catch:", err);
-}
-
-  /* SAVE */
-  window.saveDetails = function(){
-
-    var data = {
-      name:document.getElementById("name").value,
-      phone:document.getElementById("phone").value,
-      email:document.getElementById("email").value,
-      ign:document.getElementById("ign").value,
-      uid:document.getElementById("uid").value,
-      matches:document.getElementById("matchesInput").value,
-      kills:document.getElementById("killsInput").value,
-      lastUpdated:Date.now()
-    };
-
-    if(!data.name  !data.phone  !data.ign || !data.uid){
-      alert("Fill all fields");
-      return;
-    }
-
-    db.collection("users").doc(data.email).set(data);
-
-    updateProfile(data);
-
-    document.getElementById("authBtn").innerText="Logout";
-    document.getElementById("detailsPopup").style.display="none";
-  }
-
-  /* PROFILE */
-  window.updateProfile = function(d){
-    document.getElementById("profileData").innerHTML = 
-      <p>${d.name}</p>
-      <p>${d.phone}</p>
-      <p>${d.email}</p>
-      <hr>
-      <p>IGN: ${d.ign}</p>
-      <p>UID: ${d.uid}</p>
-      <p>Matches: ${d.matches}</p>
-      <p>Kills: ${d.kills}</p>
-      <button class="btn" onclick="editProfile()">Edit Profile</button>
-    ;
-  }
-
-  /* EDIT */
-  window.editProfile = function(){
-
-    var user = auth.currentUser;
-    if(!user) return;
-
-    db.collection("users").doc(user.email).get().then(function(doc){
-
-      var d = doc.data();
-      var days = (Date.now()-d.lastUpdated)/(1000*60*60*24);
-
-      if(days < 14){
-        alert("Update after 14 days");
-        return;
-      }
-
-      document.getElementById("name").value = d.name;
-      document.getElementById("phone").value = d.phone;
-      document.getElementById("email").value = d.email;
-      document.getElementById("ign").value = d.ign;
-      document.getElementById("uid").value = d.uid;
-      document.getElementById("matchesInput").value = d.matches;
-      document.getElementById("killsInput").value = d.kills;
-
-      document.getElementById("detailsPopup").style.display="flex";
-    });
-  }
-
+firebase.initializeApp({
+  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain: "ignite-scrims.firebaseapp.com",
+  projectId: "ignite-scrims"
 });
 
-</script>
+var auth = firebase.auth();
+var db = firebase.firestore();
 
-</body>
-</html>
-   
+/* TABS */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.onclick = function(){
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    this.classList.add("active");
