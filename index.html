@@ -87,34 +87,22 @@ body{background:#0b0f1a;color:#fff;}
 
 </div>
 
-<!-- POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
     <h3>Complete Profile</h3>
-
-    <p style="color:red;font-size:12px;">
-      These details can only be updated after 14 days
-    </p>
 
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
     <input class="input" id="email" readonly>
 
-    <input class="input" id="ign" placeholder="In Game Name (IGN)">
-    <input class="input" id="uid" placeholder="Game UID">
-
-    <button class="btn" onclick="saveDetails()">Save</button>
+    <button class="btn">Save</button>
   </div>
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
+<!-- JS FIX -->
 <script>
 
-/* ✅ TAB SYSTEM (UNCHANGED WORKING) */
+/* 🔥 TAB FIX */
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll(".section");
 
@@ -128,7 +116,52 @@ tabs.forEach(btn=>{
   };
 });
 
-  /* 🔐 FIREBASE INIT */
+/* 🔥 LOGIN BUTTON TEST */
+document.getElementById("authBtn").onclick = function(){
+  alert("Login button working 🔥");
+};
+
+</script>
+
+<!-- SAME HTML ABOVE... NOTHING CHANGED -->
+
+<!-- POPUP -->
+<div class="popup" id="detailsPopup">
+  <div class="popup-box">
+    <h3>Complete Profile</h3>
+
+    <p style="color:red;font-size:12px;">
+      These details can only be updated after 14 days, so fill carefully
+    </p>
+
+    <input class="input" id="name" placeholder="Full Name">
+    <input class="input" id="phone" placeholder="+91 Phone Number">
+    <input class="input" id="email" readonly>
+
+    <input class="input" id="ign" placeholder="In Game Name (IGN)">
+    <input class="input" id="uid" placeholder="Game UID">
+
+    <button class="btn" onclick="saveDetails()">Save</button>
+  </div>
+</div>
+
+<script>
+
+/* 🔥 TAB FIX (same as before) */
+const tabs = document.querySelectorAll(".tab");
+const sections = document.querySelectorAll(".section");
+
+tabs.forEach(btn=>{
+  btn.onclick = () => {
+    tabs.forEach(t=>t.classList.remove("active"));
+    sections.forEach(s=>s.classList.remove("active"));
+
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  };
+});
+
+/* 🔐 FIREBASE INIT */
 firebase.initializeApp({
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
   authDomain: "ignite-scrims.firebaseapp.com",
@@ -150,12 +183,12 @@ document.getElementById("authBtn").onclick = function(){
   auth.signInWithRedirect(provider);
 };
 
-/* 🔁 HANDLE LOGIN RESULT SAFELY */
-auth.onAuthStateChanged(async (user)=>{
+/* 🔁 REDIRECT RESULT */
+auth.getRedirectResult().then(async (result)=>{
 
-  if(user){
+  if(result.user){
 
-    let email = user.email;
+    let email = result.user.email;
 
     let doc = await db.collection("users").doc(email).get();
 
@@ -163,6 +196,7 @@ auth.onAuthStateChanged(async (user)=>{
       let data = doc.data();
       updateProfile(data);
       document.getElementById("authBtn").innerText="Logout";
+      alert("Welcome back " + data.name + " 🔥");
     } else {
       document.getElementById("email").value = email;
       document.getElementById("detailsPopup").style.display="flex";
@@ -210,7 +244,7 @@ function saveDetails(){
   document.getElementById("detailsPopup").style.display="none";
 }
 
-/* 👤 PROFILE */
+/* 👤 PROFILE UPDATE */
 function updateProfile(d){
   document.getElementById("profileData").innerHTML = 
     <p>${d.name}</p>
@@ -225,7 +259,7 @@ function updateProfile(d){
   ;
 }
 
-/* ✏️ EDIT */
+/* ✏️ EDIT PROFILE */
 function editProfile(){
 
   let user = auth.currentUser;
@@ -252,6 +286,6 @@ function editProfile(){
 }
 
 </script>
-
+  
 </body>
 </html>
