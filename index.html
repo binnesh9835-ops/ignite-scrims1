@@ -158,7 +158,7 @@ body{background:#0b0f1a;color:#fff;}
 
 <script>
 
-  /* 🔥 YOUR CONFIG */
+  // 🔥 CONFIG
 firebase.initializeApp({
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
   authDomain: "ignite-scrims.firebaseapp.com",
@@ -171,7 +171,7 @@ firebase.initializeApp({
 var auth = firebase.auth();
 var db = firebase.firestore();
 
-/* TAB FIX */
+/* TAB */
 document.querySelectorAll(".tab").forEach(tab=>{
   tab.onclick = ()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
@@ -192,11 +192,28 @@ document.getElementById("authBtn").onclick = function(){
 
   var provider = new firebase.auth.GoogleAuthProvider();
 
-  auth.signInWithPopup(provider).then(result=>{
+  auth.signInWithPopup(provider).then(async result=>{
 
     var user = result.user;
-    document.getElementById("email").value = user.email;
-    document.getElementById("detailsPopup").style.display="flex";
+    var email = user.email;
+
+    var docRef = db.collection("users").doc(email);
+    var docSnap = await docRef.get();
+
+    if(docSnap.exists){
+      var data = docSnap.data();
+
+      document.getElementById("profileData").innerHTML =
+        "<p>Name: "+data.name+"</p><p>Phone: "+data.phone+"</p><p>Email: "+data.email+"</p>";
+
+      document.getElementById("authBtn").innerText="Logout";
+
+      alert("Welcome back " + data.name + " 🔥");
+
+    } else {
+      document.getElementById("email").value = email;
+      document.getElementById("detailsPopup").style.display="flex";
+    }
 
   }).catch(()=>{
     alert("Login Failed");
