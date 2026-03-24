@@ -87,22 +87,34 @@ body{background:#0b0f1a;color:#fff;}
 
 </div>
 
+<!-- POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
     <h3>Complete Profile</h3>
+
+    <p style="color:red;font-size:12px;">
+      These details can only be updated after 14 days, so fill carefully
+    </p>
 
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
     <input class="input" id="email" readonly>
 
-    <button class="btn">Save</button>
+    <input class="input" id="ign" placeholder="IGN">
+    <input class="input" id="uid" placeholder="UID">
+
+    <button class="btn" onclick="saveDetails()">Save</button>
   </div>
 </div>
 
-<!-- JS FIX -->
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
 
-/* 🔥 TAB FIX */
+/* ✅ TABS (UNCHANGED) */
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll(".section");
 
@@ -116,10 +128,129 @@ tabs.forEach(btn=>{
   };
 });
 
-/* 🔥 LOGIN BUTTON TEST */
+  /* 🔐 FIREBASE */
+firebase.initializeApp({
+  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain: "ignite-scrims.firebaseapp.com",
+  projectId: "ignite-scrims"
+});
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* 🔐 LOGIN */
 document.getElementById("authBtn").onclick = function(){
-  alert("Login button working 🔥");
+
+  if(this.innerText==="Logout"){
+    location.reload();
+    return;
+  }
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithRedirect(provider);
 };
+
+/* 🔁 LOGIN RESULT */
+auth.getRedirectResult().then(async (result)=>{
+
+  if(result.user){
+
+    let email = result.user.email;
+
+    let doc = await db.collection("users").doc(email).get();
+
+    if(doc.exists){
+      let data = doc.data();
+      updateProfile(data);
+      document.getElementById("authBtn").innerText="Logout";
+      alert("Welcome back " + data.name + " 🔥");
+    } else {
+      document.getElementById("email").value = email;
+      document.getElementById("detailsPopup").style.display="flex";
+    }
+
+  }
+
+});
+
+/* 💾 SAVE */
+function saveDetails(){
+
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let email = document.getElementById("email").value;
+  let ign = document.getElementById("ign").value;
+  let uid = document.getElementById("uid").value;
+
+  if(!name  !phone  !ign || !uid){
+    alert("Fill all fields");
+    return;
+  }
+
+  if(!phone.startsWith("+91")){
+    alert("Phone must start with +91");
+    return;
+  }
+
+  let data = {
+    name,
+    phone,
+    email,
+    ign,
+    uid,
+    matches:0,
+    kills:0,
+    lastUpdated:Date.now()
+  };
+
+  db.collection("users").doc(email).set(data);
+
+  updateProfile(data);
+
+  document.getElementById("authBtn").innerText="Logout";
+  document.getElementById("detailsPopup").style.display="none";
+}
+
+/* 👤 PROFILE */
+function updateProfile(d){
+  document.getElementById("profileData").innerHTML = 
+    <p>${d.name}</p>
+    <p>${d.phone}</p>
+    <p>${d.email}</p>
+    <hr>
+    <p>IGN: ${d.ign}</p>
+    <p>UID: ${d.uid}</p>
+    <p>Matches: ${d.matches}</p>
+    <p>Kills: ${d.kills}</p>
+    <button class="btn" onclick="editProfile()">Edit Profile</button>
+  ;
+}
+
+/* ✏️ EDIT */
+function editProfile(){
+
+  let user = auth.currentUser;
+  if(!user) return;
+
+  db.collection("users").doc(user.email).get().then(doc=>{
+
+    let d = doc.data();
+    let days = (Date.now()-d.lastUpdated)/(1000*60*60*24);
+
+    if(days < 14){
+      alert("Update after 14 days");
+      return;
+    }
+
+    document.getElementById("name").value = d.name;
+    document.getElementById("phone").value = d.phone;
+    document.getElementById("email").value = d.email;
+    document.getElementById("ign").value = d.ign;
+    document.getElementById("uid").value = d.uid;
+
+    document.getElementById("detailsPopup").style.display="flex";
+  });
+}
 
 </script>
 
