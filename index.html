@@ -93,15 +93,15 @@ body{background:#0b0f1a;color:#fff;}
     <h3>Complete Profile</h3>
 
     <p style="color:red;font-size:12px;">
-      These details can only be updated after 14 days, so fill carefully
+      These details can only be updated after 14 days
     </p>
 
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
     <input class="input" id="email" readonly>
 
-    <input class="input" id="ign" placeholder="IGN">
-    <input class="input" id="uid" placeholder="UID">
+    <input class="input" id="ign" placeholder="In Game Name (IGN)">
+    <input class="input" id="uid" placeholder="Game UID">
 
     <button class="btn" onclick="saveDetails()">Save</button>
   </div>
@@ -114,7 +114,7 @@ body{background:#0b0f1a;color:#fff;}
 
 <script>
 
-/* ✅ TABS (UNCHANGED) */
+/* ✅ TAB SYSTEM (UNCHANGED WORKING) */
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll(".section");
 
@@ -128,7 +128,7 @@ tabs.forEach(btn=>{
   };
 });
 
-  /* 🔐 FIREBASE */
+  /* 🔐 FIREBASE INIT */
 firebase.initializeApp({
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
   authDomain: "ignite-scrims.firebaseapp.com",
@@ -138,10 +138,10 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* 🔐 LOGIN */
+/* 🔐 LOGIN BUTTON */
 document.getElementById("authBtn").onclick = function(){
 
-  if(this.innerText==="Logout"){
+  if(this.innerText === "Logout"){
     location.reload();
     return;
   }
@@ -150,12 +150,12 @@ document.getElementById("authBtn").onclick = function(){
   auth.signInWithRedirect(provider);
 };
 
-/* 🔁 LOGIN RESULT */
-auth.getRedirectResult().then(async (result)=>{
+/* 🔁 HANDLE LOGIN RESULT SAFELY */
+auth.onAuthStateChanged(async (user)=>{
 
-  if(result.user){
+  if(user){
 
-    let email = result.user.email;
+    let email = user.email;
 
     let doc = await db.collection("users").doc(email).get();
 
@@ -163,7 +163,6 @@ auth.getRedirectResult().then(async (result)=>{
       let data = doc.data();
       updateProfile(data);
       document.getElementById("authBtn").innerText="Logout";
-      alert("Welcome back " + data.name + " 🔥");
     } else {
       document.getElementById("email").value = email;
       document.getElementById("detailsPopup").style.display="flex";
@@ -173,7 +172,7 @@ auth.getRedirectResult().then(async (result)=>{
 
 });
 
-/* 💾 SAVE */
+/* 💾 SAVE DETAILS */
 function saveDetails(){
 
   let name = document.getElementById("name").value;
@@ -188,7 +187,7 @@ function saveDetails(){
   }
 
   if(!phone.startsWith("+91")){
-    alert("Phone must start with +91");
+    alert("Phone number must start with +91");
     return;
   }
 
@@ -198,9 +197,9 @@ function saveDetails(){
     email,
     ign,
     uid,
-    matches:0,
-    kills:0,
-    lastUpdated:Date.now()
+    matches: 0,
+    kills: 0,
+    lastUpdated: Date.now()
   };
 
   db.collection("users").doc(email).set(data);
