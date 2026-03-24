@@ -107,16 +107,14 @@ body{background:#0b0f1a;color:#fff;}
 <div id="home" class="section active">
   <div class="card">
     <h2>🔥 Welcome Gamer</h2>
-    <p style="margin-top:10px;">Join matches & win rewards</p>
   </div>
 </div>
 
 <!-- MATCHES -->
 <div id="matches" class="section">
   <div class="card">
-    <h3>🎮 Available Matches</h3>
-    <button class="btn">Join Match (₹10)</button>
-    <button class="btn">Join Match (₹20)</button>
+    <h3>🎮 Matches</h3>
+    <button class="btn">Join Match</button>
   </div>
 </div>
 
@@ -124,9 +122,6 @@ body{background:#0b0f1a;color:#fff;}
 <div id="wallet" class="section">
   <div class="card">
     <h3>💰 Wallet</h3>
-    <p style="margin-top:10px;">Balance: ₹100</p>
-    <button class="btn">Add Money</button>
-    <button class="btn">Withdraw</button>
   </div>
 </div>
 
@@ -140,32 +135,38 @@ body{background:#0b0f1a;color:#fff;}
 
 </div>
 
-<!-- DETAILS POPUP -->
+<!-- POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
     <h3>Complete Profile</h3>
+
+    <p style="color:red;font-size:12px;">
+      These details can only be updated after 14 days, so fill carefully
+    </p>
+
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
     <input class="input" id="email" readonly>
+
+    <input class="input" id="ign" placeholder="In Game Name">
+    <input class="input" id="uid" placeholder="Game UID">
+    <input class="input" id="matches" placeholder="Total Matches Played">
+    <input class="input" id="kills" placeholder="Total Kills">
+
     <button class="btn" onclick="saveDetails()">Save</button>
   </div>
 </div>
 
-<!-- FIREBASE CDN -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<script>
-
-  // 🔥 CONFIG
+  <script>
 firebase.initializeApp({
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
   authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims",
-  storageBucket: "ignite-scrims.firebasestorage.app",
-  messagingSenderId: "497561769270",
-  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+  projectId: "ignite-scrims"
 });
 
 var auth = firebase.auth();
@@ -194,55 +195,84 @@ document.getElementById("authBtn").onclick = function(){
 
   auth.signInWithPopup(provider).then(async result=>{
 
-    var user = result.user;
-    var email = user.email;
+    var email = result.user.email;
 
-    var docRef = db.collection("users").doc(email);
-    var docSnap = await docRef.get();
+    var doc = await db.collection("users").doc(email).get();
 
-    if(docSnap.exists){
-      var data = docSnap.data();
-
-      document.getElementById("profileData").innerHTML =
-        "<p>Name: "+data.name+"</p><p>Phone: "+data.phone+"</p><p>Email: "+data.email+"</p>";
-
-      document.getElementById("authBtn").innerText="Logout";
-
-      alert("Welcome back " + data.name + " 🔥");
-
+    if(doc.exists){
+      var data = doc.data();
+      updateProfileUI(data);
+      this.innerText="Logout";
+      alert("Welcome back " + data.name);
     } else {
-      document.getElementById("email").value = email;
+      document.getElementById("email").value=email;
       document.getElementById("detailsPopup").style.display="flex";
     }
 
-  }).catch(()=>{
-    alert("Login Failed");
   });
 };
 
 /* SAVE */
 function saveDetails(){
 
-  var name = document.getElementById("name").value;
-  var phone = document.getElementById("phone").value;
-  var email = document.getElementById("email").value;
+  var data = {
+    name:name.value,
+    phone:phone.value,
+    email:email.value,
+    ign:ign.value,
+    uid:uid.value,
+    matches:matches.value,
+    kills:kills.value,
+    lastUpdated:Date.now()
+  };
 
-  if(!name || !phone){
-    alert("Fill all fields");
-    return;
-  }
+  db.collection("users").doc(data.email).set(data);
+  updateProfileUI(data);
 
-  db.collection("users").doc(email).set({
-    name:name,
-    phone:phone,
-    email:email
+  authBtn.innerText="Logout";
+  detailsPopup.style.display="none";
+}
+
+/* PROFILE UI */
+function updateProfileUI(d){
+  profileData.innerHTML = 
+    <p>${d.name}</p>
+    <p>${d.phone}</p>
+    <p>${d.email}</p>
+    <hr>
+    <p>IGN: ${d.ign}</p>
+    <p>UID: ${d.uid}</p>
+    <p>Matches: ${d.matches}</p>
+    <p>Kills: ${d.kills}</p>
+    <button class="btn" onclick="editProfile()">Edit Profile</button>
+  ;
+}
+
+/* EDIT */
+function editProfile(){
+
+  var email = firebase.auth().currentUser.email;
+
+  db.collection("users").doc(email).get().then(doc=>{
+
+    var d = doc.data();
+    var days = (Date.now()-d.lastUpdated)/(1000*60*60*24);
+
+    if(days<14){
+      alert("Update after 14 days ❌");
+      return;
+    }
+
+    name.value=d.name;
+    phone.value=d.phone;
+    email.value=d.email;
+    ign.value=d.ign;
+    uid.value=d.uid;
+    matches.value=d.matches;
+    kills.value=d.kills;
+
+    detailsPopup.style.display="flex";
   });
-
-  document.getElementById("profileData").innerHTML =
-    "<p>Name: "+name+"</p><p>Phone: "+phone+"</p><p>Email: "+email+"</p>";
-
-  document.getElementById("authBtn").innerText="Logout";
-  document.getElementById("detailsPopup").style.display="none";
 }
 
 </script>
