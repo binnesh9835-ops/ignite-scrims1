@@ -31,8 +31,16 @@ body{background:#0b0f1a;color:#fff;}
 }
 @keyframes glow{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
 
-.menu{display:flex;gap:8px;padding:10px;align-items:center;overflow-x:auto;}
-.tab{padding:10px;border:none;background:#1e293b;color:white;border-radius:8px;cursor:pointer;}
+.menu{
+  display:flex;gap:8px;padding:10px;
+  align-items:center;overflow-x:auto;
+}
+
+.tab{
+  padding:10px;border:none;
+  background:#1e293b;color:white;
+  border-radius:8px;cursor:pointer;
+}
 .tab.active{background:#22c55e;}
 
 .auth-btn{
@@ -55,7 +63,8 @@ body{background:#0b0f1a;color:#fff;}
 
 .btn{
   width:100%;padding:12px;margin-top:10px;
-  border:none;border-radius:8px;background:#22c55e;color:white;
+  border:none;border-radius:8px;
+  background:#22c55e;color:white;
 }
 
 .input{
@@ -63,7 +72,6 @@ body{background:#0b0f1a;color:#fff;}
   border:none;border-radius:6px;
 }
 
-/* POPUP */
 .popup{
   position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0.8);
@@ -95,17 +103,34 @@ body{background:#0b0f1a;color:#fff;}
   <button class="auth-btn" id="authBtn">Login</button>
 </div>
 
-<!-- SECTIONS -->
-<div id="home" class="section active"><div class="card"><h2>🔥 Welcome Gamer</h2></div></div>
+<!-- HOME -->
+<div id="home" class="section active">
+  <div class="card">
+    <h2>🔥 Welcome Gamer</h2>
+    <p style="margin-top:10px;">Join matches & win rewards</p>
+  </div>
+</div>
 
+<!-- MATCHES -->
 <div id="matches" class="section">
-  <div class="card"><h3>🎮 Matches</h3><button class="btn">Join Match</button></div>
+  <div class="card">
+    <h3>🎮 Available Matches</h3>
+    <button class="btn">Join Match (₹10)</button>
+    <button class="btn">Join Match (₹20)</button>
+  </div>
 </div>
 
+<!-- WALLET -->
 <div id="wallet" class="section">
-  <div class="card"><h3>💰 Wallet</h3></div>
+  <div class="card">
+    <h3>💰 Wallet</h3>
+    <p style="margin-top:10px;">Balance: ₹100</p>
+    <button class="btn">Add Money</button>
+    <button class="btn">Withdraw</button>
+  </div>
 </div>
 
+<!-- PROFILE -->
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
@@ -126,80 +151,82 @@ body{background:#0b0f1a;color:#fff;}
   </div>
 </div>
 
-<!-- FIREBASE -->
-<script type="module">
+<!-- FIREBASE CDN -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-// 🔥 IMPORTANT: APNA CONFIG YAHA DAAL
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script>
 
-const firebaseConfig = {
+  /* 🔥 YOUR CONFIG */
+firebase.initializeApp({
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
   authDomain: "ignite-scrims.firebaseapp.com",
   projectId: "ignite-scrims",
-};
+  storageBucket: "ignite-scrims.firebasestorage.app",
+  messagingSenderId: "497561769270",
+  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
+});
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+var auth = firebase.auth();
+var db = firebase.firestore();
 
-  /* TAB FIX */
+/* TAB FIX */
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
+  tab.onclick = ()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
 
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(tab.dataset.tab).classList.add("active");
-  });
+  }
 });
 
-/* LOGIN BUTTON */
-const authBtn = document.getElementById("authBtn");
+/* LOGIN */
+document.getElementById("authBtn").onclick = function(){
 
-authBtn.addEventListener("click", async ()=>{
-
-  if(authBtn.innerText === "Logout"){
+  if(this.innerText === "Logout"){
     location.reload();
     return;
   }
 
-  try{
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+  var provider = new firebase.auth.GoogleAuthProvider();
 
+  auth.signInWithPopup(provider).then(result=>{
+
+    var user = result.user;
     document.getElementById("email").value = user.email;
     document.getElementById("detailsPopup").style.display="flex";
 
-  }catch(err){
+  }).catch(()=>{
     alert("Login Failed");
-  }
-});
+  });
+};
 
-/* SAVE DETAILS */
-window.saveDetails = async function(){
+/* SAVE */
+function saveDetails(){
 
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const email = document.getElementById("email").value;
+  var name = document.getElementById("name").value;
+  var phone = document.getElementById("phone").value;
+  var email = document.getElementById("email").value;
 
   if(!name || !phone){
     alert("Fill all fields");
     return;
   }
 
-  await setDoc(doc(db,"users",email),{
-    name, phone, email
+  db.collection("users").doc(email).set({
+    name:name,
+    phone:phone,
+    email:email
   });
 
   document.getElementById("profileData").innerHTML =
-    <p>${name}</p><p>${phone}</p><p>${email}</p>;
+    "<p>Name: "+name+"</p><p>Phone: "+phone+"</p><p>Email: "+email+"</p>";
 
-  authBtn.innerText="Logout";
+  document.getElementById("authBtn").innerText="Logout";
   document.getElementById("detailsPopup").style.display="none";
-};
+}
 
 </script>
 
