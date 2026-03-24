@@ -231,3 +231,98 @@ document.querySelectorAll(".tab").forEach(tab=>{
   tab.onclick = function(){
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     this.classList.add("active");
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+    document.getElementById(this.dataset.tab).classList.add("active");
+  }
+});
+
+/* LOGIN */
+document.getElementById("authBtn").onclick = function(){
+  if(this.innerText==="Logout"){location.reload();return;}
+  var provider=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithRedirect(provider);
+};
+
+/* REDIRECT */
+auth.getRedirectResult().then(res=>{
+if(res.user){
+let email=res.user.email;
+db.collection("users").doc(email).get().then(doc=>{
+if(doc.exists){
+updateProfile(doc.data());
+document.getElementById("authBtn").innerText="Logout";
+alert("Welcome back "+doc.data().name);
+}else{
+document.getElementById("email").value=email;
+document.getElementById("detailsPopup").style.display="flex";
+}
+});
+}
+});
+
+/* SAVE */
+window.saveDetails=function(){
+let data={
+name:name.value,
+phone:phone.value,
+email:email.value,
+ign:ign.value,
+uid:uid.value,
+matches:matchesInput.value,
+kills:killsInput.value,
+lastUpdated:Date.now()
+};
+
+if(!data.name  !data.phone  !data.ign || !data.uid){
+alert("Fill all fields");return;
+}
+
+db.collection("users").doc(data.email).set(data);
+updateProfile(data);
+authBtn.innerText="Logout";
+detailsPopup.style.display="none";
+}
+
+/* PROFILE */
+window.updateProfile=function(d){
+profileData.innerHTML=
+<p>${d.name}</p>
+<p>${d.phone}</p>
+<p>${d.email}</p>
+<hr>
+<p>IGN: ${d.ign}</p>
+<p>UID: ${d.uid}</p>
+<p>Matches: ${d.matches}</p>
+<p>Kills: ${d.kills}</p>
+<button class="btn" onclick="editProfile()">Edit Profile</button>;
+}
+
+/* EDIT */
+window.editProfile=function(){
+let user=auth.currentUser;
+if(!user)return;
+
+db.collection("users").doc(user.email).get().then(doc=>{
+let d=doc.data();
+let days=(Date.now()-d.lastUpdated)/(1000*60*60*24);
+
+if(days<14){alert("Update after 14 days");return;}
+
+name.value=d.name;
+phone.value=d.phone;
+email.value=d.email;
+ign.value=d.ign;
+uid.value=d.uid;
+matchesInput.value=d.matches;
+killsInput.value=d.kills;
+
+detailsPopup.style.display="flex";
+});
+}
+
+});
+
+</script>
+
+</body>
+</html>
