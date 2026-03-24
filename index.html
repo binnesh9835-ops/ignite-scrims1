@@ -108,133 +108,139 @@ body{background:#0b0f1a;color:#fff;}
 
 <script>
 
-firebase.initializeApp({
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims"
-});
+document.addEventListener("DOMContentLoaded", function(){
 
-var auth = firebase.auth();
-var db = firebase.firestore();
-
-/* TABS */
-document.querySelectorAll(".tab").forEach(function(tab){
-  tab.addEventListener("click", function(){
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
-
-                       document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-    document.getElementById(tab.dataset.tab).classList.add("active");
+  firebase.initializeApp({
+    apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+    authDomain: "ignite-scrims.firebaseapp.com",
+    projectId: "ignite-scrims"
   });
-});
 
-/* LOGIN BUTTON */
-document.getElementById("authBtn").addEventListener("click", function(){
+  var auth = firebase.auth();
+  var db = firebase.firestore();
 
-  if(this.innerText === "Logout"){
-    location.reload();
-    return;
-  }
+  /* TABS */
+  document.querySelectorAll(".tab").forEach(function(tab){
+    tab.addEventListener("click", function(){
+      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+      tab.classList.add("active");
 
-  var provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithRedirect(provider);
+      document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+      document.getElementById(tab.dataset.tab).classList.add("active");
+    });
+  });
 
-});
+  /* LOGIN */
+  document.getElementById("authBtn").addEventListener("click", function(){
 
-/* REDIRECT RESULT */
-auth.getRedirectResult().then(async function(result){
-
-  if(result.user){
-
-    var email = result.user.email;
-
-    var docSnap = await db.collection("users").doc(email).get();
-
-    if(docSnap.exists){
-      var data = docSnap.data();
-      updateProfile(data);
-      document.getElementById("authBtn").innerText="Logout";
-      alert("Welcome back " + data.name + " 🔥");
-    } else {
-      document.getElementById("email").value = email;
-      document.getElementById("detailsPopup").style.display="flex";
-    }
-
-  }
-
-}).catch(function(e){
-  console.log(e);
-});
-
-/* SAVE */
-function saveDetails(){
-
-  var data = {
-    name:document.getElementById("name").value,
-    phone:document.getElementById("phone").value,
-    email:document.getElementById("email").value,
-    ign:document.getElementById("ign").value,
-    uid:document.getElementById("uid").value,
-    matches:document.getElementById("matchesInput").value,
-    kills:document.getElementById("killsInput").value,
-    lastUpdated:Date.now()
-  };
-
-  if(!data.name  !data.phone  !data.ign || !data.uid){
-    alert("Fill all fields");
-    return;
-  }
-
-  db.collection("users").doc(data.email).set(data);
-
-  updateProfile(data);
-
-  document.getElementById("authBtn").innerText="Logout";
-  document.getElementById("detailsPopup").style.display="none";
-}
-
-/* PROFILE */
-function updateProfile(d){
-  document.getElementById("profileData").innerHTML = 
-    <p>${d.name}</p>
-    <p>${d.phone}</p>
-    <p>${d.email}</p>
-    <hr>
-    <p>IGN: ${d.ign}</p>
-    <p>UID: ${d.uid}</p>
-    <p>Matches: ${d.matches}</p>
-    <p>Kills: ${d.kills}</p>
-    <button class="btn" onclick="editProfile()">Edit Profile</button>
-  ;
-}
-
-/* EDIT */
-function editProfile(){
-
-  var user = auth.currentUser;
-  if(!user) return;
-
-  db.collection("users").doc(user.email).get().then(function(doc){
-
-    var d = doc.data();
-    var days = (Date.now()-d.lastUpdated)/(1000*60*60*24);
-
-    if(days < 14){
-      alert("Update after 14 days");
+    if(this.innerText === "Logout"){
+      location.reload();
       return;
     }
 
-    document.getElementById("name").value = d.name;
-    document.getElementById("phone").value = d.phone;
-    document.getElementById("email").value = d.email;
-    document.getElementById("ign").value = d.ign;
-    document.getElementById("uid").value = d.uid;
-    document.getElementById("matchesInput").value = d.matches;
-    document.getElementById("killsInput").value = d.kills;
+    var provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithRedirect(provider);
 
-    document.getElementById("detailsPopup").style.display="flex";
   });
-}
+
+  /* REDIRECT RESULT (SAFE) */
+  auth.getRedirectResult().then(function(result){
+
+    if(result.user){
+
+      var email = result.user.email;
+
+      db.collection("users").doc(email).get().then(function(docSnap){
+
+        if(docSnap.exists){
+          var data = docSnap.data();
+          updateProfile(data);
+          document.getElementById("authBtn").innerText="Logout";
+          alert("Welcome back " + data.name + " 🔥");
+        } else {
+          document.getElementById("email").value = email;
+          document.getElementById("detailsPopup").style.display="flex";
+        }
+
+      });
+
+    }
+
+  }).catch(function(e){
+    console.log("Redirect error:", e);
+  });
+
+  /* SAVE */
+  window.saveDetails = function(){
+
+    var data = {
+      name:document.getElementById("name").value,
+      phone:document.getElementById("phone").value,
+      email:document.getElementById("email").value,
+      ign:document.getElementById("ign").value,
+      uid:document.getElementById("uid").value,
+      matches:document.getElementById("matchesInput").value,
+      kills:document.getElementById("killsInput").value,
+      lastUpdated:Date.now()
+    };
+
+    if(!data.name  !data.phone  !data.ign || !data.uid){
+      alert("Fill all fields");
+      return;
+    }
+
+    db.collection("users").doc(data.email).set(data);
+
+    updateProfile(data);
+
+    document.getElementById("authBtn").innerText="Logout";
+    document.getElementById("detailsPopup").style.display="none";
+  }
+
+  /* PROFILE */
+  window.updateProfile = function(d){
+    document.getElementById("profileData").innerHTML = 
+      <p>${d.name}</p>
+      <p>${d.phone}</p>
+      <p>${d.email}</p>
+      <hr>
+      <p>IGN: ${d.ign}</p>
+      <p>UID: ${d.uid}</p>
+      <p>Matches: ${d.matches}</p>
+      <p>Kills: ${d.kills}</p>
+      <button class="btn" onclick="editProfile()">Edit Profile</button>
+    ;
+  }
+
+  /* EDIT */
+  window.editProfile = function(){
+
+    var user = auth.currentUser;
+    if(!user) return;
+
+    db.collection("users").doc(user.email).get().then(function(doc){
+
+      var d = doc.data();
+      var days = (Date.now()-d.lastUpdated)/(1000*60*60*24);
+
+      if(days < 14){
+        alert("Update after 14 days");
+        return;
+      }
+
+      document.getElementById("name").value = d.name;
+      document.getElementById("phone").value = d.phone;
+      document.getElementById("email").value = d.email;
+      document.getElementById("ign").value = d.ign;
+      document.getElementById("uid").value = d.uid;
+      document.getElementById("matchesInput").value = d.matches;
+      document.getElementById("killsInput").value = d.kills;
+
+      document.getElementById("detailsPopup").style.display="flex";
+    });
+  }
+
+});
 
 </script>
 
