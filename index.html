@@ -87,14 +87,10 @@ body{background:#0b0f1a;color:#fff;}
 
 </div>
 
-<!-- POPUP -->
+<!-- ✅ UPDATED POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
     <h3>Complete Profile</h3>
-
-    <p style="color:red;font-size:12px;">
-      These details can only be updated after 14 days
-    </p>
 
     <input class="input" id="name" placeholder="Full Name">
     <input class="input" id="phone" placeholder="+91 Phone Number">
@@ -114,7 +110,7 @@ body{background:#0b0f1a;color:#fff;}
 
 <script>
 
-/* ✅ TAB SYSTEM (UNCHANGED) */
+/* 🔥 TAB FIX (UNCHANGED) */
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll(".section");
 
@@ -127,7 +123,8 @@ tabs.forEach(btn=>{
     document.getElementById(btn.dataset.tab).classList.add("active");
   };
 });
-/* 🔐 FIREBASE */
+
+  /* 🔐 FIREBASE INIT */
 firebase.initializeApp({
   apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
   authDomain: "ignite-scrims.firebaseapp.com",
@@ -137,10 +134,10 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* 🔥 LOGIN BUTTON */
+/* 🔐 LOGIN BUTTON */
 document.getElementById("authBtn").onclick = function(){
 
-  if(this.innerText === "Logout"){
+  if(this.innerText==="Logout"){
     location.reload();
     return;
   }
@@ -159,8 +156,8 @@ auth.onAuthStateChanged(async (user)=>{
     let doc = await db.collection("users").doc(email).get();
 
     if(doc.exists){
-      let data = doc.data();
-      updateProfile(data);
+      let d = doc.data();
+      updateProfile(d);
       document.getElementById("authBtn").innerText="Logout";
     } else {
       document.getElementById("email").value = email;
@@ -174,7 +171,7 @@ auth.onAuthStateChanged(async (user)=>{
 /* 💾 SAVE */
 function saveDetails(){
 
-  let name = document.getElementById("name").value;
+  let name = name.value;
   let phone = document.getElementById("phone").value;
   let email = document.getElementById("email").value;
   let ign = document.getElementById("ign").value;
@@ -190,16 +187,7 @@ function saveDetails(){
     return;
   }
 
-  let data = {
-    name,
-    phone,
-    email,
-    ign,
-    uid,
-    matches:0,
-    kills:0,
-    lastUpdated:Date.now()
-  };
+  let data = {name,phone,email,ign,uid,matches:0,kills:0};
 
   db.collection("users").doc(email).set(data);
 
@@ -227,4 +215,3 @@ function updateProfile(d){
 
 </body>
 </html>
-  
