@@ -270,6 +270,8 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   /* REDIRECT RESULT */
+  try {
+
   auth.getRedirectResult().then(function(result){
 
     if(result.user){
@@ -293,8 +295,12 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
   }).catch(function(e){
-    console.log(e);
+    console.log("Redirect error:", e);
   });
+
+} catch(err){
+  console.log("Safe catch:", err);
+}
 
   /* SAVE */
   window.saveDetails = function(){
