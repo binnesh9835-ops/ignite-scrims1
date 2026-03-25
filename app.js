@@ -49,8 +49,7 @@ provider.setCustomParameters({
 });
 
 auth.signInWithRedirect(provider);
-
-  });
+    });
 
   /* LOGIN STATE */
   auth.onAuthStateChanged(async (user)=>{
