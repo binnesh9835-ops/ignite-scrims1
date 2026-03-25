@@ -72,6 +72,30 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 
+  auth.onAuthStateChanged(async (user)=>{
+
+  if(user){
+
+    let email = user.email;
+
+    let doc = await db.collection("users").doc(email).get();
+
+    if(doc.exists){
+      let d = doc.data();
+      updateProfile(d);
+      authBtn.innerText = "Logout";
+
+      // 🔥 wallet update bhi
+      document.getElementById("balance").innerText = "₹" + (d.wallet || 0);
+    }
+
+  } else {
+    authBtn.innerText = "Login";
+    document.getElementById("profileText").innerText = "Login karo";
+  }
+
+});
+
 
   /* SAVE DETAILS */
   window.saveDetails = function(){
