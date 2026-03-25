@@ -85,10 +85,132 @@ document.addEventListener("DOMContentLoaded", function(){
       updateProfile(d);
       authBtn.innerText = "Logout";
 
-      // 🔥 wallet update bhi
-      document.getElementById("balance").innerText = "₹" + (d.wallet || 0);
-loadTransactions(d.transactions);
+      /* ================= WALLET SYSTEM ================= */
+
+/* 🟢 OPEN ADD MONEY */
+window.openAddMoney = function(){
+  document.getElementById("addMoneyPopup").style.display = "flex";
+}
+
+/* 🔴 OPEN WITHDRAW */
+window.openWithdraw = function(){
+  document.getElementById("withdrawPopup").style.display = "flex";
+}
+
+/* ❌ CLOSE POPUPS */
+window.closePopup = function(id){
+  document.getElementById(id).style.display = "none";
+}
+
+/* 💰 ADD MONEY STEP 1 */
+window.submitAddMoney = function(){
+
+  let amount = document.getElementById("addAmount").value;
+
+  if(!amount || amount <= 0){
+    alert("Enter valid amount");
+    return;
+  }
+
+  document.getElementById("upiAmountText").innerText = amount;
+  document.getElementById("addMoneyPopup").style.display = "none";
+  document.getElementById("paymentPopup").style.display = "flex";
+}
+
+/* 💸 FINAL CONFIRM ADD MONEY */
+window.confirmPayment = function(){
+
+  let amount = document.getElementById("upiAmountText").innerText;
+  let txnId = document.getElementById("txnId").value;
+  let name = document.getElementById("payerName").value;
+
+  if(!txnId || !name){
+    alert("Fill all details");
+    return;
+  }
+
+  let history = JSON.parse(localStorage.getItem("transactions")) || [];
+
+  history.unshift({
+    type: "credit",
+    amount: amount,
+    status: "pending",
+    time: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("transactions", JSON.stringify(history));
+
+  alert("Request submitted, wait for approval");
+
+  closePopup("paymentPopup");
+  loadTransactions();
+}
+
+/* 🏧 WITHDRAW REQUEST */
+window.submitWithdraw = function(){
+
+  let amount = document.getElementById("withdrawAmount").value;
+
+  if(!amount || amount <= 0){
+    alert("Enter valid amount");
+    return;
+  }
+
+  let history = JSON.parse(localStorage.getItem("transactions")) || [];
+
+  history.unshift({
+    type: "debit",
+    amount: amount,
+    status: "pending",
+    time: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("transactions", JSON.stringify(history));
+
+  alert("Withdraw request submitted");
+
+  closePopup("withdrawPopup");
+  loadTransactions();
+}
+
+/* 📜 LOAD TRANSACTIONS */
+function loadTransactions(){
+
+  let historyBox = document.getElementById("history");
+  let history = JSON.parse(localStorage.getItem("transactions")) || [];
+
+  if(history.length === 0){
+    historyBox.innerHTML = "<p>No transactions yet</p>";
+    return;
+  }
+
+  historyBox.innerHTML = "";
+
+  history.forEach(tx => {
+
+    let color = "yellow";
+
+    if(tx.status === "approved"){
+      color = tx.type === "credit" ? "limegreen" : "red";
     }
+
+    if(tx.status === "rejected"){
+      color = "red";
+    }
+
+    let sign = tx.type === "credit" ? "+" : "-";
+
+    historyBox.innerHTML += 
+      <p style="color:${color}">
+        ${sign}₹${tx.amount} - ${tx.status} <br>
+        <small>${tx.time}</small>
+      </p>
+    ;
+  });
+}
+
+/* 🔄 LOAD ON START */
+loadTransactions();
 
   } else {
     authBtn.innerText = "Login";
