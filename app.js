@@ -79,7 +79,8 @@ document.addEventListener("DOMContentLoaded", function(){
     let ign = document.getElementById("ign").value;
     let uid = document.getElementById("uid").value;
 
-    if(!name || !phone || !ign || !uid){
+    // ✅ FIXED LINE
+    if(!name  !phone  !ign || !uid){
       alert("Fill all fields");
       return;
     }
@@ -108,17 +109,42 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("detailsPopup").style.display="none";
   }
 
+  /* PROFILE */
   function updateProfile(d){
-    document.getElementById("profileText").innerHTML = `
-  <p>${d.name}</p>
-  <p>${d.phone}</p>
-  <p>${d.email}</p>
-  <hr>
-  <p>IGN: ${d.ign}</p>
-  <p>UID: ${d.uid}</p>
-  <p>Matches: ${d.matches}</p>
-  <p>Kills: ${d.kills}</p>
-`;
+    document.getElementById("profileText").innerHTML = 
+      <p>${d.name}</p>
+      <p>${d.phone}</p>
+      <p>${d.email}</p>
+      <hr>
+      <p>IGN: ${d.ign}</p>
+      <p>UID: ${d.uid}</p>
+      <p>Matches: ${d.matches}</p>
+      <p>Kills: ${d.kills}</p>
+
+      <button class="btn" onclick="editProfile()">Edit Profile</button>
+    ;
+  }
+
+  /* EDIT PROFILE */
+  window.editProfile = function(){
+
+    let user = auth.currentUser;
+    if(!user) return;
+
+    db.collection("users").doc(user.email).get().then(doc=>{
+
+      let d = doc.data();
+
+      document.getElementById("name").value = d.name;
+      document.getElementById("phone").value = d.phone;
+      document.getElementById("email").value = d.email;
+      document.getElementById("ign").value = d.ign;
+      document.getElementById("uid").value = d.uid;
+
+      document.getElementById("detailsPopup").style.display="flex";
+
+    });
+
   }
 
 });
