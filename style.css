@@ -1,1 +1,132 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
 
+body{
+  background:#0b0f1a;
+  color:#fff;
+}
+
+/* 🔥 CONTAINER */
+.container{
+  width:100%;
+  max-width:1200px;
+  margin:auto;
+  padding:10px;
+}
+
+/* 🔥 HEADER */
+.header{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  padding:15px;
+}
+
+/* 🔥 SHINE TEXT */
+.brand{
+  font-size:22px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8);
+  background-size:400%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:shine 5s linear infinite;
+}
+
+/* ✨ SHINE ANIMATION */
+@keyframes shine{
+  0%{background-position:0%;}
+  100%{background-position:400%;}
+}
+
+/* 🔥 SIDE LINES */
+.line{
+  height:2px;
+  width:70px;
+  background:linear-gradient(90deg,transparent,#22c55e,transparent);
+  animation:lineMove 2s infinite;
+}
+
+@keyframes lineMove{
+  0%{opacity:0.2;}
+  50%{opacity:1;}
+  100%{opacity:0.2;}
+}
+
+/* 🔥 MENU */
+.menu{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  overflow-x:auto;
+}
+
+/* 🔥 TAB BUTTON */
+.tab{
+  padding:10px 14px;
+  border:none;
+  background:#1e293b;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:0.3s;
+}
+
+.tab:hover{
+  background:#334155;
+}
+
+.tab.active{
+  background:#22c55e;
+}
+
+/* 🔥 SECTIONS */
+.section{
+  display:none;
+  padding:15px;
+}
+
+.section.active{
+  display:block;
+}
+
+/* 🔥 CARD */
+.card{
+  background:#111827;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+/* 📱 MOBILE */
+@media(max-width:600px){
+
+  .brand{
+    font-size:18px;
+  }
+
+  .line{
+    width:40px;
+  }
+
+}
+
+/* 💻 DESKTOP */
+@media(min-width:768px){
+
+  .menu{
+    justify-content:center;
+  }
+
+  .card{
+    max-width:600px;
+    margin:auto;
+  }
+
+}
