@@ -37,19 +37,22 @@ document.addEventListener("DOMContentLoaded", function(){
 
   authBtn.addEventListener("click", function(){
 
-    if(authBtn.innerText === "Logout"){
-      auth.signOut().then(()=>{
-  location.reload();
-});
-
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-provider.setCustomParameters({
-  prompt: "select_account" // 🔥 हर बार Gmail choose karne ke liye
-});
-
-auth.signInWithRedirect(provider);
+  if(authBtn.innerText === "Logout"){
+    auth.signOut().then(()=>{
+      location.reload();
     });
+    return; // 🔥 important
+  }
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  provider.setCustomParameters({
+    prompt: "select_account"
+  });
+
+  auth.signInWithRedirect(provider);
+
+});
 
   /* LOGIN STATE */
   auth.onAuthStateChanged(async (user)=>{
@@ -72,6 +75,27 @@ auth.signInWithRedirect(provider);
     }
 
   });
+
+  auth.getRedirectResult().then(async (result)=>{
+
+  if(result.user){
+
+    let email = result.user.email;
+
+    let doc = await db.collection("users").doc(email).get();
+
+    if(doc.exists){
+      let d = doc.data();
+      updateProfile(d);
+      authBtn.innerText="Logout";
+    } else {
+      document.getElementById("email").value = email;
+      document.getElementById("detailsPopup").style.display="flex";
+    }
+
+  }
+
+});
 
   /* SAVE DETAILS */
   window.saveDetails = function(){
