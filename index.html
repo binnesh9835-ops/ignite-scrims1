@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ignite Scrims</title>
 
-<!-- CSS LINK -->
 <link rel="stylesheet" href="style.css">
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 </head>
 
@@ -14,53 +18,42 @@
 
 <div class="container">
 
-<!-- HEADER -->
 <div class="header">
   <div class="line"></div>
   <div class="brand">IGNITE SCRIMS</div>
   <div class="line"></div>
 </div>
 
-<!-- MENU -->
 <div class="menu">
   <button class="tab active" data-tab="home">Home</button>
   <button class="tab" data-tab="matches">Matches</button>
   <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
-
-  <!-- LOGIN BUTTON -->
   <button id="authBtn" class="tab">Login</button>
 </div>
-  
-<!-- SECTIONS -->
+
 <div id="home" class="section active">
-  <div class="card">
-    <h2>🔥 Welcome Gamer</h2>
-    <p>Best scrims platform loading...</p>
-  </div>
+  <div class="card"><h2>🔥 Welcome Gamer</h2></div>
 </div>
 
 <div id="matches" class="section">
-  <div class="card">
-    <h3>🎮 Matches</h3>
-    <p>Upcoming matches will appear here</p>
-  </div>
+  <div class="card"><h3>🎮 Matches</h3></div>
 </div>
 
 <div id="wallet" class="section">
-  <div class="card">
-    <h3>💰 Wallet</h3>
-    <p>Your balance & transactions</p>
-  </div>
+  <div class="card"><h3>💰 Wallet</h3></div>
 </div>
 
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
-    <p id="profileText">Login First</p>
+    <div id="profileText">Login karo</div>
   </div>
 </div>
 
+</div>
+
+<!-- POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
     <h3>Complete Profile</h3>
@@ -76,12 +69,7 @@
   </div>
 </div>
 
-<!-- JS LINK (IMPORTANT - LAST ME) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-  
+<!-- JS -->
 <script src="app.js"></script>
 
 </body>
