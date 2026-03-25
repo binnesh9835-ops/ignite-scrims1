@@ -40,32 +40,24 @@ body{background:#0b0f1a;color:#fff;}
 }
 
 .menu{display:flex;gap:10px;padding:10px;overflow-x:auto;}
-
-.tab{
-  padding:10px 14px;border:none;background:#1e293b;color:white;
-  border-radius:8px;cursor:pointer;white-space:nowrap;transition:0.3s;
-}
-
-.tab:hover{background:#334155;}
+.tab{padding:10px 14px;border:none;background:#1e293b;color:white;border-radius:8px;cursor:pointer;}
 .tab.active{background:#22c55e;}
-
-.auth-btn{
-  margin-left:auto;
-  padding:10px 14px;
-  border:none;
-  border-radius:8px;
-  background:#22c55e;
-  color:white;
-  cursor:pointer;
-}
 
 .section{display:none;padding:15px;}
 .section.active{display:block;}
 
-.card{
-  background:#111827;padding:18px;border-radius:14px;
-  box-shadow:0 0 20px rgba(0,0,0,0.5);
+.card{background:#111827;padding:18px;border-radius:14px;margin-bottom:10px;}
+
+.input{width:100%;padding:10px;margin-top:10px;border:none;border-radius:6px;}
+.btn{width:100%;padding:12px;margin-top:10px;border:none;border-radius:8px;background:#22c55e;color:white;cursor:pointer;}
+
+.popup{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  display:none;justify-content:center;align-items:center;
 }
+
+.popup-box{background:#111827;padding:20px;border-radius:12px;width:90%;max-width:400px;}
 
 @media(max-width:600px){
   .brand{font-size:18px;}
@@ -94,123 +86,251 @@ body{background:#0b0f1a;color:#fff;}
   <button class="tab" data-tab="matches">Matches</button>
   <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
-
-  <!-- 🔐 LOGIN BUTTON -->
-  <button class="auth-btn" id="authBtn">Login</button>
+  <button class="tab" id="loginBtn">Login</button>
 </div>
 
 <div id="home" class="section active">
-  <div class="card">
-    <h2>🔥 Welcome Gamer</h2>
-    <p>Best scrims platform loading...</p>
-  </div>
+  <div class="card"><h2>🔥 Welcome Gamer</h2></div>
 </div>
 
 <div id="matches" class="section">
-  <div class="card">
-    <h3>🎮 Matches</h3>
-    <p>Upcoming matches will appear here</p>
-  </div>
+  <div class="card"><h3>🎮 Matches</h3></div>
+  <div id="matchList"></div>
 </div>
 
 <div id="wallet" class="section">
-  <div class="card">
-    <h3>💰 Wallet</h3>
-    <p>Your balance & transactions</p>
-  </div>
+  <div class="card"><h3>💰 Wallet</h3></div>
 </div>
 
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
     <div id="profileData">Login karo</div>
+  </div>
 
-    <!-- 🔥 ADMIN PANEL BUTTON -->
-    <button id="adminPanelBtn" class="auth-btn" style="display:none;margin-top:10px;">
-      Admin Panel
-    </button>
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" style="display:none;">
+    <div class="card">
+      <h3>⚙️ Admin Panel</h3>
 
+      <input class="input" id="matchName" placeholder="Match Name">
+      <input class="input" id="entryFee" placeholder="Entry Fee">
+      <input class="input" id="prize" placeholder="Prize Pool">
+
+      <button class="btn" onclick="createMatch()">Create Match</button>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <h3>Complete Profile</h3>
+
+    <input class="input" id="name" placeholder="Full Name">
+    <input class="input" id="phone" placeholder="+91 Phone Number">
+    <input class="input" id="email" readonly>
+    <input class="input" id="ign" placeholder="IGN">
+    <input class="input" id="uid" placeholder="UID">
+
+    <button class="btn" onclick="saveData()">Save</button>
   </div>
 </div>
 
-</div>
-
-<!-- 🔐 FIREBASE -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 
-/* 🔥 TAB SWITCH (UNCHANGED) */
-const tabs = document.querySelectorAll(".tab");
-const sections = document.querySelectorAll(".section");
+  /* TAB */
+const tabs=document.querySelectorAll(".tab");
+const sections=document.querySelectorAll(".section");
 
 tabs.forEach(btn=>{
-  btn.onclick = () => {
+  btn.onclick=()=>{
+    if(btn.id==="loginBtn") return;
     tabs.forEach(t=>t.classList.remove("active"));
     sections.forEach(s=>s.classList.remove("active"));
-
     btn.classList.add("active");
     document.getElementById(btn.dataset.tab).classList.add("active");
   };
 });
 
-/* 🔐 FIREBASE INIT */
+/* FIREBASE */
 firebase.initializeApp({
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims"
+  apiKey:"AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain:"ignite-scrims.firebaseapp.com",
+  projectId:"ignite-scrims"
 });
 
-const auth = firebase.auth();
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-/* 👑 ROLE EMAILS */
-const OWNER_EMAIL = "vishalpandey25288@gmail.com";
-const ADMIN_EMAIL = "vmtournament20@gmail.com";
+/* OWNER ADMIN */
+const OWNER="vishalpandey25288@gmail.com";
+const ADMIN="vmtournament20@gmail.com";
 
-/* 🔐 LOGIN BUTTON */
-document.getElementById("authBtn").onclick = function(){
-  if(this.innerText === "Logout"){
+/* LOGIN */
+document.getElementById("loginBtn").onclick=function(){
+
+  if(this.innerText==="Logout"){
     auth.signOut();
     location.reload();
     return;
   }
 
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithRedirect(provider);
+  const provider=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider);
 };
 
-/* 🔁 AUTH STATE */
-auth.onAuthStateChanged((user)=>{
+/* LOGIN STATE */
+auth.onAuthStateChanged(async user=>{
 
   if(user){
 
-    let email = user.email;
-    let role = "user";
+    let email=user.email;
+    let role="User";
 
-    if(email === OWNER_EMAIL){
-      role = "owner";
-    } 
-    else if(email === ADMIN_EMAIL){
-      role = "admin";
+    if(email===OWNER) role="👑 Owner";
+    else if(email===ADMIN) role="🛡 Admin";
+
+    document.getElementById("loginBtn").innerText="Logout";
+
+    let doc=await db.collection("users").doc(email).get();
+
+    if(doc.exists){
+      updateProfile(doc.data(),role);
+    }else{
+      document.getElementById("email").value=email;
+      document.getElementById("popup").style.display="flex";
     }
 
-    /* 👤 PROFILE UPDATE */
-    document.getElementById("profileData").innerHTML = 
-      <p>${email}</p>
-      <p>Role: ${role}</p>
-    ;
-
-    document.getElementById("authBtn").innerText = "Logout";
-
-    /* 🔥 ADMIN PANEL SHOW */
-    if(role === "admin" || role === "owner"){
-      document.getElementById("adminPanelBtn").style.display = "block";
+    if(role!=="User"){
+      document.getElementById("adminPanel").style.display="block";
     }
 
+    loadMatches();
   }
 
 });
+
+/* SAVE USER */
+function saveData(){
+
+  let name=nameInput.value;
+  let phone=document.getElementById("phone").value;
+  let email=document.getElementById("email").value;
+  let ign=document.getElementById("ign").value;
+  let uid=document.getElementById("uid").value;
+
+  if(!name  !phone  !ign || !uid){
+    alert("Fill all fields");
+    return;
+  }
+
+  if(!phone.startsWith("+91")){
+    alert("Phone must start with +91");
+    return;
+  }
+
+  let data={name,phone,email,ign,uid,matches:0,kills:0,lastUpdated:Date.now()};
+
+  db.collection("users").doc(email).set(data);
+
+  updateProfile(data,"User");
+
+  document.getElementById("popup").style.display="none";
+}
+
+/* PROFILE */
+function updateProfile(d,role){
+  document.getElementById("profileData").innerHTML=
+    <p><b>${role}</b></p>
+    <p>${d.name}</p>
+    <p>${d.phone}</p>
+    <p>${d.email}</p>
+    <hr>
+    <p>IGN: ${d.ign}</p>
+    <p>UID: ${d.uid}</p>
+    <p>Matches: ${d.matches}</p>
+    <p>Kills: ${d.kills}</p>
+    <button class="btn" onclick="editProfile()">Edit Profile</button>
+  ;
+}
+
+/* EDIT PROFILE */
+function editProfile(){
+
+  let user=auth.currentUser;
+  if(!user) return;
+
+  db.collection("users").doc(user.email).get().then(doc=>{
+
+    let d=doc.data();
+    let days=(Date.now()-d.lastUpdated)/(1000*60*60*24);
+
+    if(days<14){
+      alert("Update after 14 days");
+      return;
+    }
+
+    document.getElementById("name").value=d.name;
+    document.getElementById("phone").value=d.phone;
+    document.getElementById("email").value=d.email;
+    document.getElementById("ign").value=d.ign;
+    document.getElementById("uid").value=d.uid;
+
+    document.getElementById("popup").style.display="flex";
+  });
+}
+
+/* CREATE MATCH */
+function createMatch(){
+
+  let name=document.getElementById("matchName").value;
+  let entry=document.getElementById("entryFee").value;
+  let prize=document.getElementById("prize").value;
+
+  if(!name  !entry  !prize){
+    alert("Fill all match fields");
+    return;
+  }
+
+  db.collection("matches").add({
+    name,entry,prize,time:Date.now()
+  });
+
+  alert("Match Created 🔥");
+}
+
+/* LOAD MATCHES */
+function loadMatches(){
+
+  db.collection("matches").orderBy("time","desc").onSnapshot(snap=>{
+
+    let html="";
+
+    snap.forEach(doc=>{
+      let m=doc.data();
+
+                 html+=
+      <div class="card">
+        <h3>${m.name}</h3>
+        <p>Entry: ₹${m.entry}</p>
+        <p>Prize: ₹${m.prize}</p>
+        <button class="btn">Join</button>
+      </div>
+      ;
+    });
+
+    document.getElementById("matchList").innerHTML=html;
+  });
+}
 
 </script>
 
