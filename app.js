@@ -1,40 +1,125 @@
 document.addEventListener("DOMContentLoaded", function(){
 
-  console.log("🔥 JS Loaded Successfully");
+  console.log("🔥 JS Loaded");
 
-  /* TAB SELECT */
+  /* ---------------- TAB SYSTEM ---------------- */
   const tabs = document.querySelectorAll(".tab");
   const sections = document.querySelectorAll(".section");
 
-  /* SAFETY CHECK */
-  if(tabs.length === 0){
-    console.log("❌ Tabs not found");
-    return;
-  }
-
-  /* CLICK EVENT */
-  tabs.forEach(btn => {
+  tabs.forEach(btn=>{
     btn.addEventListener("click", function(){
 
-      console.log("👉 Clicked:", btn.dataset.tab);
+      if(btn.id === "authBtn") return; // login button skip
 
-      // remove active
-      tabs.forEach(t => t.classList.remove("active"));
-      sections.forEach(s => s.classList.remove("active"));
+      tabs.forEach(t=>t.classList.remove("active"));
+      sections.forEach(s=>s.classList.remove("active"));
 
-      // add active to clicked
       btn.classList.add("active");
 
-      // show section
-      const target = document.getElementById(btn.dataset.tab);
-
-      if(target){
-        target.classList.add("active");
-      } else {
-        console.log("❌ Section not found:", btn.dataset.tab);
-      }
+      let target = document.getElementById(btn.dataset.tab);
+      if(target) target.classList.add("active");
 
     });
   });
+
+  /* ---------------- FIREBASE ---------------- */
+  firebase.initializeApp({
+    apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+    authDomain: "ignite-scrims.firebaseapp.com",
+    projectId: "ignite-scrims"
+  });
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  /* ---------------- LOGIN BUTTON ---------------- */
+  const authBtn = document.getElementById("authBtn");
+
+  authBtn.addEventListener("click", function(){
+
+    if(authBtn.innerText === "Logout"){
+      auth.signOut();
+      location.reload();
+      return;
+    }
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithRedirect(provider);
+
+  });
+
+  /* ---------------- LOGIN STATE ---------------- */
+  auth.onAuthStateChanged(async (user)=>{
+
+    if(user){
+
+      let email = user.email;
+
+      let doc = await db.collection("users").doc(email).get();
+
+      if(doc.exists){
+        let d = doc.data();
+        updateProfile(d);
+        authBtn.innerText="Logout";
+      } else {
+        document.getElementById("email").value = email;
+        document.getElementById("detailsPopup").style.display="flex";
+      }
+
+    }
+
+  });
+
+  /* ---------------- SAVE DETAILS ---------------- */
+  window.saveDetails = function(){
+
+    let name = document.getElementById("name").value;
+    let phone = document.getElementById("phone").value;
+    let email = document.getElementById("email").value;
+    let ign = document.getElementById("ign").value;
+    let uid = document.getElementById("uid").value;
+
+    if(!name  !phone  !ign || !uid){
+      alert("Fill all fields");
+      return;
+    }
+
+    if(!phone.startsWith("+91")){
+      alert("Phone must start with +91");
+      return;
+    }
+
+    let data = {
+      name,
+      phone,
+      email,
+      ign,
+      uid,
+      matches:0,
+      kills:0,
+      lastUpdated:Date.now()
+    };
+
+    db.collection("users").doc(email).set(data);
+
+    updateProfile(data);
+
+    authBtn.innerText="Logout";
+    document.getElementById("detailsPopup").style.display="none";
+  }
+
+  /* ---------------- PROFILE ---------------- */
+  function updateProfile(d){
+    document.getElementById("profileText").innerHTML = 
+      <p>${d.name}</p>
+      <p>${d.phone}</p>
+      <p>${d.email}</p>
+      <hr>
+      <p>IGN: ${d.ign}</p>
+      <p>UID: ${d.uid}</p>
+      <p>Matches: ${d.matches}</p>
+      <p>Kills: ${d.kills}</p>
+    ;
+  }
 
 });
