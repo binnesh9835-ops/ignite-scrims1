@@ -1,15 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  /* ================= OPEN ADD MONEY ================= */
   window.openAddMoney = function () {
     document.getElementById("addMoneyPopup").style.display = "flex";
   }
 
+  /* ================= CONFIRM AMOUNT ================= */
   window.confirmAmount = function () {
 
     let amount = document.getElementById("amountInput").value;
 
-    // FIXED: isNaN check
-    if (!amount || isNaN(amount)) {
+    // FIXED CONDITION
+    if (!amount  isNaN(amount)  amount <= 0) {
       alert("Enter valid amount");
       return;
     }
@@ -21,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("paymentPopup").style.display = "flex";
   }
 
+  /* ================= SUBMIT PAYMENT ================= */
   window.submitPayment = async function () {
 
     let user = firebase.auth().currentUser;
@@ -33,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let name = document.getElementById("payerName").value;
     let txnId = document.getElementById("txnId").value;
 
-    // FIXED: proper condition
+    // FIXED CONDITION
     if (!name || !txnId) {
       alert("Fill all fields");
       return;
@@ -48,11 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let transactions = data.transactions || [];
 
     transactions.unshift({
-      amount,
+      amount: amount,
       type: "credit",
       status: "pending",
-      name,
-      txnId,
+      name: name,
+      txnId: txnId,
       time: Date.now()
     });
 
@@ -65,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadTransactions(transactions);
   }
 
+  /* ================= LOAD TRANSACTIONS ================= */
   window.loadTransactions = function (list) {
 
     let box = document.getElementById("transactionsBox");
