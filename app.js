@@ -109,16 +109,16 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function updateProfile(d){
-    document.getElementById("profileText").innerHTML = 
-      <p>${d.name}</p>
-      <p>${d.phone}</p>
-      <p>${d.email}</p>
-      <hr>
-      <p>IGN: ${d.ign}</p>
-      <p>UID: ${d.uid}</p>
-      <p>Matches: ${d.matches}</p>
-      <p>Kills: ${d.kills}</p>
-    ;
+    document.getElementById("profileText").innerHTML = `
+  <p>${d.name}</p>
+  <p>${d.phone}</p>
+  <p>${d.email}</p>
+  <hr>
+  <p>IGN: ${d.ign}</p>
+  <p>UID: ${d.uid}</p>
+  <p>Matches: ${d.matches}</p>
+  <p>Kills: ${d.kills}</p>
+`;
   }
 
 });
