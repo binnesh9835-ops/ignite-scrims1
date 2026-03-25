@@ -216,7 +216,8 @@ loadTransactions();
     authBtn.innerText = "Login";
     document.getElementById("profileText").innerText = "Login karo";
   }
-});
+    
+}
 
 
   /* SAVE DETAILS */
