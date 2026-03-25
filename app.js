@@ -38,13 +38,17 @@ document.addEventListener("DOMContentLoaded", function(){
   authBtn.addEventListener("click", function(){
 
     if(authBtn.innerText === "Logout"){
-      auth.signOut();
-      location.reload();
-      return;
-    }
+      auth.signOut().then(()=>{
+  location.reload();
+});
 
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
+
+provider.setCustomParameters({
+  prompt: "select_account" // 🔥 हर बार Gmail choose karne ke liye
+});
+
+auth.signInWithRedirect(provider);
 
   });
 
