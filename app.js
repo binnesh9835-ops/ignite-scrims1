@@ -200,13 +200,13 @@ function loadTransactions(){
 
     let sign = tx.type === "credit" ? "+" : "-";
 
-    historyBox.innerHTML += 
+    historyBox.innerHTML += `
       <p style="color:${color}">
         ${sign}₹${tx.amount} - ${tx.status} <br>
         <small>${tx.time}</small>
       </p>
     ;
-  });
+  `});
 }
 
 /* 🔄 LOAD ON START */
