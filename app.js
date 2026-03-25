@@ -87,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
       // 🔥 wallet update bhi
       document.getElementById("balance").innerText = "₹" + (d.wallet || 0);
+loadTransactions(d.transactions);
     }
 
   } else {
