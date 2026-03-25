@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let name = document.getElementById("payerName").value;
     let txnId = document.getElementById("txnId").value;
 
-    // FIXED CONDITION
     if (!name || !txnId) {
       alert("Fill all fields");
       return;
@@ -64,6 +63,54 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Request submitted ✅");
 
     document.getElementById("paymentPopup").style.display = "none";
+
+    loadTransactions(transactions);
+  }
+
+  /* ================= WITHDRAW (UPI ADDED) ================= */
+  window.submitWithdraw = async function () {
+
+    let user = firebase.auth().currentUser;
+    if (!user) {
+      alert("Login first");
+      return;
+    }
+
+    let amount = document.getElementById("withdrawAmount").value;
+    let upi = document.getElementById("withdrawUpi").value;
+
+    // VALIDATION
+    if (!amount  isNaN(amount)  amount <= 0) {
+      alert("Enter valid amount");
+      return;
+    }
+
+    if (!upi) {
+      alert("Enter your UPI ID");
+      return;
+    }
+
+    let db = firebase.firestore();
+    let ref = db.collection("users").doc(user.email);
+
+    let doc = await ref.get();
+    let data = doc.data();
+
+    let transactions = data.transactions || [];
+
+    transactions.unshift({
+      amount: amount,
+      type: "debit",
+      status: "pending",
+      upi: upi,   // ✅ UPI SAVED HERE
+      time: Date.now()
+    });
+
+    await ref.update({ transactions });
+
+    alert("Withdraw request submitted");
+
+    document.getElementById("withdrawPopup").style.display = "none";
 
     loadTransactions(transactions);
   }
