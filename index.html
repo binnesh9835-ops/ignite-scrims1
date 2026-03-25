@@ -41,9 +41,48 @@
 </div>
 
 <div id="wallet" class="section">
-  <div class="card"><h3>💰 Wallet</h3></div>
+  <div class="card">
+
+    <h2 id="balance">₹0</h2>
+
+    <button class="btn" onclick="openAddMoney()">Add Money</button>
+    <button class="btn" onclick="withdraw()">Withdraw</button>
+
+    <hr style="margin:15px 0;">
+
+    <div id="transactionsBox">
+      <p>No transactions yet</p>
+    </div>
+
+  </div>
 </div>
 
+<div class="popup" id="addMoneyPopup">
+  <div class="popup-box">
+    <h3>Add Money</h3>
+
+    <input class="input" id="amountInput" placeholder="Enter Amount">
+
+    <button class="btn" onclick="confirmAmount()">Confirm</button>
+  </div>
+</div>
+
+<div class="popup" id="paymentPopup">
+  <div class="popup-box">
+    <h3>Complete Payment</h3>
+
+    <p>Send money to UPI:</p>
+    <h4>9279072936@axl</h4>
+
+    <p id="payAmount"></p>
+
+    <input class="input" id="payerName" placeholder="Your Name">
+    <input class="input" id="txnId" placeholder="Transaction ID">
+
+    <button class="btn" onclick="submitPayment()">Submit</button>
+  </div>
+</div>
+  
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
