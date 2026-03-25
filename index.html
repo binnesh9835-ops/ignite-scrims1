@@ -6,30 +6,58 @@
 <title>Ignite Scrims</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:#0b0f1a;color:#fff;}
-.container{max-width:420px;margin:auto;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial;
+}
 
-.header{display:flex;justify-content:center;align-items:center;gap:10px;padding:14px;background:#020617;}
+body{
+  background:#0b0f1a;
+  color:#fff;
+}
 
+/* 🔥 RESPONSIVE CONTAINER */
+.container{
+  width:100%;
+  max-width:1200px;
+  margin:auto;
+  padding:10px;
+}
+
+/* 🔥 HEADER */
+.header{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  padding:15px;
+}
+
+/* 🔥 SHINE TEXT */
 .brand{
-  font-size:18px;font-weight:bold;
-  background:linear-gradient(90deg,red,orange,yellow,green,cyan,blue,violet);
-  background-size:300%;
+  font-size:22px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8);
+  background-size:400%;
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:shine 4s linear infinite;
+  animation:shine 5s linear infinite;
 }
 
+/* ✨ SHINE ANIMATION */
 @keyframes shine{
   0%{background-position:0%;}
-  100%{background-position:300%;}
+  100%{background-position:400%;}
 }
 
+/* 🔥 SIDE LINES */
 .line{
-  height:2px;width:60px;
+  height:2px;
+  width:70px;
   background:linear-gradient(90deg,transparent,#22c55e,transparent);
-  animation:lineMove 2s linear infinite;
+  animation:lineMove 2s infinite;
 }
 
 @keyframes lineMove{
@@ -38,21 +66,78 @@ body{background:#0b0f1a;color:#fff;}
   100%{opacity:0.2;}
 }
 
-.menu{display:flex;gap:8px;padding:10px;align-items:center;overflow-x:auto;}
-.tab{padding:10px;border:none;background:#1e293b;color:white;border-radius:8px;cursor:pointer;}
-.tab.active{background:#22c55e;}
+/* 🔥 MENU */
+.menu{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  overflow-x:auto;
+}
 
-.auth-btn{margin-left:auto;padding:8px 12px;border:none;border-radius:6px;background:#22c55e;color:white;cursor:pointer;}
+/* 🔥 TABS */
+.tab{
+  padding:10px 14px;
+  border:none;
+  background:#1e293b;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:0.3s;
+}
 
-.section{display:none;padding:15px;}
-.section.active{display:block;}
+.tab:hover{
+  background:#334155;
+}
 
-.card{background:#111827;padding:15px;border-radius:12px;}
-.btn{width:100%;padding:12px;margin-top:10px;border:none;border-radius:8px;background:#22c55e;color:white;}
-.input{width:100%;padding:10px;margin-top:10px;border:none;border-radius:6px;}
+.tab.active{
+  background:#22c55e;
+}
 
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;}
-.popup-box{background:#111827;padding:20px;border-radius:12px;width:90%;}
+/* 🔥 SECTIONS */
+.section{
+  display:none;
+  padding:15px;
+}
+
+.section.active{
+  display:block;
+}
+
+/* 🔥 CARD */
+.card{
+  background:#111827;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+/* 📱 MOBILE OPTIMIZATION */
+@media(max-width:600px){
+
+  .brand{
+    font-size:18px;
+  }
+
+  .line{
+    width:40px;
+  }
+
+}
+
+/* 💻 DESKTOP OPTIMIZATION */
+@media(min-width:768px){
+
+  .menu{
+    justify-content:center;
+  }
+
+  .card{
+    max-width:600px;
+    margin:auto;
+  }
+
+}
 </style>
 </head>
 
@@ -60,61 +145,56 @@ body{background:#0b0f1a;color:#fff;}
 
 <div class="container">
 
+<!-- HEADER -->
 <div class="header">
   <div class="line"></div>
   <div class="brand">IGNITE SCRIMS</div>
   <div class="line"></div>
 </div>
 
+<!-- MENU -->
 <div class="menu">
   <button class="tab active" data-tab="home">Home</button>
   <button class="tab" data-tab="matches">Matches</button>
   <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
-  <button class="auth-btn" id="authBtn">Login</button>
 </div>
 
-<div id="home" class="section active"><div class="card"><h2>🔥 Welcome Gamer</h2></div></div>
-<div id="matches" class="section"><div class="card"><h3>🎮 Matches</h3></div></div>
-<div id="wallet" class="section"><div class="card"><h3>💰 Wallet</h3></div></div>
+<!-- SECTIONS -->
+<div id="home" class="section active">
+  <div class="card">
+    <h2>🔥 Welcome Gamer</h2>
+    <p>Best scrims platform loading...</p>
+  </div>
+</div>
+
+<div id="matches" class="section">
+  <div class="card">
+    <h3>🎮 Matches</h3>
+    <p>Upcoming matches will appear here</p>
+  </div>
+</div>
+
+<div id="wallet" class="section">
+  <div class="card">
+    <h3>💰 Wallet</h3>
+    <p>Your balance & transactions</p>
+  </div>
+</div>
 
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
-    <div id="profileData">Login karo</div>
+    <p>User profile info</p>
   </div>
 </div>
 
 </div>
 
-<!-- POPUP -->
-<div class="popup" id="detailsPopup">
-  <div class="popup-box">
-    <h3>Complete Profile</h3>
-
-    <p style="color:red;font-size:12px;">
-      These details can only be updated after 14 days
-    </p>
-
-    <input class="input" id="name" placeholder="Full Name">
-    <input class="input" id="phone" placeholder="+91 Phone Number">
-    <input class="input" id="email" readonly>
-
-    <input class="input" id="ign" placeholder="IGN">
-    <input class="input" id="uid" placeholder="UID">
-
-    <button class="btn" onclick="saveDetails()">Save</button>
-  </div>
-</div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
+<!-- JS -->
 <script>
 
-/* 🔥 TAB FIX (UNCHANGED) */
+/* 🔥 TAB SWITCH */
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll(".section");
 
@@ -127,100 +207,6 @@ tabs.forEach(btn=>{
     document.getElementById(btn.dataset.tab).classList.add("active");
   };
 });
-
-  /* 🔐 FIREBASE */
-firebase.initializeApp({
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims"
-});
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-/* 🔐 LOGIN BUTTON (REAL) */
-document.getElementById("authBtn").onclick = function(){
-
-  if(this.innerText === "Logout"){
-    auth.signOut();
-    location.reload();
-    return;
-  }
-
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithRedirect(provider);
-};
-
-/* 🔁 LOGIN RESULT */
-auth.getRedirectResult().then(async (result)=>{
-
-  if(result.user){
-
-    let email = result.user.email;
-
-    let doc = await db.collection("users").doc(email).get();
-
-    if(doc.exists){
-      let data = doc.data();
-      updateProfile(data);
-      document.getElementById("authBtn").innerText="Logout";
-      alert("Welcome back " + data.name + " 🔥");
-    } else {
-      document.getElementById("email").value = email;
-      document.getElementById("detailsPopup").style.display="flex";
-    }
-
-  }
-
-});
-
-/* 💾 SAVE */
-function saveDetails(){
-
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let email = document.getElementById("email").value;
-  let ign = document.getElementById("ign").value;
-  let uid = document.getElementById("uid").value;
-
-  if(!name  !phone  !ign || !uid){
-    alert("Fill all fields");
-    return;
-  }
-
-  if(!phone.startsWith("+91")){
-    alert("Phone must start with +91");
-    return;
-  }
-
-  let data = {
-    name, phone, email, ign, uid,
-    matches:0,
-    kills:0,
-    lastUpdated:Date.now()
-  };
-
-  db.collection("users").doc(email).set(data);
-
-  updateProfile(data);
-
-  document.getElementById("authBtn").innerText="Logout";
-  document.getElementById("detailsPopup").style.display="none";
-}
-
-/* 👤 PROFILE */
-function updateProfile(d){
-  document.getElementById("profileData").innerHTML = 
-    <p>${d.name}</p>
-    <p>${d.phone}</p>
-    <p>${d.email}</p>
-    <hr>
-    <p>IGN: ${d.ign}</p>
-    <p>UID: ${d.uid}</p>
-    <p>Matches: ${d.matches}</p>
-    <p>Kills: ${d.kills}</p>
-  ;
-}
 
 </script>
 
