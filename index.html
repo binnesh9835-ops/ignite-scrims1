@@ -5,257 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ignite Scrims</title>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:#0b0f1a;color:#fff;}
+<!-- CSS LINK -->
+<link rel="stylesheet" href="style.css">
 
-.container{width:100%;max-width:1200px;margin:auto;padding:10px;}
-
-.header{display:flex;justify-content:center;align-items:center;gap:12px;padding:15px;}
-
-.brand{
-  font-size:22px;font-weight:bold;
-  background:linear-gradient(90deg,#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8);
-  background-size:400%;
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shine 5s linear infinite;
-}
-
-@keyframes shine{
-  0%{background-position:0%;}
-  100%{background-position:400%;}
-}
-
-.line{
-  height:2px;width:70px;
-  background:linear-gradient(90deg,transparent,#22c55e,transparent);
-  animation:lineMove 2s infinite;
-}
-
-@keyframes lineMove{
-  0%{opacity:0.2;}
-  50%{opacity:1;}
-  100%{opacity:0.2;}
-}
-
-.menu{display:flex;gap:10px;padding:10px;overflow-x:auto;}
-.tab{padding:10px 14px;border:none;background:#1e293b;color:white;border-radius:8px;cursor:pointer;}
-.tab.active{background:#22c55e;}
-
-.section{display:none;padding:15px;}
-.section.active{display:block;}
-
-.card{background:#111827;padding:18px;border-radius:14px;margin-bottom:10px;}
-
-.input{width:100%;padding:10px;margin-top:10px;border:none;border-radius:6px;}
-.btn{width:100%;padding:12px;margin-top:10px;border:none;border-radius:8px;background:#22c55e;color:white;cursor:pointer;}
-
-.popup{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.8);
-  display:none;justify-content:center;align-items:center;
-}
-
-.popup-box{background:#111827;padding:20px;border-radius:12px;width:90%;max-width:400px;}
-</style>
 </head>
 
 <body>
 
 <div class="container">
 
+<!-- HEADER -->
 <div class="header">
   <div class="line"></div>
   <div class="brand">IGNITE SCRIMS</div>
   <div class="line"></div>
 </div>
 
+<!-- MENU -->
 <div class="menu">
   <button class="tab active" data-tab="home">Home</button>
   <button class="tab" data-tab="matches">Matches</button>
   <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
-  <button class="tab" id="loginBtn">Login</button>
 </div>
 
-<div id="home" class="section active"><div class="card"><h2>🔥 Welcome Gamer</h2></div></div>
-<div id="matches" class="section"><div class="card"><h3>🎮 Matches</h3></div></div>
-<div id="wallet" class="section"><div class="card"><h3>💰 Wallet</h3></div></div>
+<!-- SECTIONS -->
+<div id="home" class="section active">
+  <div class="card">
+    <h2>🔥 Welcome Gamer</h2>
+    <p>Best scrims platform loading...</p>
+  </div>
+</div>
+
+<div id="matches" class="section">
+  <div class="card">
+    <h3>🎮 Matches</h3>
+    <p>Upcoming matches will appear here</p>
+  </div>
+</div>
+
+<div id="wallet" class="section">
+  <div class="card">
+    <h3>💰 Wallet</h3>
+    <p>Your balance & transactions</p>
+  </div>
+</div>
 
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
-    <div id="profileData">Login karo</div>
-  </div>
-
-  <div id="adminPanel" style="display:none;">
-    <div class="card">
-      <h3>⚙️ Admin Panel</h3>
-      <input class="input" id="matchName" placeholder="Match Name">
-      <input class="input" id="entryFee" placeholder="Entry Fee">
-      <input class="input" id="prize" placeholder="Prize Pool">
-      <button class="btn" onclick="createMatch()">Create Match</button>
-    </div>
+    <p id="profileText">Login First</p>
   </div>
 </div>
 
 </div>
 
-<!-- POPUP -->
-<div class="popup" id="popup">
-  <div class="popup-box">
-    <h3>Complete Profile</h3>
-    <input class="input" id="name" placeholder="Full Name">
-    <input class="input" id="phone" placeholder="+91 Phone Number">
-    <input class="input" id="email" readonly>
-    <input class="input" id="ign" placeholder="IGN">
-    <input class="input" id="uid" placeholder="UID">
-    <button class="btn" onclick="saveData()">Save</button>
-  </div>
-</div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script>
-
-/* TAB FIX */
-const tabs=document.querySelectorAll(".tab");
-const sections=document.querySelectorAll(".section");
-tabs.forEach(btn=>{
-  btn.onclick=()=>{
-    if(btn.id==="loginBtn") return;
-    tabs.forEach(t=>t.classList.remove("active"));
-    sections.forEach(s=>s.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.tab).classList.add("active");
-  };
-});
-
-/* FIREBASE */
-firebase.initializeApp({
-  apiKey:"AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain:"ignite-scrims.firebaseapp.com",
-  projectId:"ignite-scrims"
-});
-
-const auth=firebase.auth();
-const db=firebase.firestore();
-
-/* OWNER ADMIN */
-const OWNER="vishalpandey25288@gmail.com";
-const ADMIN="vmtournament20@gmail.com";
-
-/* LOGIN */
-document.getElementById("loginBtn").onclick=function(){
-
-  if(this.innerText==="Logout"){
-    auth.signOut();
-    location.reload();
-    return;
-  }
-
-  const provider=new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider);
-};
-
-/* LOGIN STATE */
-auth.onAuthStateChanged(async user=>{
-  if(user){
-
-    let email=user.email;
-    let role="User";
-
-    if(email===OWNER) role="👑 Owner";
-    else if(email===ADMIN) role="🛡 Admin";
-
-    document.getElementById("loginBtn").innerText="Logout";
-
-    let doc=await db.collection("users").doc(email).get();
-
-    if(doc.exists){
-      updateProfile(doc.data(),role);
-    }else{
-      document.getElementById("email").value=email;
-      document.getElementById("popup").style.display="flex";
-    }
-
-    if(role!=="User"){
-      document.getElementById("adminPanel").style.display="block";
-    }
-
-  }
-});
-
-/* SAVE */
-function saveData(){
-
-  let name=document.getElementById("name").value;
-  let phone=document.getElementById("phone").value;
-  let email=document.getElementById("email").value;
-  let ign=document.getElementById("ign").value;
-  let uid=document.getElementById("uid").value;
-
-  if(!name  !phone  !ign || !uid){
-    alert("Fill all fields");
-    return;
-  }
-
-  if(!phone.startsWith("+91")){
-    alert("Phone must start with +91");
-    return;
-  }
-
-  let data={
-    name,phone,email,ign,uid,
-    matches:0,
-    kills:0,
-    lastUpdated:Date.now()
-  };
-
-  db.collection("users").doc(email).set(data);
-
-  updateProfile(data,"User");
-
-  document.getElementById("popup").style.display="none";
-}
-
-/* PROFILE */
-function updateProfile(d,role){
-  document.getElementById("profileData").innerHTML=
-    <p><b>${role}</b></p>
-    <p>${d.name}</p>
-    <p>${d.phone}</p>
-    <p>${d.email}</p>
-    <hr>
-    <p>IGN: ${d.ign}</p>
-    <p>UID: ${d.uid}</p>
-    <p>Matches: ${d.matches}</p>
-    <p>Kills: ${d.kills}</p>
-  ;
-}
-
-/* CREATE MATCH */
-function createMatch(){
-
-  let name=document.getElementById("matchName").value;
-  let entry=document.getElementById("entryFee").value;
-  let prize=document.getElementById("prize").value;
-
-  if(!name  !entry  !prize){
-    alert("Fill all fields");
-    return;
-  }
-
-  db.collection("matches").add({name,entry,prize,time:Date.now()});
-
-  alert("Match Created 🔥");
-}
-
-</script>
+<!-- JS LINK (IMPORTANT - LAST ME) -->
+<script src="app.js"></script>
 
 </body>
 </html>
