@@ -6,39 +6,15 @@
 <title>Ignite Scrims</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#0b0f1a;color:#fff;}
 
-body{
-  background:#0b0f1a;
-  color:#fff;
-}
+.container{width:100%;max-width:1200px;margin:auto;padding:10px;}
 
-/* 🔥 RESPONSIVE CONTAINER */
-.container{
-  width:100%;
-  max-width:1200px;
-  margin:auto;
-  padding:10px;
-}
+.header{display:flex;justify-content:center;align-items:center;gap:12px;padding:15px;}
 
-/* 🔥 HEADER */
-.header{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
-  padding:15px;
-}
-
-/* 🔥 SHINE TEXT */
 .brand{
-  font-size:22px;
-  font-weight:bold;
+  font-size:22px;font-weight:bold;
   background:linear-gradient(90deg,#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8);
   background-size:400%;
   -webkit-background-clip:text;
@@ -46,16 +22,13 @@ body{
   animation:shine 5s linear infinite;
 }
 
-/* ✨ SHINE ANIMATION */
 @keyframes shine{
   0%{background-position:0%;}
   100%{background-position:400%;}
 }
 
-/* 🔥 SIDE LINES */
 .line{
-  height:2px;
-  width:70px;
+  height:2px;width:70px;
   background:linear-gradient(90deg,transparent,#22c55e,transparent);
   animation:lineMove 2s infinite;
 }
@@ -66,77 +39,42 @@ body{
   100%{opacity:0.2;}
 }
 
-/* 🔥 MENU */
-.menu{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  overflow-x:auto;
+.menu{display:flex;gap:10px;padding:10px;overflow-x:auto;}
+
+.tab{
+  padding:10px 14px;border:none;background:#1e293b;color:white;
+  border-radius:8px;cursor:pointer;white-space:nowrap;transition:0.3s;
 }
 
-/* 🔥 TABS */
-.tab{
+.tab:hover{background:#334155;}
+.tab.active{background:#22c55e;}
+
+.auth-btn{
+  margin-left:auto;
   padding:10px 14px;
   border:none;
-  background:#1e293b;
-  color:white;
   border-radius:8px;
-  cursor:pointer;
-  white-space:nowrap;
-  transition:0.3s;
-}
-
-.tab:hover{
-  background:#334155;
-}
-
-.tab.active{
   background:#22c55e;
+  color:white;
+  cursor:pointer;
 }
 
-/* 🔥 SECTIONS */
-.section{
-  display:none;
-  padding:15px;
-}
+.section{display:none;padding:15px;}
+.section.active{display:block;}
 
-.section.active{
-  display:block;
-}
-
-/* 🔥 CARD */
 .card{
-  background:#111827;
-  padding:18px;
-  border-radius:14px;
+  background:#111827;padding:18px;border-radius:14px;
   box-shadow:0 0 20px rgba(0,0,0,0.5);
 }
 
-/* 📱 MOBILE OPTIMIZATION */
 @media(max-width:600px){
-
-  .brand{
-    font-size:18px;
-  }
-
-  .line{
-    width:40px;
-  }
-
+  .brand{font-size:18px;}
+  .line{width:40px;}
 }
 
-/* 💻 DESKTOP OPTIMIZATION */
 @media(min-width:768px){
-
-  .menu{
-    justify-content:center;
-  }
-
-  .card{
-    max-width:600px;
-    margin:auto;
-  }
-
+  .menu{justify-content:center;}
+  .card{max-width:600px;margin:auto;}
 }
 </style>
 </head>
@@ -145,22 +83,22 @@ body{
 
 <div class="container">
 
-<!-- HEADER -->
 <div class="header">
   <div class="line"></div>
   <div class="brand">IGNITE SCRIMS</div>
   <div class="line"></div>
 </div>
 
-<!-- MENU -->
 <div class="menu">
   <button class="tab active" data-tab="home">Home</button>
   <button class="tab" data-tab="matches">Matches</button>
   <button class="tab" data-tab="wallet">Wallet</button>
   <button class="tab" data-tab="profile">Profile</button>
+
+  <!-- 🔐 LOGIN BUTTON -->
+  <button class="auth-btn" id="authBtn">Login</button>
 </div>
 
-<!-- SECTIONS -->
 <div id="home" class="section active">
   <div class="card">
     <h2>🔥 Welcome Gamer</h2>
@@ -185,16 +123,25 @@ body{
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
-    <p>User profile info</p>
+    <div id="profileData">Login karo</div>
+
+    <!-- 🔥 ADMIN PANEL BUTTON -->
+    <button id="adminPanelBtn" class="auth-btn" style="display:none;margin-top:10px;">
+      Admin Panel
+    </button>
+
   </div>
 </div>
 
 </div>
 
-<!-- JS -->
+<!-- 🔐 FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
 <script>
 
-/* 🔥 TAB SWITCH */
+/* 🔥 TAB SWITCH (UNCHANGED) */
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll(".section");
 
@@ -206,6 +153,63 @@ tabs.forEach(btn=>{
     btn.classList.add("active");
     document.getElementById(btn.dataset.tab).classList.add("active");
   };
+});
+
+/* 🔐 FIREBASE INIT */
+firebase.initializeApp({
+  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
+  authDomain: "ignite-scrims.firebaseapp.com",
+  projectId: "ignite-scrims"
+});
+
+const auth = firebase.auth();
+
+/* 👑 ROLE EMAILS */
+const OWNER_EMAIL = "vishalpandey25288@gmail.com";
+const ADMIN_EMAIL = "vmtournament20@gmail.com";
+
+/* 🔐 LOGIN BUTTON */
+document.getElementById("authBtn").onclick = function(){
+  if(this.innerText === "Logout"){
+    auth.signOut();
+    location.reload();
+    return;
+  }
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithRedirect(provider);
+};
+
+/* 🔁 AUTH STATE */
+auth.onAuthStateChanged((user)=>{
+
+  if(user){
+
+    let email = user.email;
+    let role = "user";
+
+    if(email === OWNER_EMAIL){
+      role = "owner";
+    } 
+    else if(email === ADMIN_EMAIL){
+      role = "admin";
+    }
+
+    /* 👤 PROFILE UPDATE */
+    document.getElementById("profileData").innerHTML = 
+      <p>${email}</p>
+      <p>Role: ${role}</p>
+    ;
+
+    document.getElementById("authBtn").innerText = "Logout";
+
+    /* 🔥 ADMIN PANEL SHOW */
+    if(role === "admin" || role === "owner"){
+      document.getElementById("adminPanelBtn").style.display = "block";
+    }
+
+  }
+
 });
 
 </script>
