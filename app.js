@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
       window.submitWithdraw = function () {
 
         let amount = document.getElementById("withdrawAmount").value;
-        if (!amount  isNaN(amount)  amount <= 0) {
+        if (!amount || isNaN(amount) || amount <= 0) {
           alert("Enter valid amount");
           return;
         }
