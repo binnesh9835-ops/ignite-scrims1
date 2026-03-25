@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
   console.log("🔥 JS Loaded");
 
-  /* ---------------- TAB SYSTEM ---------------- */
   const tabs = document.querySelectorAll(".tab");
   const sections = document.querySelectorAll(".section");
 
@@ -11,9 +10,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
       let tabName = btn.dataset.tab;
 
-      // Agar normal tab hai (home, matches, etc.)
       if(tabName){
-
         tabs.forEach(t=>t.classList.remove("active"));
         sections.forEach(s=>s.classList.remove("active"));
 
@@ -26,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
 
-  /* ---------------- FIREBASE ---------------- */
+  /* FIREBASE */
   firebase.initializeApp({
     apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
     authDomain: "ignite-scrims.firebaseapp.com",
@@ -36,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function(){
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  /* ---------------- LOGIN BUTTON ---------------- */
   const authBtn = document.getElementById("authBtn");
 
   authBtn.addEventListener("click", function(){
@@ -49,9 +45,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithRedirect(provider);
+
   });
 
-  /* ---------------- LOGIN STATE ---------------- */
+  /* LOGIN STATE */
   auth.onAuthStateChanged(async (user)=>{
 
     if(user){
@@ -73,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   });
 
-  /* ---------------- SAVE ---------------- */
+  /* SAVE DETAILS */
   window.saveDetails = function(){
 
     let name = document.getElementById("name").value;
@@ -111,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("detailsPopup").style.display="none";
   }
 
-  /* ---------------- PROFILE ---------------- */
   function updateProfile(d){
     document.getElementById("profileText").innerHTML = 
       <p>${d.name}</p>
