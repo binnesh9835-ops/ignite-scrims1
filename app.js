@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let amount = document.getElementById("amountInput").value;
 
-        if (!amount  isNaN(amount)  amount <= 0) {
+        if (!amount || isNaN(amount) || amount <= 0) {
           alert("Enter valid amount");
           return;
         }
