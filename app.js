@@ -9,15 +9,19 @@ document.addEventListener("DOMContentLoaded", function(){
   tabs.forEach(btn=>{
     btn.addEventListener("click", function(){
 
-      if(btn.id === "authBtn") return; // login button skip
+      let tabName = btn.dataset.tab;
 
-      tabs.forEach(t=>t.classList.remove("active"));
-      sections.forEach(s=>s.classList.remove("active"));
+      // Agar normal tab hai (home, matches, etc.)
+      if(tabName){
 
-      btn.classList.add("active");
+        tabs.forEach(t=>t.classList.remove("active"));
+        sections.forEach(s=>s.classList.remove("active"));
 
-      let target = document.getElementById(btn.dataset.tab);
-      if(target) target.classList.add("active");
+        btn.classList.add("active");
+
+        let target = document.getElementById(tabName);
+        if(target) target.classList.add("active");
+      }
 
     });
   });
@@ -45,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithRedirect(provider);
-
   });
 
   /* ---------------- LOGIN STATE ---------------- */
@@ -70,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   });
 
-  /* ---------------- SAVE DETAILS ---------------- */
+  /* ---------------- SAVE ---------------- */
   window.saveDetails = function(){
 
     let name = document.getElementById("name").value;
