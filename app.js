@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function(){
     let uid = document.getElementById("uid").value;
 
     // ✅ FIXED LINE
-    if(!name  !phone  !ign || !uid){
+    if(!name || !phone || !ign || !uid){
       alert("Fill all fields");
       return;
     }
