@@ -215,7 +215,7 @@ loadTransactions();
   } else {
     authBtn.innerText = "Login";
     document.getElementById("profileText").innerText = "Login karo";
-  }
+  });
 
 });
 
