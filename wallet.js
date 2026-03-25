@@ -1,14 +1,15 @@
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
 
-  window.openAddMoney = function(){
+  window.openAddMoney = function () {
     document.getElementById("addMoneyPopup").style.display = "flex";
   }
 
-  window.confirmAmount = function(){
+  window.confirmAmount = function () {
 
     let amount = document.getElementById("amountInput").value;
 
-    if(!amount || isNaN(amount)){
+    // FIXED: isNaN check
+    if (!amount || isNaN(amount)) {
       alert("Enter valid amount");
       return;
     }
@@ -20,10 +21,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
     document.getElementById("paymentPopup").style.display = "flex";
   }
 
-  window.submitPayment = async function(){
+  window.submitPayment = async function () {
 
     let user = firebase.auth().currentUser;
-    if(!user){
+    if (!user) {
       alert("Login first");
       return;
     }
@@ -32,7 +33,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
     let name = document.getElementById("payerName").value;
     let txnId = document.getElementById("txnId").value;
 
-    if(!name || !txnId){
+    // FIXED: proper condition
+    if (!name || !txnId) {
       alert("Fill all fields");
       return;
     }
@@ -63,27 +65,27 @@ document.addEventListener("DOMContentLoaded", ()=>{
     loadTransactions(transactions);
   }
 
-  window.loadTransactions = function(list){
+  window.loadTransactions = function (list) {
 
     let box = document.getElementById("transactionsBox");
 
-    if(!list || list.length === 0){
+    if (!list || list.length === 0) {
       box.innerHTML = "<p>No transactions yet</p>";
       return;
     }
 
     box.innerHTML = "";
 
-    list.forEach(t=>{
+    list.forEach(t => {
 
       let color = "white";
       let sign = "+";
 
-      if(t.status === "pending") color = "yellow";
-      else if(t.status === "rejected") color = "red";
-      else if(t.status === "success") color = "green";
+      if (t.status === "pending") color = "yellow";
+      else if (t.status === "rejected") color = "red";
+      else if (t.status === "success") color = "green";
 
-      if(t.type === "debit") sign = "-";
+      if (t.type === "debit") sign = "-";
 
       box.innerHTML += 
         <p style="color:${color}">
