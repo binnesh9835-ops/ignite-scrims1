@@ -50,52 +50,28 @@ document.addEventListener("DOMContentLoaded", function(){
     prompt: "select_account"
   });
 
-  auth.signInWithRedirect(provider);
+  auth.signInWithPopup(provider).then(async (result)=>{
 
-});
+  let email = result.user.email;
 
-  /* LOGIN STATE */
-  auth.onAuthStateChanged(async (user)=>{
+  let doc = await db.collection("users").doc(email).get();
 
-    if(user){
-
-      let email = user.email;
-
-      let doc = await db.collection("users").doc(email).get();
-
-      if(doc.exists){
-        let d = doc.data();
-        updateProfile(d);
-        authBtn.innerText="Logout";
-      } else {
-        document.getElementById("email").value = email;
-        document.getElementById("detailsPopup").style.display="flex";
-      }
-
-    }
-
-  });
-
-  auth.getRedirectResult().then(async (result)=>{
-
-  if(result.user){
-
-    let email = result.user.email;
-
-    let doc = await db.collection("users").doc(email).get();
-
-    if(doc.exists){
-      let d = doc.data();
-      updateProfile(d);
-      authBtn.innerText="Logout";
-    } else {
-      document.getElementById("email").value = email;
-      document.getElementById("detailsPopup").style.display="flex";
-    }
-
+  if(doc.exists){
+    let d = doc.data();
+    updateProfile(d);
+    authBtn.innerText="Logout";
+    alert("Welcome " + d.name + " 🔥");
+  } else {
+    document.getElementById("email").value = email;
+    document.getElementById("detailsPopup").style.display="flex";
   }
 
+}).catch((error)=>{
+  console.log("Login Error:", error);
 });
+
+});
+
 
   /* SAVE DETAILS */
   window.saveDetails = function(){
