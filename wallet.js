@@ -173,15 +173,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (t.status === "rejected") color = "red";
 
       if (t.type === "deposit") {
-        text = + ₹${t.amount} Added;
+        text = `+ ₹${t.amount} Added`;
       }
 
       if (t.type === "winning") {
-        text = + ₹${t.amount} Won;
+        text = `+ ₹${t.amount} Won`;
       }
 
       if (t.type === "withdraw") {
-        text = - ₹${t.amount} Withdraw;
+        text = `- ₹${t.amount} Withdraw`;
       }
 
       box.innerHTML += 
