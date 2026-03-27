@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ❌ NOT ENOUGH BALANCE
   if (amount > winning) {
     msg.style.color = "red";
-    msg.innerText = You can withdraw only ₹${winning};
+    msg.innerText =` You can withdraw only ₹${winning}`;
     return;
   }
 
