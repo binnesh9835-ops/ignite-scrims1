@@ -184,12 +184,12 @@ document.addEventListener("DOMContentLoaded", () => {
         text = `- ₹${t.amount} Withdraw`;
       }
 
-      box.innerHTML += 
+      box.innerHTML +=` 
         <p style="color:${color}">
           ${text} <br>
           <small style="opacity:0.6;">${t.status}</small>
         </p>
-      ;
+      `;
     });
   }
 
