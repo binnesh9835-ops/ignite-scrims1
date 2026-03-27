@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (amount > winning) {
           msg.style.color = "red";
-          msg.innerText = You can withdraw only ₹${winning};
+          msg.innerText =` You can withdraw only ₹${winning}`;
           return;
         }
 
