@@ -1,23 +1,21 @@
-document.addEventListener("DOMContentLoaded", function () {
-
-  console.log("🔥 JS Loaded");
+document.addEventListener("DOMContentLoaded", function(){
 
   const tabs = document.querySelectorAll(".tab");
   const sections = document.querySelectorAll(".section");
 
-  tabs.forEach(btn => {
-    btn.addEventListener("click", function () {
+  tabs.forEach(btn=>{
+    btn.addEventListener("click", function(){
 
       let tabName = btn.dataset.tab;
 
-      if (tabName) {
-        tabs.forEach(t => t.classList.remove("active"));
-        sections.forEach(s => s.classList.remove("active"));
+      if(tabName){
+        tabs.forEach(t=>t.classList.remove("active"));
+        sections.forEach(s=>s.classList.remove("active"));
 
         btn.classList.add("active");
 
         let target = document.getElementById(tabName);
-        if (target) target.classList.add("active");
+        if(target) target.classList.add("active");
       }
 
     });
@@ -36,53 +34,55 @@ document.addEventListener("DOMContentLoaded", function () {
   const authBtn = document.getElementById("authBtn");
 
   /* LOGIN */
-  authBtn.addEventListener("click", function () {
+  authBtn.addEventListener("click", function(){
 
-    if (authBtn.innerText === "Logout") {
-      auth.signOut().then(() => location.reload());
+    if(authBtn.innerText === "Logout"){
+      auth.signOut().then(()=>location.reload());
       return;
     }
 
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
 
-    auth.signInWithPopup(provider).then(async (result) => {
+    auth.signInWithPopup(provider).then(async (result)=>{
 
       let email = result.user.email;
       let doc = await db.collection("users").doc(email).get();
 
-      if (doc.exists) {
+      if(doc.exists){
         updateProfile(doc.data());
-        authBtn.innerText = "Logout";
+        authBtn.innerText="Logout";
+        loadWallet();
       } else {
         document.getElementById("email").value = email;
         openPopup("detailsPopup");
       }
 
-    }).catch(err => console.log(err));
+    });
 
   });
 
   /* AUTH STATE */
-  auth.onAuthStateChanged(async (user) => {
+  auth.onAuthStateChanged(async (user)=>{
 
-    if (!user) {
-      authBtn.innerText = "Login";
-      document.getElementById("profileText").innerText = "Login karo";
+    if(!user){
+      authBtn.innerText="Login";
+      document.getElementById("profileText").innerText="Login karo";
       return;
     }
 
     let doc = await db.collection("users").doc(user.email).get();
 
-    if (doc.exists) {
+    if(doc.exists){
       updateProfile(doc.data());
-      authBtn.innerText = "Logout";
+      authBtn.innerText="Logout";
+      loadWallet();
     }
 
   });
 
-  /* SAVE DETAILS */
-  window.saveDetails = function () {
+  /* SAVE PROFILE */
+  window.saveDetails = function(){
 
     let name = document.getElementById("name").value;
     let phone = document.getElementById("phone").value;
@@ -90,62 +90,44 @@ document.addEventListener("DOMContentLoaded", function () {
     let ign = document.getElementById("ign").value;
     let uid = document.getElementById("uid").value;
 
-    if (!name || !phone || !ign || !uid) {
+    if(!name  !phone  !ign || !uid){
       alert("Fill all fields");
       return;
     }
 
-    if (!phone.startsWith("+91")) {
-      alert("Phone must start with +91");
-      return;
-    }
-
     let data = {
-      name,
-      phone,
-      email,
-      ign,
-      uid,
-      matches: 0,
-      kills: 0,
+      name, phone, email, ign, uid,
+      deposit: 0,
       winning: 0,
-      transactions: [],
-      lastUpdated: Date.now()
+      transactions: []
     };
 
     db.collection("users").doc(email).set(data);
 
     updateProfile(data);
     closePopup("detailsPopup");
-
-    authBtn.innerText = "Logout";
+    authBtn.innerText="Logout";
   }
 
-  /* PROFILE */
-  function updateProfile(d) {
-
-    document.getElementById("profileText").innerHTML =` 
+  function updateProfile(d){
+    document.getElementById("profileText").innerHTML = 
       <p>${d.name}</p>
       <p>${d.phone}</p>
       <p>${d.email}</p>
       <hr>
       <p>IGN: ${d.ign}</p>
       <p>UID: ${d.uid}</p>
-      <p>Matches: ${d.matches}</p>
-      <p>Kills: ${d.kills}</p>
 
       <button class="btn" onclick="editProfile()">Edit Profile</button>
-    `;
+    ;
   }
 
-  /* EDIT PROFILE */
-  window.editProfile = function () {
+  window.editProfile = function(){
 
     let user = auth.currentUser;
-    if (!user) return;
+    if(!user) return;
 
-    db.collection("users").doc(user.email).get().then(doc => {
-
+    db.collection("users").doc(user.email).get().then(doc=>{
       let d = doc.data();
 
       document.getElementById("name").value = d.name;
@@ -155,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("uid").value = d.uid;
 
       openPopup("detailsPopup");
-
     });
 
   }
