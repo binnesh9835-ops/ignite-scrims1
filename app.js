@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Welcome 🔥");
       } else {
         document.getElementById("email").value = email;
-        document.getElementById("detailsPopup").style.display = "flex";
+        openPopup("detailsPopup"); // ✅ FIXED
       }
 
     }).catch(err => console.log(err));
@@ -84,24 +84,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       /* ================= WALLET ================= */
 
-      window.openAddMoney = function () {
-        document.getElementById("addMoneyPopup").style.display = "flex";
-      }
-
-      window.openWithdraw = function () {
-        document.getElementById("withdrawPopup").style.display = "flex";
-      }
-
-      window.closePopup = function (id) {
-        document.getElementById(id).style.display = "none";
-      }
-
       /* ADD MONEY */
       window.confirmAmount = function () {
 
         let amount = document.getElementById("amountInput").value;
 
-        if (!amount || isNaN(amount) || amount <= 0) {
+        if (!amount  isNaN(amount)  amount <= 0) {
           alert("Enter valid amount");
           return;
         }
@@ -109,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("payAmount").innerText = "₹" + amount;
 
         closePopup("addMoneyPopup");
-        document.getElementById("paymentPopup").style.display = "flex";
+        openPopup("paymentPopup"); // ✅ FIXED
       }
 
       /* PAYMENT */
@@ -141,72 +129,68 @@ document.addEventListener("DOMContentLoaded", function () {
         loadTransactions();
       }
 
-      /* WITHDRAW */
+      /* ================= WITHDRAW ================= */
       window.submitWithdraw = async function () {
 
-  let user = firebase.auth().currentUser;
-  if (!user) {
-    alert("Login first");
-    return;
-  }
+        let user = firebase.auth().currentUser;
+        if (!user) {
+          alert("Login first");
+          return;
+        }
 
-  let amount = Number(document.getElementById("withdrawAmount").value);
-  let upi = document.getElementById("withdrawUpi").value;
-  let msg = document.getElementById("withdrawMsg");
+        let amount = Number(document.getElementById("withdrawAmount").value);
+        let upi = document.getElementById("withdrawUpi").value;
+        let msg = document.getElementById("withdrawMsg");
 
-  msg.innerText = "";
+        msg.innerText = "";
 
-  if (!amount || isNaN(amount) || amount <= 0) {
-    msg.style.color = "red";
-    msg.innerText = "Enter valid amount";
-    return;
-  }
+        if (!amount  isNaN(amount)  amount <= 0) {
+          msg.style.color = "red";
+          msg.innerText = "Enter valid amount";
+          return;
+        }
 
-  if (!upi) {
-    msg.style.color = "red";
-    msg.innerText = "Enter UPI ID";
-    return;
-  }
+        if (!upi) {
+          msg.style.color = "red";
+          msg.innerText = "Enter UPI ID";
+          return;
+        }
 
-  let db = firebase.firestore();
-  let ref = db.collection("users").doc(user.email);
+        let ref = db.collection("users").doc(user.email);
+        let doc = await ref.get();
+        let data = doc.data();
 
-  let doc = await ref.get();
-  let data = doc.data();
+        let winning = data.winning || 0;
 
-  let winning = data.winning || 0;
+        if (amount > winning) {
+          msg.style.color = "red";
+          msg.innerText = You can withdraw only ₹${winning};
+          return;
+        }
 
-  // ❌ NOT ENOUGH BALANCE
-  if (amount > winning) {
-    msg.style.color = "red";
-    msg.innerText =` You can withdraw only ₹${winning}`;
-    return;
-  }
+        let transactions = data.transactions || [];
 
-  // ✅ SUCCESS
-  let transactions = data.transactions || [];
+        transactions.unshift({
+          type: "debit",
+          amount: amount,
+          status: "pending",
+          upi: upi,
+          label: "withdrawal",
+          time: Date.now()
+        });
 
-  transactions.unshift({
-    type: "debit",
-    amount: amount,
-    status: "pending",
-    upi: upi,
-    label: "withdrawal",
-    time: Date.now()
-  });
+        await ref.update({
+          transactions: transactions,
+          winning: winning - amount
+        });
 
-  await ref.update({
-    transactions: transactions,
-    winning: winning - amount
-  });
+        closePopup("withdrawPopup");
+        openPopup("successPopup"); // ✅ FIXED
 
-  document.getElementById("withdrawPopup").style.display = "none";
-  document.getElementById("successPopup").style.display = "flex";
+        loadTransactions(transactions);
+      }
 
-  loadTransactions(transactions);
-}
-
-      /* LOAD TRANSACTIONS */
+      /* ================= LOAD ================= */
       function loadTransactions() {
 
         let box = document.getElementById("history");
@@ -235,19 +219,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let sign = tx.type === "credit" ? "+" : "-";
 
-          box.innerHTML += `
+          box.innerHTML += 
             <p style="color:${color}">
               ${sign}₹${tx.amount} - ${tx.status} <br>
               <small>${tx.time}</small>
             </p>
           ;
-        `});
+        });
       }
 
       loadTransactions();
 
-    } else {
-      authBtn.innerText = "Login";
     }
 
   });
@@ -261,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let ign = document.getElementById("ign").value;
     let uid = document.getElementById("uid").value;
 
-    if (!name || !phone || !ign || !uid) {
+    if (!name  !phone  !ign || !uid) {
       alert("Fill all fields");
       return;
     }
@@ -279,6 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
       uid,
       matches: 0,
       kills: 0,
+      winning: 0, // ✅ IMPORTANT
       lastUpdated: Date.now()
     };
 
@@ -287,13 +270,13 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProfile(data);
 
     authBtn.innerText = "Logout";
-    document.getElementById("detailsPopup").style.display = "none";
+    closePopup("detailsPopup"); // ✅ FIXED
   }
 
   /* ================= PROFILE ================= */
   function updateProfile(d) {
 
-    document.getElementById("profileText").innerHTML = `
+    document.getElementById("profileText").innerHTML = 
       <p>${d.name}</p>
       <p>${d.phone}</p>
       <p>${d.email}</p>
@@ -304,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <p>Kills: ${d.kills}</p>
 
       <button class="btn" onclick="editProfile()">Edit Profile</button>
-    `;
+    ;
   }
 
   window.editProfile = function () {
@@ -322,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("ign").value = d.ign;
       document.getElementById("uid").value = d.uid;
 
-      document.getElementById("detailsPopup").style.display = "flex";
+      openPopup("detailsPopup"); // ✅ FIXED
 
     });
 
