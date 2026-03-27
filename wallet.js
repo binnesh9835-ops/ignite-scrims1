@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ADD MONEY */
+  /* ================= ADD MONEY ================= */
   window.confirmAmount = function () {
 
     let amount = document.getElementById("amountInput").value;
@@ -11,13 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.getElementById("payAmount").innerText =
-      "Send ₹" + amount;
+      "Send ₹" + amount + " to 9279072936@axl";
 
     closePopup("addMoneyPopup");
     openPopup("paymentPopup");
   }
 
-  /* PAYMENT */
+  /* ================= SUBMIT PAYMENT ================= */
   window.submitPayment = async function () {
 
     let user = firebase.auth().currentUser;
@@ -41,22 +41,23 @@ document.addEventListener("DOMContentLoaded", () => {
     let transactions = data.transactions || [];
 
     transactions.unshift({
-      amount,
-      type: "credit",
+      type: "deposit",
+      amount: amount,
       status: "pending",
-      name,
-      txnId,
+      name: name,
+      txnId: txnId,
       time: Date.now()
     });
 
     await ref.update({ transactions });
 
-    alert("Request submitted ✅");
-
     closePopup("paymentPopup");
+    openPopup("successPopup");
+
+    loadWallet();
   }
 
-  /* WITHDRAW */
+  /* ================= WITHDRAW ================= */
   window.submitWithdraw = async function () {
 
     let user = firebase.auth().currentUser;
@@ -71,6 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!amount  isNaN(amount)  amount <= 0) {
       msg.style.color = "red";
       msg.innerText = "Enter valid amount";
+      return;
+    }
+
+    if (amount < 100) {
+      msg.style.color = "red";
+      msg.innerText = "Minimum withdrawal is ₹100";
+      return;
+    }
+
+    if (amount > 1000) {
+      msg.style.color = "red";
+      msg.innerText = "Maximum withdrawal is ₹1000";
       return;
     }
 
@@ -97,10 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let transactions = data.transactions || [];
 
     transactions.unshift({
-      type: "debit",
-      amount,
+      type: "withdraw",
+      amount: amount,
       status: "pending",
-      upi,
+      upi: upi,
       label: "withdrawal",
       time: Date.now()
     });
@@ -112,6 +125,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
     closePopup("withdrawPopup");
     openPopup("successPopup");
+
+    loadWallet();
+  }
+
+  /* ================= LOAD WALLET ================= */
+  window.loadWallet = async function () {
+
+    let user = firebase.auth().currentUser;
+    if (!user) return;
+
+    let db = firebase.firestore();
+    let ref = db.collection("users").doc(user.email);
+
+    let doc = await ref.get();
+    let data = doc.data();
+
+    /* BALANCES */
+    document.getElementById("balance").innerText =
+      "₹" + (data.deposit || 0);
+
+    document.getElementById("winningBalance").innerText =
+      "₹" + (data.winning || 0);
+
+    /* TRANSACTIONS */
+    loadTransactions(data.transactions || []);
+  }
+
+  /* ================= TRANSACTION UI ================= */
+  window.loadTransactions = function (list) {
+
+    let box = document.getElementById("history");
+
+    if (!list || list.length === 0) {
+      box.innerHTML = "<p>No transactions yet</p>";
+      return;
+    }
+
+    box.innerHTML = "";
+
+    list.forEach(t => {
+
+      let color = "white";
+      let text = "";
+      if (t.status === "pending") color = "yellow";
+      if (t.status === "success") color = "limegreen";
+      if (t.status === "rejected") color = "red";
+
+      if (t.type === "deposit") {
+        text = + ₹${t.amount} Added;
+      }
+
+      if (t.type === "winning") {
+        text = + ₹${t.amount} Won;
+      }
+
+      if (t.type === "withdraw") {
+        text = - ₹${t.amount} Withdraw;
+      }
+
+      box.innerHTML += 
+        <p style="color:${color}">
+          ${text} <br>
+          <small style="opacity:0.6;">${t.status}</small>
+        </p>
+      ;
+    });
   }
 
 });
