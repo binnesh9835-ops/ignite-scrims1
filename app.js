@@ -219,12 +219,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let sign = tx.type === "credit" ? "+" : "-";
 
-          box.innerHTML += 
+          box.innerHTML +=` 
             <p style="color:${color}">
               ${sign}₹${tx.amount} - ${tx.status} <br>
               <small>${tx.time}</small>
             </p>
-          ;
+          `;
         });
       }
 
