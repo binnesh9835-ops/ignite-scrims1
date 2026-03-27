@@ -32,10 +32,12 @@
   <button id="authBtn" class="tab">Login</button>
 </div>
 
+<!-- HOME -->
 <div id="home" class="section active">
   <div class="card"><h2>🔥 Welcome Gamer</h2></div>
 </div>
 
+<!-- MATCHES -->
 <div id="matches" class="section">
   <div class="card"><h3>🎮 Matches</h3></div>
 </div>
@@ -44,7 +46,8 @@
 <div id="wallet" class="section">
   <div class="card">
 
-    <h2 id="balance">₹0</h2>
+    <h3>Deposit Balance: ₹<span id="balance">0</span></h3>
+    <h3>Winning Balance: ₹<span id="winningBalance">0</span> ⭐</h3>
 
     <button class="btn" onclick="openPopup('addMoneyPopup')">Add Money</button>
     <button class="btn" onclick="openPopup('withdrawPopup')">Withdraw</button>
@@ -58,41 +61,39 @@
   </div>
 </div>
 
-<!-- ADD MONEY POPUP -->
+<!-- ADD MONEY -->
 <div class="popup" id="addMoneyPopup">
   <div class="popup-box">
 
     <div style="text-align:right;">
-      <span onclick="closePopup('addMoneyPopup')" style="cursor:pointer;">❌</span>
+      <span onclick="closePopup('addMoneyPopup')">❌</span>
     </div>
 
     <h3>Add Money</h3>
 
     <input class="input" id="amountInput" placeholder="Enter Amount">
 
-    <button class="btn" onclick="confirmAmount()">Confirm</button>
+    <button class="btn" onclick="confirmAmount()">Proceed</button>
     <button class="btn" onclick="goBack()">Back</button>
 
   </div>
 </div>
 
-<!-- PAYMENT POPUP -->
+<!-- PAYMENT -->
 <div class="popup" id="paymentPopup">
   <div class="popup-box">
 
     <div style="text-align:right;">
-      <span onclick="closePopup('paymentPopup')" style="cursor:pointer;">❌</span>
+      <span onclick="closePopup('paymentPopup')">❌</span>
     </div>
 
-    <h3>Complete Payment</h3>
+    <h3>Submit Payment</h3>
 
-    <p>Send money to UPI:</p>
-    <h4>9279072936@axl</h4>
-
+    <p>Send to: 9279072936@axl</p>
     <p id="payAmount"></p>
 
     <input class="input" id="payerName" placeholder="Your Name">
-    <input class="input" id="txnId" placeholder="Transaction ID">
+    <input class="input" id="txnId" placeholder="UTR Number">
 
     <button class="btn" onclick="submitPayment()">Submit</button>
     <button class="btn" onclick="goBack()">Back</button>
@@ -100,12 +101,12 @@
   </div>
 </div>
 
-<!-- WITHDRAW POPUP (FIXED 🔥) -->
+<!-- WITHDRAW -->
 <div class="popup" id="withdrawPopup">
   <div class="popup-box">
 
     <div style="text-align:right;">
-      <span onclick="closePopup('withdrawPopup')" style="cursor:pointer;">❌</span>
+      <span onclick="closePopup('withdrawPopup')">❌</span>
     </div>
 
     <h3>Withdraw</h3>
@@ -121,22 +122,19 @@
   </div>
 </div>
 
-<!-- SUCCESS POPUP -->
+<!-- SUCCESS -->
 <div class="popup" id="successPopup">
   <div class="popup-box">
 
     <div style="text-align:right;">
-      <span onclick="closePopup('successPopup')" style="cursor:pointer;">❌</span>
+      <span onclick="closePopup('successPopup')">❌</span>
     </div>
 
-    <h3 style="color:limegreen;">✅ Withdrawal Requested</h3>
+    <h3 style="color:limegreen;">✅ Request Submitted</h3>
 
-    <p style="color:lightgreen;">
-      Your request has been submitted.<br>
-      Amount will be sent to your UPI shortly.
-    </p>
+    <p>Your request is under review</p>
 
-    <button class="btn" onclick="goBack()">Back</button>
+    <button class="btn" onclick="goBack()">OK</button>
 
   </div>
 </div>
@@ -149,33 +147,32 @@
   </div>
 </div>
 
-</div>
-
-<!-- DETAILS POPUP -->
+<!-- PROFILE POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
 
     <div style="text-align:right;">
-      <span onclick="closePopup('detailsPopup')" style="cursor:pointer;">❌</span>
+      <span onclick="closePopup('detailsPopup')">❌</span>
     </div>
 
     <h3>Complete Profile</h3>
 
-    <input class="input" id="name" placeholder="Full Name">
-    <input class="input" id="phone" placeholder="+91 Phone Number">
+    <input class="input" id="name">
+    <input class="input" id="phone">
     <input class="input" id="email" readonly>
-
-    <input class="input" id="ign" placeholder="IGN">
-    <input class="input" id="uid" placeholder="UID">
-
+    <input class="input" id="ign">
+    <input class="input" id="uid">
     <button class="btn" onclick="saveDetails()">Save</button>
     <button class="btn" onclick="goBack()">Back</button>
 
   </div>
 </div>
 
+</div>
+
 <!-- JS -->
 <script src="navigation.js"></script>
+<script src="wallet.js"></script>
 <script src="app.js"></script>
 
 </body>
