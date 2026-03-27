@@ -142,30 +142,69 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       /* WITHDRAW */
-      window.submitWithdraw = function () {
+      window.submitWithdraw = async function () {
 
-        let amount = document.getElementById("withdrawAmount").value;
-        if (!amount || isNaN(amount) || amount <= 0) {
-          alert("Enter valid amount");
-          return;
-        }
+  let user = firebase.auth().currentUser;
+  if (!user) {
+    alert("Login first");
+    return;
+  }
 
-        let history = JSON.parse(localStorage.getItem("transactions")) || [];
+  let amount = Number(document.getElementById("withdrawAmount").value);
+  let upi = document.getElementById("withdrawUpi").value;
+  let msg = document.getElementById("withdrawMsg");
 
-        history.unshift({
-          type: "debit",
-          amount: amount,
-          status: "pending",
-          time: new Date().toLocaleString()
-        });
+  msg.innerText = "";
 
-        localStorage.setItem("transactions", JSON.stringify(history));
+  if (!amount  isNaN(amount)  amount <= 0) {
+    msg.style.color = "red";
+    msg.innerText = "Enter valid amount";
+    return;
+  }
 
-        alert("Withdraw request submitted");
+  if (!upi) {
+    msg.style.color = "red";
+    msg.innerText = "Enter UPI ID";
+    return;
+  }
 
-        closePopup("withdrawPopup");
-        loadTransactions();
-      }
+  let db = firebase.firestore();
+  let ref = db.collection("users").doc(user.email);
+
+  let doc = await ref.get();
+  let data = doc.data();
+
+  let winning = data.winning || 0;
+
+  // ❌ NOT ENOUGH BALANCE
+  if (amount > winning) {
+    msg.style.color = "red";
+    msg.innerText = You can withdraw only ₹${winning};
+    return;
+  }
+
+  // ✅ SUCCESS
+  let transactions = data.transactions || [];
+
+  transactions.unshift({
+    type: "debit",
+    amount: amount,
+    status: "pending",
+    upi: upi,
+    label: "withdrawal",
+    time: Date.now()
+  });
+
+  await ref.update({
+    transactions: transactions,
+    winning: winning - amount
+  });
+
+  document.getElementById("withdrawPopup").style.display = "none";
+  document.getElementById("successPopup").style.display = "flex";
+
+  loadTransactions(transactions);
+}
 
       /* LOAD TRANSACTIONS */
       function loadTransactions() {
