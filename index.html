@@ -95,10 +95,31 @@
   <div class="popup-box">
     <h3>Withdraw</h3>
 
-    <input class="input" id="withdrawUpi" placeholder="Enter your UPI ID">
+    <!-- WITHDRAW POPUP -->
+<div class="popup" id="withdrawPopup">
+  <div class="popup-box">
+    <h3>Withdraw</h3>
 
-    <!-- FIX: function missing in your app.js -->
-    <button class="btn" onclick="submitWithdraw()">Withdraw</button>
+    <input class="input" id="withdrawAmount" placeholder="Enter Amount">
+    <input class="input" id="withdrawUpi" placeholder="Enter UPI ID">
+
+    <p id="withdrawMsg"></p>
+
+    <button class="btn" onclick="submitWithdraw()">Confirm</button>
+  </div>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div class="popup" id="successPopup">
+  <div class="popup-box">
+    <h3 style="color:limegreen;">✅ Withdrawal Requested</h3>
+
+    <p style="color:lightgreen;">
+      Your request has been submitted.<br>
+      Amount will be sent to your UPI shortly.
+    </p>
+
+    <button class="btn" onclick="closePopup('successPopup')">Back</button>
   </div>
 </div>
 
