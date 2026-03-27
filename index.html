@@ -46,13 +46,11 @@
 
     <h2 id="balance">₹0</h2>
 
-    <!-- ✅ function names match JS -->
-    <button class="btn" onclick="openAddMoney()">Add Money</button>
-    <button class="btn" onclick="openWithdraw()">Withdraw</button>
+    <button class="btn" onclick="openPopup('addMoneyPopup')">Add Money</button>
+    <button class="btn" onclick="openPopup('withdrawPopup')">Withdraw</button>
 
     <hr style="margin:15px 0;">
 
-    <!-- ✅ this was missing earlier -->
     <div id="history">
       <p>No transactions yet</p>
     </div>
@@ -63,18 +61,29 @@
 <!-- ADD MONEY POPUP -->
 <div class="popup" id="addMoneyPopup">
   <div class="popup-box">
+
+    <div style="text-align:right;">
+      <span onclick="closePopup('addMoneyPopup')" style="cursor:pointer;">❌</span>
+    </div>
+
     <h3>Add Money</h3>
 
     <input class="input" id="amountInput" placeholder="Enter Amount">
 
-    <!-- FIX: function name must match app.js -->
     <button class="btn" onclick="confirmAmount()">Confirm</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
   </div>
 </div>
 
 <!-- PAYMENT POPUP -->
 <div class="popup" id="paymentPopup">
   <div class="popup-box">
+
+    <div style="text-align:right;">
+      <span onclick="closePopup('paymentPopup')" style="cursor:pointer;">❌</span>
+    </div>
+
     <h3>Complete Payment</h3>
 
     <p>Send money to UPI:</p>
@@ -85,19 +94,20 @@
     <input class="input" id="payerName" placeholder="Your Name">
     <input class="input" id="txnId" placeholder="Transaction ID">
 
-    <!-- FIX: match app.js -->
     <button class="btn" onclick="submitPayment()">Submit</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
   </div>
 </div>
 
-<!-- WITHDRAW POPUP -->
+<!-- WITHDRAW POPUP (FIXED 🔥) -->
 <div class="popup" id="withdrawPopup">
   <div class="popup-box">
-    <h3>Withdraw</h3>
 
-    <!-- WITHDRAW POPUP -->
-<div class="popup" id="withdrawPopup">
-  <div class="popup-box">
+    <div style="text-align:right;">
+      <span onclick="closePopup('withdrawPopup')" style="cursor:pointer;">❌</span>
+    </div>
+
     <h3>Withdraw</h3>
 
     <input class="input" id="withdrawAmount" placeholder="Enter Amount">
@@ -106,12 +116,19 @@
     <p id="withdrawMsg"></p>
 
     <button class="btn" onclick="submitWithdraw()">Confirm</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
   </div>
 </div>
 
 <!-- SUCCESS POPUP -->
 <div class="popup" id="successPopup">
   <div class="popup-box">
+
+    <div style="text-align:right;">
+      <span onclick="closePopup('successPopup')" style="cursor:pointer;">❌</span>
+    </div>
+
     <h3 style="color:limegreen;">✅ Withdrawal Requested</h3>
 
     <p style="color:lightgreen;">
@@ -119,7 +136,8 @@
       Amount will be sent to your UPI shortly.
     </p>
 
-    <button class="btn" onclick="closePopup('successPopup')">Back</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
   </div>
 </div>
 
@@ -136,6 +154,11 @@
 <!-- DETAILS POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
+
+    <div style="text-align:right;">
+      <span onclick="closePopup('detailsPopup')" style="cursor:pointer;">❌</span>
+    </div>
+
     <h3>Complete Profile</h3>
 
     <input class="input" id="name" placeholder="Full Name">
@@ -146,10 +169,13 @@
     <input class="input" id="uid" placeholder="UID">
 
     <button class="btn" onclick="saveDetails()">Save</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
   </div>
 </div>
 
 <!-- JS -->
+<script src="navigation.js"></script>
 <script src="app.js"></script>
 
 </body>
