@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
   /* PROFILE */
   function updateProfile(d) {
 
-    document.getElementById("profileText").innerHTML = 
+    document.getElementById("profileText").innerHTML =` 
       <p>${d.name}</p>
       <p>${d.phone}</p>
       <p>${d.email}</p>
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <p>Kills: ${d.kills}</p>
 
       <button class="btn" onclick="editProfile()">Edit Profile</button>
-    ;
+    `;
   }
 
   /* EDIT PROFILE */
