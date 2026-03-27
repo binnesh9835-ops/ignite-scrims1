@@ -138,11 +138,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (t.type === "debit") sign = "-";
 
-      box.innerHTML += 
-        <p style="color:${color}">
-          ${sign} ₹${t.amount} (${t.status})
-        </p>
-      ;
+      box.innerHTML += `
+  <p style="color:${color}">
+    ${sign} ₹${t.amount}
+    <br>
+    <small style="opacity:0.6;">${t.label || ""}</small>
+  </p>
+`;
     });
 
   }
