@@ -204,23 +204,23 @@ document.addEventListener("DOMContentLoaded", function(){
       if(t.status === "rejected") color = "red";
 
       if(t.type === "deposit"){
-        text = + ₹${t.amount} Added;
+        text =` + ₹${t.amount} Added`;
       }
 
       if(t.type === "withdraw"){
-        text = - ₹${t.amount} Withdraw;
+        text =` - ₹${t.amount} Withdraw`;
       }
 
       if(t.type === "winning"){
-        text = 🏆 ₹${t.amount} Won;
+        text =` 🏆 ₹${t.amount} Won`;
         color = "limegreen";
       }
 
-      box.innerHTML += 
+      box.innerHTML +=` 
         <p style="color:${color}">
           ${text} (${t.status})
         </p>
-      ;
+      `;
     });
 
   }
