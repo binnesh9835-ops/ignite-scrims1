@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
 
-  /* FIREBASE */
+  /* ================= FIREBASE ================= */
   firebase.initializeApp({
     apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
     authDomain: "ignite-scrims.firebaseapp.com",
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   const authBtn = document.getElementById("authBtn");
 
-  /* LOGIN */
+  /* ================= LOGIN ================= */
   authBtn.addEventListener("click", function(){
 
     if(authBtn.innerText === "Logout"){
@@ -58,11 +58,11 @@ document.addEventListener("DOMContentLoaded", function(){
         openPopup("detailsPopup");
       }
 
-    });
+    }).catch(err => console.log(err));
 
   });
 
-  /* AUTH STATE */
+  /* ================= AUTH STATE ================= */
   auth.onAuthStateChanged(async (user)=>{
 
     if(!user){
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   });
 
-  /* SAVE PROFILE */
+  /* ================= SAVE PROFILE ================= */
   window.saveDetails = function(){
 
     let name = document.getElementById("name").value;
@@ -90,13 +90,22 @@ document.addEventListener("DOMContentLoaded", function(){
     let ign = document.getElementById("ign").value;
     let uid = document.getElementById("uid").value;
 
-    if(!name || !phone || !ign || !uid){
+    if(!name  !phone  !ign || !uid){
       alert("Fill all fields");
       return;
     }
 
+    if(phone.length !== 10){
+      alert("Enter valid 10 digit number");
+      return;
+    }
+
     let data = {
-      name, phone, email, ign, uid,
+      name,
+      phone,
+      email,
+      ign,
+      uid,
       deposit: 0,
       winning: 0,
       transactions: []
@@ -109,19 +118,22 @@ document.addEventListener("DOMContentLoaded", function(){
     authBtn.innerText="Logout";
   }
 
+  /* ================= PROFILE UI ================= */
   function updateProfile(d){
-    document.getElementById("profileText").innerHTML =` 
-      <p>${d.name}</p>
-      <p>${d.phone}</p>
+
+    document.getElementById("profileText").innerHTML =  
+      <p><b>${d.name}</b></p>
+      <p>+91 ${d.phone}</p>
       <p>${d.email}</p>
       <hr>
       <p>IGN: ${d.ign}</p>
       <p>UID: ${d.uid}</p>
 
       <button class="btn" onclick="editProfile()">Edit Profile</button>
-    `;
+    ;
   }
 
+  /* ================= EDIT PROFILE ================= */
   window.editProfile = function(){
 
     let user = auth.currentUser;
@@ -137,6 +149,78 @@ document.addEventListener("DOMContentLoaded", function(){
       document.getElementById("uid").value = d.uid;
 
       openPopup("detailsPopup");
+    });
+
+  }
+
+  /* ================= LOGOUT ================= */
+  window.logoutUser = function () {
+
+    auth.signOut().then(() => {
+      alert("Logged out successfully ✅");
+      location.reload();
+    }).catch(err => {
+      console.log("Logout Error:", err);
+    });
+
+  }
+
+  /* ================= WALLET LOAD ================= */
+  window.loadWallet = async function(){
+
+    let user = auth.currentUser;
+    if(!user) return;
+
+    let doc = await db.collection("users").doc(user.email).get();
+
+    if(!doc.exists) return;
+
+    let data = doc.data();
+
+    document.getElementById("balance").innerText = data.deposit || 0;
+    document.getElementById("winningBalance").innerText = data.winning || 0;
+
+    loadHistory(data.transactions || []);
+  }
+
+  /* ================= HISTORY ================= */
+  window.loadHistory = function(list){
+
+    let box = document.getElementById("history");
+
+    if(!list || list.length === 0){
+      box.innerHTML = "<p>No transactions yet</p>";
+      return;
+    }
+
+    box.innerHTML = "";
+
+    list.forEach(t=>{
+
+      let color = "yellow";
+      let text = "";
+
+      if(t.status === "approved") color = "limegreen";
+      if(t.status === "rejected") color = "red";
+
+      if(t.type === "deposit"){
+        text = + ₹${t.amount} Added;
+      }
+
+      if(t.type === "withdraw"){
+        text = - ₹${t.amount} Withdraw;
+      }
+
+      if(t.type === "winning"){
+        text = 🏆 ₹${t.amount} Won;
+        color = "limegreen";
+      }
+
+      box.innerHTML += 
+        <p style="color:${color}">
+          ${text} (${t.status})
+        </p>
+      ;
     });
 
   }
