@@ -220,7 +220,59 @@ document.addEventListener("DOMContentLoaded", function(){
         </p>
       `;
     });
+    
+  }
+window.saveMobile = async function(){
 
+  let user = firebase.auth().currentUser;
+  if(!user) return;
+
+  let mobile = document.getElementById("mobileInput").value;
+  let error = document.getElementById("mobileError");
+
+  error.innerText = "";
+
+  if(mobile.length !== 10 || isNaN(mobile)){
+    error.innerText = "Enter valid 10-digit mobile number";
+    return;
   }
 
+  let db = firebase.firestore();
+
+  await db.collection("users").doc(user.email).update({
+    phone: mobile
+  });
+
+  alert("Mobile number saved successfully ✅");
+
+  closePopup("mobilePopup");
+  location.reload();
+}
+
+  window.saveUpi = async function(){
+
+  let user = firebase.auth().currentUser;
+  if(!user) return;
+
+  let upi = document.getElementById("upiInput").value;
+  let msg = document.getElementById("upiMsg");
+
+  msg.innerText = "";
+
+  if(!upi.includes("@")){
+    msg.innerText = "Enter valid UPI ID";
+    return;
+  }
+
+  let db = firebase.firestore();
+
+  await db.collection("users").doc(user.email).update({
+    upi: upi
+  });
+
+  alert("UPI ID saved successfully ✅");
+
+  closePopup("upiPopup");
+  location.reload();
+}
 });
