@@ -138,15 +138,37 @@
 
   </div>
 </div>
-
+  
 <!-- PROFILE -->
 <div id="profile" class="section">
   <div class="card">
     <h3>👤 Profile</h3>
+
     <div id="profileText">Login karo</div>
+
+    <!-- ✅ NEW STATS CARD -->
+    <div class="card" style="margin-top:15px;">
+      <p>🎮 Games Played: <span id="games">0</span></p>
+      <p>🏆 Wins: <span id="wins">0</span></p>
+      <p>💰 Winnings: ₹<span id="winnings">0</span></p>
+      <p>📊 Win Rate: <span id="winrate">0</span>%</p>
+    </div>
+
+    <!-- ✅ ACTION BUTTONS -->
+    <div style="margin-top:15px;">
+      <button class="btn" onclick="openPopup('detailsPopup')">Edit Profile</button>
+      <button class="btn" onclick="openPopup('mobilePopup')">Add/Edit Mobile</button>
+      <button class="btn" onclick="openPopup('upiPopup')">Add/Edit UPI</button>
+    </div>
+
+    <div style="margin-top:10px;">
+      <p>🔒 You are securely logged in with Google</p>
+    </div>
+
+    <button class="btn" onclick="logoutUser()">Logout</button>
+
   </div>
 </div>
-
 <!-- PROFILE POPUP -->
 <div class="popup" id="detailsPopup">
   <div class="popup-box">
@@ -157,8 +179,9 @@
 
     <h3>Complete Profile</h3>
 
+
     <input class="input" id="name">
-    <input class="input" id="phone">
+    <input class="input" id="phone" placeholder="Enter 10 digit number">
     <input class="input" id="email" readonly>
     <input class="input" id="ign">
     <input class="input" id="uid">
@@ -167,7 +190,46 @@
 
   </div>
 </div>
+<!-- MOBILE POPUP -->
+<div class="popup" id="mobilePopup">
+  <div class="popup-box">
 
+    <div style="text-align:right;">
+      <span onclick="closePopup('mobilePopup')">❌</span>
+    </div>
+
+    <h3>Add Mobile Number</h3>
+
+    <p>+91</p>
+    <input class="input" id="mobileInput" placeholder="Enter 10-digit number">
+
+    <p id="mobileError" style="color:red;"></p>
+
+    <button class="btn" onclick="saveMobile()">Save</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
+  </div>
+</div>
+
+<!-- UPI POPUP -->
+<div class="popup" id="upiPopup">
+  <div class="popup-box">
+
+    <div style="text-align:right;">
+      <span onclick="closePopup('upiPopup')">❌</span>
+    </div>
+
+    <h3>UPI ID</h3>
+
+    <input class="input" id="upiInput" placeholder="Enter UPI ID">
+
+    <p id="upiMsg" style="color:red;"></p>
+
+    <button class="btn" onclick="saveUpi()">Save</button>
+    <button class="btn" onclick="goBack()">Back</button>
+
+  </div>
+</div>
 </div>
 
 <!-- JS -->
