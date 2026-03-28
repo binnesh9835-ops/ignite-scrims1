@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function(){
   /* ================= PROFILE UI ================= */
   function updateProfile(d){
 
-    document.getElementById("profileText").innerHTML =  
+    document.getElementById("profileText").innerHTML =`  
       <p><b>${d.name}</b></p>
       <p>+91 ${d.phone}</p>
       <p>${d.email}</p>
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function(){
       <p>UID: ${d.uid}</p>
 
       <button class="btn" onclick="editProfile()">Edit Profile</button>
-    ;
+    `;
   }
 
   /* ================= EDIT PROFILE ================= */
