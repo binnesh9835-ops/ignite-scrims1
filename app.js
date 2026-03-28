@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function(){
     let ign = document.getElementById("ign").value;
     let uid = document.getElementById("uid").value;
 
-    if(!name  !phone  !ign || !uid){
+    if(!name || !phone || !ign || !uid){
       alert("Fill all fields");
       return;
     }
