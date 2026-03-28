@@ -128,8 +128,6 @@ document.addEventListener("DOMContentLoaded", function(){
       <hr>
       <p>IGN: ${d.ign}</p>
       <p>UID: ${d.uid}</p>
-
-      <button class="btn" onclick="editProfile()">Edit Profile</button>
     `;
   }
 
