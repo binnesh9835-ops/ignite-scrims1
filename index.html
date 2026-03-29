@@ -13,8 +13,13 @@
     <!-- 🔥 MAIN CONTAINER -->
     <div class="container">
 
-        <!-- LOGO -->
-        <h1 class="logo">IGNITE SCRIMS 🔥</h1>
+        <!-- 🔥 LOGO WITH BULLET EFFECT -->
+        <div class="logo-container">
+            <h1 class="logo">
+                IGNITE SCRIMS
+                <span class="bullet"></span>
+            </h1>
+        </div>
 
         <!-- TAGLINE -->
         <p class="tagline">
@@ -23,13 +28,8 @@
 
         <!-- BUTTONS -->
         <div class="buttons">
-            <button class="primary-btn" onclick="startPlaying()">
-                🚀 Start Playing
-            </button>
-
-            <button class="secondary-btn">
-                🔐 Login with Google
-            </button>
+            <button class="primary-btn" onclick="startPlaying()">🚀 Start Playing</button>
+            <button class="secondary-btn">🔐 Login with Google</button>
         </div>
 
     </div>
@@ -40,9 +40,9 @@
         <div class="popup">
 
             <!-- TOP BAR -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span id="backBtn" onclick="prevStep()" style="cursor:pointer;">←</span>
-                <span class="close" onclick="closeOnboarding()">❌</span>
+            <div class="popup-top">
+                <span onclick="prevStep()">←</span>
+                <span onclick="closeOnboarding()">❌</span>
             </div>
 
             <!-- CONTENT -->
