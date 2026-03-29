@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGNITE SCRIMS</title>
 
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 🔥 MAIN CONTAINER -->
+    <div class="container">
+
+        <!-- LOGO -->
+        <h1 class="logo">IGNITE SCRIMS 🔥</h1>
+
+        <!-- TAGLINE -->
+        <p class="tagline">
+            Play tournaments. Win real money.
+        </p>
+
+        <!-- BUTTONS -->
+        <div class="buttons">
+            <button class="primary-btn" onclick="startPlaying()">Start Playing</button>
+            <button class="secondary-btn">Login with Google</button>
+        </div>
+
+    </div>
+
+    <!-- 🔥 ONBOARDING POPUP -->
+    <div id="onboarding" class="onboarding hidden">
+
+        <div class="popup">
+
+            <!-- CLOSE -->
+            <span class="close" onclick="closeOnboarding()">❌</span>
+
+            <!-- CONTENT -->
+            <h2 id="step-title">Welcome</h2>
+            <p id="step-text">Welcome to IGNITE SCRIMS</p>
+
+            <!-- BUTTONS -->
+            <div class="popup-buttons">
+                <button onclick="prevStep()">← Back</button>
+                <button onclick="nextStep()">Next →</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JS -->
+    <script src="js/main.js"></script>
+    <script src="js/onboarding.js"></script>
+
+</body>
+</html>
