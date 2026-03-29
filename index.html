@@ -5,63 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IGNITE SCRIMS</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- 🔥 MAIN CONTAINER -->
-    <div class="container">
+    <!-- 🔥 HERO SECTION -->
+    <div class="hero">
 
-        <!-- 🔥 LOGO WITH BULLET EFFECT -->
-        <div class="logo-container">
+        <div class="overlay"></div>
+
+        <div class="content">
+
+            <!-- LOGO -->
             <h1 class="logo">
                 IGNITE SCRIMS
                 <span class="bullet"></span>
             </h1>
-        </div>
 
-        <!-- TAGLINE -->
-        <p class="tagline">
-            Play tournaments. Win real money.
-        </p>
+            <!-- TAGLINE -->
+            <p class="tagline">
+                Enter the battlefield. Win real money.
+            </p>
 
-        <!-- BUTTONS -->
-        <div class="buttons">
-            <button class="primary-btn" onclick="startPlaying()">🚀 Start Playing</button>
-            <button class="secondary-btn">🔐 Login with Google</button>
-        </div>
-
-    </div>
-
-    <!-- 🔥 ONBOARDING POPUP -->
-    <div id="onboarding" class="onboarding hidden">
-
-        <div class="popup">
-
-            <!-- TOP BAR -->
-            <div class="popup-top">
-                <span onclick="prevStep()">←</span>
-                <span onclick="closeOnboarding()">❌</span>
-            </div>
-
-            <!-- CONTENT -->
-            <h2 id="step-title">Welcome 🔥</h2>
-            <p id="step-text">Play tournaments and win real money.</p>
-
-            <!-- BUTTONS -->
-            <div class="popup-buttons">
-                <button onclick="prevStep()">Back</button>
-                <button onclick="nextStep()">Next</button>
-            </div>
+            <!-- BUTTON -->
+            <button class="play-btn">START PLAYING</button>
 
         </div>
 
     </div>
-
-    <!-- JS -->
-    <script src="js/main.js"></script>
-    <script src="js/onboarding.js"></script>
 
 </body>
 </html>
