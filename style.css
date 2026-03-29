@@ -8,31 +8,45 @@
 /* BODY */
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top, #0B0F1A, #000);
-    color: white;
-    text-align: center;
+    background: black;
+    overflow: hidden;
 }
 
-/* CONTAINER */
-.container {
-    margin-top: 120px;
-}
-
-/* 🔥 LOGO CONTAINER */
-.logo-container {
+/* HERO */
+.hero {
+    height: 100vh;
+    width: 100%;
+    background: radial-gradient(circle at center, #0f172a, black);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
-    display: inline-block;
 }
 
-/* 🔥 LOGO TEXT */
+/* DARK OVERLAY */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent, rgba(0,0,0,0.9));
+}
+
+/* CONTENT */
+.content {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+}
+
+/* 🔥 LOGO */
 .logo {
-    font-size: 50px;
+    font-size: 64px;
     font-weight: bold;
     color: #FFD000;
-    text-shadow: 
+    text-shadow:
         0 0 10px #FFD000,
-        0 0 20px #FF6A00,
-        0 0 30px #FF0000;
+        0 0 30px #FF6A00,
+        0 0 60px #FF0000;
     position: relative;
     overflow: hidden;
 }
@@ -41,13 +55,13 @@ body {
 .bullet {
     position: absolute;
     top: 50%;
-    left: -120px;
-    width: 100px;
+    left: -150px;
+    width: 120px;
     height: 4px;
     background: linear-gradient(90deg, red, yellow);
-    box-shadow: 0 0 10px red, 0 0 20px yellow;
+    box-shadow: 0 0 20px red, 0 0 30px yellow;
     transform: translateY(-50%);
-    animation: shoot 2s linear infinite;
+    animation: shoot 1.5s linear infinite;
 }
 
 /* 💥 CUT EFFECT */
@@ -57,114 +71,45 @@ body {
     top: 50%;
     left: -100%;
     width: 200%;
-    height: 3px;
+    height: 4px;
     background: linear-gradient(90deg, red, yellow, transparent);
-    animation: cut 2s linear infinite;
+    animation: cut 1.5s linear infinite;
+}
+
+/* TAGLINE */
+.tagline {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #ccc;
+}
+
+/* BUTTON */
+.play-btn {
+    margin-top: 40px;
+    padding: 15px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #FF6A00, #FFD000);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 20px #FF6A00;
+    transition: 0.3s;
+}
+
+.play-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px #FF6A00;
 }
 
 /* ANIMATIONS */
 @keyframes shoot {
-    0% { left: -120px; }
+    0% { left: -150px; }
     100% { left: 120%; }
 }
 
 @keyframes cut {
     0% { left: -100%; opacity: 0; }
-    20% { opacity: 1; }
+    30% { opacity: 1; }
     100% { left: 100%; opacity: 0; }
-}
-
-/* TAGLINE */
-.tagline {
-    margin: 20px 0 40px;
-    color: #ccc;
-}
-
-/* BUTTONS */
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-/* PRIMARY BUTTON */
-.primary-btn {
-    padding: 14px 25px;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(45deg, #FF6A00, #FFD000);
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 0 15px #FF6A00;
-    transition: 0.3s;
-}
-
-.primary-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px #FF6A00;
-}
-
-/* SECONDARY BUTTON */
-.secondary-btn {
-    padding: 14px 25px;
-    border-radius: 10px;
-    background: transparent;
-    border: 1px solid #FFD000;
-    color: #FFD000;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.secondary-btn:hover {
-    background: #FFD000;
-    color: black;
-}
-
-/* ONBOARDING */
-.onboarding {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.hidden {
-    display: none;
-}
-
-/* POPUP */
-.popup {
-    background: #121826;
-    padding: 25px;
-    border-radius: 14px;
-    width: 320px;
-    box-shadow: 0 0 25px rgba(255,106,0,0.3);
-}
-
-/* POPUP TOP */
-.popup-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
-
-/* POPUP TEXT */
-.popup p {
-    color: #bbb;
-    margin-top: 10px;
-}
-
-/* POPUP BUTTONS */
-.popup-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
 }
