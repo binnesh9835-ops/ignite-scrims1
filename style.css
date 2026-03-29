@@ -1,1 +1,74 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0B0F1A;
+    color: white;
+    text-align: center;
+}
 
+.container {
+    margin-top: 100px;
+}
+
+.logo {
+    font-size: 40px;
+    color: #FF6A00;
+}
+
+.tagline {
+    margin: 10px 0 30px;
+    color: #ccc;
+}
+
+.buttons button {
+    padding: 12px 20px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.primary-btn {
+    background: #FF6A00;
+    color: white;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid #FF6A00;
+    color: #FF6A00;
+}
+
+/* ONBOARDING */
+.onboarding {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.popup {
+    background: #121826;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+}
+
+.popup-buttons {
+    margin-top: 20px;
+}
