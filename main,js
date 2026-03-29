@@ -1,7 +1,0 @@
-function startPlaying() {
-    window.location.href = "dashboard.html";
-}
-
-function closeOnboarding() {
-    document.getElementById("onboarding").classList.add("hidden");
-}
