@@ -23,8 +23,13 @@
 
         <!-- BUTTONS -->
         <div class="buttons">
-            <button class="primary-btn" onclick="startPlaying()">Start Playing</button>
-            <button class="secondary-btn">Login with Google</button>
+            <button class="primary-btn" onclick="startPlaying()">
+                🚀 Start Playing
+            </button>
+
+            <button class="secondary-btn">
+                🔐 Login with Google
+            </button>
         </div>
 
     </div>
@@ -34,17 +39,20 @@
 
         <div class="popup">
 
-            <!-- CLOSE -->
-            <span class="close" onclick="closeOnboarding()">❌</span>
+            <!-- TOP BAR -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span id="backBtn" onclick="prevStep()" style="cursor:pointer;">←</span>
+                <span class="close" onclick="closeOnboarding()">❌</span>
+            </div>
 
             <!-- CONTENT -->
-            <h2 id="step-title">Welcome</h2>
-            <p id="step-text">Welcome to IGNITE SCRIMS</p>
+            <h2 id="step-title">Welcome 🔥</h2>
+            <p id="step-text">Play tournaments and win real money.</p>
 
             <!-- BUTTONS -->
             <div class="popup-buttons">
-                <button onclick="prevStep()">← Back</button>
-                <button onclick="nextStep()">Next →</button>
+                <button onclick="prevStep()">Back</button>
+                <button onclick="nextStep()">Next</button>
             </div>
 
         </div>
