@@ -1,74 +1,169 @@
-body {
+/* RESET */
+* {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0B0F1A;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top, #121826, #0B0F1A);
     color: white;
     text-align: center;
 }
 
+/* CONTAINER */
 .container {
-    margin-top: 100px;
+    margin-top: 120px;
+    padding: 40px;
+    background: rgba(18, 24, 38, 0.9);
+    border-radius: 16px;
+    display: inline-block;
+    box-shadow: 0 0 40px rgba(255, 106, 0, 0.2);
+    backdrop-filter: blur(10px);
 }
 
+/* LOGO */
 .logo {
-    font-size: 40px;
+    font-size: 42px;
     color: #FF6A00;
+    text-shadow: 0 0 15px #FF6A00, 0 0 30px rgba(255,106,0,0.5);
+    letter-spacing: 2px;
 }
 
+/* TAGLINE */
 .tagline {
-    margin: 10px 0 30px;
+    margin: 15px 0 35px;
     color: #ccc;
-}
-
-.buttons button {
-    padding: 12px 20px;
-    margin: 10px;
-    border: none;
-    cursor: pointer;
     font-size: 16px;
-    border-radius: 8px;
 }
 
+/* BUTTONS */
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* PRIMARY BUTTON */
 .primary-btn {
-    background: #FF6A00;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #FF6A00, #FFD000);
     color: white;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #FF6A00;
+    transition: 0.3s;
 }
 
+.primary-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px #FF6A00;
+}
+
+/* SECONDARY BUTTON */
 .secondary-btn {
+    padding: 14px;
+    border-radius: 10px;
     background: transparent;
     border: 1px solid #FF6A00;
     color: #FF6A00;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-/* ONBOARDING */
+.secondary-btn:hover {
+    background: #FF6A00;
+    color: white;
+    box-shadow: 0 0 20px #FF6A00;
+}
+
+/* ONBOARDING OVERLAY */
 .onboarding {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* HIDDEN */
 .hidden {
     display: none;
 }
 
+/* POPUP */
 .popup {
     background: #121826;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
+    padding: 25px;
+    border-radius: 14px;
+    width: 320px;
+    box-shadow: 0 0 25px rgba(255,106,0,0.3);
+    animation: fadeIn 0.3s ease;
 }
 
+/* CLOSE BUTTON */
 .close {
     float: right;
     cursor: pointer;
+    color: #999;
 }
 
+.close:hover {
+    color: white;
+}
+
+/* POPUP TEXT */
+.popup h2 {
+    margin-bottom: 10px;
+}
+
+.popup p {
+    color: #bbb;
+    font-size: 14px;
+}
+
+/* POPUP BUTTONS */
 .popup-buttons {
     margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.popup-buttons button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+/* BACK BUTTON */
+.popup-buttons button:first-child {
+    background: #222;
+    color: white;
+}
+
+/* NEXT BUTTON */
+.popup-buttons button:last-child {
+    background: #FF6A00;
+    color: white;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
