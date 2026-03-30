@@ -167,3 +167,25 @@ body {
         margin-top: 80px;
     }
 }
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: black;
+    color: #FFD000;
+}
+
+/* DASHBOARD */
+.dashboard {
+    padding: 20px;
+}
+
+/* CARD */
+.card {
+    background: #222;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
