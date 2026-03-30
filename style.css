@@ -44,37 +44,62 @@ body {
     font-weight: bold;
     color: #FFD000;
     text-shadow:
-        0 0 10px #FFD000,
-        0 0 30px #FF6A00,
-        0 0 60px #FF0000;
+        0 0 8px #FFD000,
+        0 0 20px #FF6A00,
+        0 0 40px #FF0000;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* important */
 }
-
 /* 🔫 BULLET */
 .bullet {
     position: absolute;
     top: 50%;
-    left: -150px;
-    width: 120px;
-    height: 4px;
-    background: linear-gradient(90deg, red, yellow);
-    box-shadow: 0 0 20px red, 0 0 30px yellow;
+    left: -200px;
+    width: 60px;
+    height: 12px;
+    background: linear-gradient(90deg, #999, #fff);
+    border-radius: 50px;
     transform: translateY(-50%);
-    animation: shoot 1.5s linear infinite;
+    animation: shoot 1.2s linear infinite;
 }
 
-/* 💥 CUT EFFECT */
+/* Bullet head */
+.bullet::before {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 0;
+    width: 20px;
+    height: 12px;
+    background: gold;
+    border-radius: 50%;
+}
+
+/* Bullet trail (fire) */
+.bullet::after {
+    content: "";
+    position: absolute;
+    left: -40px;
+    top: 2px;
+    width: 40px;
+    height: 8px;
+    background: linear-gradient(90deg, red, orange, transparent);
+    filter: blur(2px);
+}
+
+/*Logo after */
 .logo::after {
     content: "";
     position: absolute;
     top: 50%;
     left: -100%;
     width: 200%;
-    height: 4px;
-    background: linear-gradient(90deg, red, yellow, transparent);
-    animation: cut 1.5s linear infinite;
+    height: 3px;
+    background: linear-gradient(90deg, yellow, red, transparent);
+    opacity: 0.8;
+    animation: cut 1.2s linear infinite;
 }
+
 
 /* TAGLINE */
 .tagline {
@@ -104,7 +129,7 @@ body {
 
 /* ANIMATIONS */
 @keyframes shoot {
-    0% { left: -150px; }
+    0% { left: -200px; }
     100% { left: 120%; }
 }
 
