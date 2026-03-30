@@ -1,19 +1,37 @@
+// 🔐 GOOGLE LOGIN FUNCTION
 function googleLogin() {
     auth.signInWithPopup(provider)
     .then((result) => {
-        let isNewUser = result.additionalUserInfo.isNewUser;
 
+        const user = result.user;
+        const isNewUser = result.additionalUserInfo.isNewUser;
+
+        console.log("User:", user);
+
+        // 🆕 FIRST TIME USER
         if (isNewUser) {
             document.getElementById("welcomePopup").classList.remove("hidden");
-        } else {
+        } 
+        // 🔁 EXISTING USER
+        else {
             window.location.href = "dashboard.html";
         }
+
     })
     .catch((error) => {
-        alert(error.message);
+        console.error(error);
+        alert("Login failed: " + error.message);
     });
 }
 
+// 🎉 CLOSE POPUP
 function closePopup() {
     window.location.href = "dashboard.html";
 }
+
+// 🔄 AUTO LOGIN CHECK (optional but useful)
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        console.log("Already logged in:", user.email);
+    }
+});
