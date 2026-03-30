@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IGNITE SCRIMS</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="hero">
-    <div class="content">
-        <h1 class="logo">IGNITE SCRIMS</h1>
-        <p class="tagline">Enter the battlefield. Win real money.</p>
-        <button class="play-btn" onclick="goToLogin()">START PLAYING</button>
+    <!-- 🔥 HERO SECTION -->
+    <div class="hero">
+        <div class="content">
+
+            <!-- LOGO -->
+            <h1 class="logo">IGNITE SCRIMS</h1>
+
+            <!-- TAGLINE -->
+            <p class="tagline">
+                Enter the battlefield. Win real money.
+            </p>
+
+            <!-- BUTTON -->
+            <button class="play-btn" onclick="goToLogin()">
+                START PLAYING
+            </button>
+
+        </div>
     </div>
-</div>
 
-<div class="bottom-section"></div>
+    <!-- ⚙️ GREY SECTION (EMPTY FOR NOW) -->
+    <div class="bottom-section"></div>
 
-<script>
-function goToLogin() {
-    window.location.href = "login.html";
-}
-</script>
+    <!-- JS -->
+    <script>
+        function goToLogin() {
+            window.location.href = "login.html";
+        }
+    </script>
 
 </body>
 </html>
