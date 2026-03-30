@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - IGNITE SCRIMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 🔥 NAVBAR -->
+<div class="navbar">
+    <h2>IGNITE SCRIMS</h2>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<!-- 🎮 MATCH SECTION -->
+<div class="dashboard">
+
+    <h3>🔥 Available Matches</h3>
+
+    <div class="card">
+        <p>Solo Match</p>
+        <p>Entry: ₹20</p>
+        <button>Join</button>
+    </div>
+
+    <div class="card">
+        <p>Duo Match</p>
+        <p>Entry: ₹50</p>
+        <button>Join</button>
+    </div>
+
+</div>
+
+<script type="module">
+import { auth } from "./firebase.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+window.logout = function() {
+    signOut(auth).then(() => {
+        window.location.href = "login.html";
+    });
+};
+</script>
+
+</body>
+</html>
