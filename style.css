@@ -15,112 +15,84 @@ body {
 /* HERO */
 .hero {
     height: 100vh;
-    width: 100%;
-    background: radial-gradient(circle at center, #0f172a, black);
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-}
-
-/* OVERLAY */
-.overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, transparent, rgba(0,0,0,0.9));
 }
 
 /* CONTENT */
 .content {
-    position: relative;
     text-align: center;
-    z-index: 2;
+    position: relative;
 }
 
 /* 🔥 LOGO */
 .logo {
     font-size: 64px;
-    font-weight: bold;
     color: #FFD000;
     text-shadow:
-        0 0 8px #FFD000,
-        0 0 20px #FF6A00,
-        0 0 40px #FF0000;
-    position: relative;
-    display: inline-block;
-    overflow: hidden; /* bullet ko limit karta hai */
-}
-
-/* 🔫 BULLET */
-.bullet {
-    position: absolute;
-    top: 50%;
-    left: -10%;
-    width: 60px;
-    height: 10px;
-    background: linear-gradient(90deg, #bbb, #fff);
-    border-radius: 50px;
-    transform: translateY(-50%);
-    animation: shoot 1.5s linear infinite;
-}
-
-/* bullet head */
-.bullet::before {
-    content: "";
-    position: absolute;
-    right: -8px;
-    top: 0;
-    width: 16px;
-    height: 10px;
-    background: gold;
-    border-radius: 50%;
-}
-
-/* fire trail */
-.bullet::after {
-    content: "";
-    position: absolute;
-    left: -30px;
-    top: 2px;
-    width: 30px;
-    height: 6px;
-    background: linear-gradient(90deg, red, orange, transparent);
-    filter: blur(2px);
+        0 0 10px #FFD000,
+        0 0 25px #FF6A00,
+        0 0 50px #FF0000;
 }
 
 /* 💥 PARTICLES */
 .particles {
     position: absolute;
-    top: 50%;
-    left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    top: 0;
+    left: 0;
 }
 
-.particles::before,
-.particles::after {
-    content: "";
+/* DOTS */
+.particles span {
     position: absolute;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    background: orange;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, yellow, red);
     border-radius: 50%;
-    opacity: 0;
-    animation: spark 1.5s linear infinite;
+    top: 50%;
+    left: 50%;
+    animation: move 3s infinite ease-in-out;
 }
 
-.particles::after {
-    background: yellow;
-    animation-delay: 0.2s;
+/* Different delays for randomness */
+.particles span:nth-child(1) { animation-delay: 0s; }
+.particles span:nth-child(2) { animation-delay: 0.3s; }
+.particles span:nth-child(3) { animation-delay: 0.6s; }
+.particles span:nth-child(4) { animation-delay: 0.9s; }
+.particles span:nth-child(5) { animation-delay: 1.2s; }
+
+/* 🔥 PARTICLE ANIMATION */
+@keyframes move {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* OUTWARD RANDOM */
+    30% {
+        transform: translate(calc(-50% + 150px), calc(-50% - 100px)) scale(1);
+    }
+
+    /* COME BACK (collision feel) */
+    50% {
+        transform: translate(-50%, -50%) scale(2);
+    }
+
+    /* SPREAD AGAIN */
+    80% {
+        transform: translate(calc(-50% - 120px), calc(-50% + 80px)) scale(1);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 /* TAGLINE */
 .tagline {
     margin-top: 20px;
-    font-size: 18px;
     color: #ccc;
 }
 
@@ -128,9 +100,8 @@ body {
 .play-btn {
     margin-top: 40px;
     padding: 15px 40px;
-    font-size: 18px;
-    border: none;
     border-radius: 10px;
+    border: none;
     background: linear-gradient(45deg, #FF6A00, #FFD000);
     color: white;
     cursor: pointer;
@@ -140,29 +111,4 @@ body {
 
 .play-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 40px #FF6A00;
-}
-
-/* 🔫 BULLET ANIMATION */
-@keyframes shoot {
-    0% { left: -10%; }
-    100% { left: 100%; }
-}
-
-/* 💥 SPARK ANIMATION */
-@keyframes spark {
-    0% {
-        left: 0%;
-        opacity: 0;
-        transform: scale(0);
-    }
-    30% {
-        opacity: 1;
-        transform: scale(1.5);
-    }
-    100% {
-        left: 100%;
-        opacity: 0;
-        transform: scale(0);
-    }
 }
