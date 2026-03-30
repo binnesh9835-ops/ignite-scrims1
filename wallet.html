@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet - IGNITE SCRIMS</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/wallet.css">
+</head>
+<body>
+
+<!-- 🔥 TOP BAR -->
+<div class="top-bar">
+    <button onclick="goBack()">←</button>
+    <h2>Wallet</h2>
+</div>
+
+<div class="wallet-container">
+
+    <!-- 💰 BALANCE -->
+    <div class="wallet-box">
+        <p>Total Balance: ₹<span id="balance">0</span></p>
+        <p>Winning Balance: ₹<span id="winning">0</span></p>
+    </div>
+
+    <!-- 🔘 ACTION BUTTONS -->
+    <div class="wallet-actions">
+        <button class="play-btn" onclick="openAddMoney()">Add Money</button>
+        <button class="play-btn" onclick="openWithdraw()">Withdraw</button>
+    </div>
+
+    <!-- 📜 HISTORY -->
+    <div class="history-section">
+        <h3>Transaction History</h3>
+        <div id="historyList"></div>
+    </div>
+
+</div>
+
+
+<!-- 💰 ADD MONEY POPUP -->
+<div id="addMoneyPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <div class="popup-top">
+            <button onclick="backToWallet()">←</button>
+            <button onclick="closePopup()">✖</button>
+        </div>
+
+        <h3>Add Money via UPI</h3>
+
+        <input type="number" id="amount" placeholder="Enter Amount ₹">
+
+        <p>Send payment to: <b>9279072936@axl</b></p>
+
+        <button class="play-btn" onclick="nextAddStep()">Proceed</button>
+
+    </div>
+
+</div>
+
+
+<!-- 🧾 PAYMENT DETAILS POPUP -->
+<div id="paymentPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <div class="popup-top">
+            <button onclick="backToAdd()">←</button>
+            <button onclick="closePopup()">✖</button>
+        </div>
+
+        <h3>Submit Payment Details</h3>
+
+        <input type="text" id="utr" placeholder="UTR Number (required)">
+        <input type="text" id="sender" placeholder="Sender Name (required)">
+
+        <button class="play-btn" onclick="submitPayment()">
+            Submit for Verification
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ⏳ PENDING POPUP -->
+<div id="pendingPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <div class="popup-top">
+            <span></span>
+            <button onclick="closePopup()">✖</button>
+        </div>
+
+        <h3>Payment Under Review</h3>
+        <p>Your payment is being verified by admin</p>
+
+        <span class="badge pending">Pending</span>
+
+    </div>
+
+</div>
+
+
+<!-- 💸 WITHDRAW POPUP -->
+<div id="withdrawPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <div class="popup-top">
+            <button onclick="backToWallet()">←</button>
+            <button onclick="closePopup()">✖</button>
+        </div>
+
+        <h3>Withdraw Money</h3>
+
+        <input type="number" id="withdrawAmount" placeholder="Enter Amount ₹ (100 - 1000)">
+
+        <button class="play-btn" onclick="submitWithdraw()">
+            Request Withdraw
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- SCRIPT -->
+<script type="module" src="js/wallet.js"></script>
+
+<script>
+function goBack(){
+    window.history.back();
+}
+</script>
+
+</body>
+</html>
