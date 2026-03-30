@@ -23,7 +23,7 @@ body {
     position: relative;
 }
 
-/* DARK OVERLAY */
+/* OVERLAY */
 .overlay {
     position: absolute;
     width: 100%;
@@ -48,58 +48,74 @@ body {
         0 0 20px #FF6A00,
         0 0 40px #FF0000;
     position: relative;
-    overflow: visible; /* important */
+    display: inline-block;
+    overflow: hidden; /* bullet ko limit karta hai */
 }
+
 /* 🔫 BULLET */
 .bullet {
     position: absolute;
     top: 50%;
-    left: -200px;
+    left: -10%;
     width: 60px;
-    height: 12px;
-    background: linear-gradient(90deg, #999, #fff);
+    height: 10px;
+    background: linear-gradient(90deg, #bbb, #fff);
     border-radius: 50px;
     transform: translateY(-50%);
-    animation: shoot 1.2s linear infinite;
+    animation: shoot 1.5s linear infinite;
 }
 
-/* Bullet head */
+/* bullet head */
 .bullet::before {
     content: "";
     position: absolute;
-    right: -10px;
+    right: -8px;
     top: 0;
-    width: 20px;
-    height: 12px;
+    width: 16px;
+    height: 10px;
     background: gold;
     border-radius: 50%;
 }
 
-/* Bullet trail (fire) */
+/* fire trail */
 .bullet::after {
     content: "";
     position: absolute;
-    left: -40px;
+    left: -30px;
     top: 2px;
-    width: 40px;
-    height: 8px;
+    width: 30px;
+    height: 6px;
     background: linear-gradient(90deg, red, orange, transparent);
     filter: blur(2px);
 }
 
-/*Logo after */
-.logo::after {
+/* 💥 PARTICLES */
+.particles {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.particles::before,
+.particles::after {
     content: "";
     position: absolute;
     top: 50%;
-    left: -100%;
-    width: 200%;
-    height: 3px;
-    background: linear-gradient(90deg, yellow, red, transparent);
-    opacity: 0.8;
-    animation: cut 1.2s linear infinite;
+    width: 6px;
+    height: 6px;
+    background: orange;
+    border-radius: 50%;
+    opacity: 0;
+    animation: spark 1.5s linear infinite;
 }
 
+.particles::after {
+    background: yellow;
+    animation-delay: 0.2s;
+}
 
 /* TAGLINE */
 .tagline {
@@ -127,14 +143,26 @@ body {
     box-shadow: 0 0 40px #FF6A00;
 }
 
-/* ANIMATIONS */
+/* 🔫 BULLET ANIMATION */
 @keyframes shoot {
-    0% { left: -200px; }
-    100% { left: 120%; }
+    0% { left: -10%; }
+    100% { left: 100%; }
 }
 
-@keyframes cut {
-    0% { left: -100%; opacity: 0; }
-    30% { opacity: 1; }
-    100% { left: 100%; opacity: 0; }
+/* 💥 SPARK ANIMATION */
+@keyframes spark {
+    0% {
+        left: 0%;
+        opacity: 0;
+        transform: scale(0);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+    100% {
+        left: 100%;
+        opacity: 0;
+        transform: scale(0);
+    }
 }
