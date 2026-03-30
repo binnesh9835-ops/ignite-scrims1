@@ -1,46 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - IGNITE SCRIMS</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 
-<!-- 🔥 NAVBAR -->
-<div class="navbar">
+<!-- 🔥 TOP NAVBAR -->
+<div class="top-bar">
     <h2>IGNITE SCRIMS</h2>
     <button onclick="logout()">Logout</button>
 </div>
 
-<!-- 🎮 MATCH SECTION -->
-<div class="dashboard">
+<!-- 🎮 MAIN CONTENT -->
+<div class="main-content">
 
-    <h3>🔥 Available Matches</h3>
+    <!-- MATCHES SECTION -->
+    <div id="matchesSection" class="section active">
 
-    <div class="card">
-        <p>Solo Match</p>
-        <p>Entry: ₹20</p>
-        <button>Join</button>
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('all')">All</button>
+            <button class="tab" onclick="switchTab('solo')">Solo</button>
+            <button class="tab" onclick="switchTab('duo')">Duo</button>
+            <button class="tab" onclick="switchTab('squad')">Squad</button>
+        </div>
+
+        <!-- MATCH LIST -->
+        <div id="matchList" class="card-container">
+            <!-- dynamic cards -->
+        </div>
+
     </div>
 
-    <div class="card">
-        <p>Duo Match</p>
-        <p>Entry: ₹50</p>
-        <button>Join</button>
+
+    <!-- TOURNAMENT SECTION -->
+    <div id="tournamentSection" class="section">
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTournamentTab('all')">All</button>
+            <button class="tab" onclick="switchTournamentTab('solo')">Solo</button>
+            <button class="tab" onclick="switchTournamentTab('duo')">Duo</button>
+            <button class="tab" onclick="switchTournamentTab('squad')">Squad</button>
+        </div>
+
+        <div id="tournamentList" class="card-container"></div>
+
+    </div>
+
+
+    <!-- WALLET SECTION -->
+    <div id="walletSection" class="section">
+
+        <h3>💰 Wallet</h3>
+
+        <div class="wallet-box">
+            <p>Total Balance: ₹<span id="balance">0</span></p>
+            <p>Winning Balance: ₹<span id="winning">0</span></p>
+        </div>
+
+        <button class="play-btn" onclick="goWallet()">Open Wallet</button>
+
+    </div>
+
+
+    <!-- PROFILE SECTION -->
+    <div id="profileSection" class="section">
+
+        <h3>👤 Profile</h3>
+
+        <div class="profile-box">
+            <p>Name: <span id="userName"></span></p>
+            <p>Email: <span id="userEmail"></span></p>
+        </div>
+
+        <button class="play-btn" onclick="goProfile()">Edit Profile</button>
+
     </div>
 
 </div>
 
-<script type="module">
-import { auth } from "./firebase.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-window.logout = function() {
-    signOut(auth).then(() => {
-        window.location.href = "login.html";
-    });
-};
-</script>
+<!-- 🔥 BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+
+    <button onclick="showSection('matchesSection')" class="nav-btn active">Matches</button>
+    <button onclick="showSection('tournamentSection')" class="nav-btn">Tournaments</button>
+    <button onclick="showSection('walletSection')" class="nav-btn">Wallet</button>
+    <button onclick="showSection('profileSection')" class="nav-btn">Profile</button>
+
+</div>
+
+
+<!-- 🔥 SCRIPT -->
+<script type="module" src="js/dashboard.js"></script>
 
 </body>
 </html>
