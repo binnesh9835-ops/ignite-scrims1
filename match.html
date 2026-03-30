@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match - IGNITE SCRIMS</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/match.css">
+</head>
+<body>
+
+<!-- 🔥 TOP BAR -->
+<div class="top-bar">
+    <button onclick="goBack()">←</button>
+    <h2>Match Details</h2>
+</div>
+
+<div class="match-container">
+
+    <!-- 🎮 MATCH INFO -->
+    <div class="match-box">
+        <p>Mode: <span id="mode"></span></p>
+        <p>Entry: ₹<span id="entry"></span></p>
+        <p>Per Kill: ₹<span id="perKill"></span></p>
+        <p>Booyah: ₹<span id="booyah"></span></p>
+        <p>Slots: <span id="slots"></span></p>
+        <p>Start Time: <span id="time"></span></p>
+    </div>
+
+    <!-- 🔘 JOIN BUTTON -->
+    <button class="play-btn" onclick="openJoinPopup()">
+        Join Match
+    </button>
+
+    <!-- 🎮 ROOM DETAILS -->
+    <div id="roomBox" class="room-box hidden">
+        <h3>Room Details</h3>
+        <p>ID: <span id="roomId"></span></p>
+        <p>Password: <span id="roomPass"></span></p>
+    </div>
+
+    <!-- 📊 LIVE SCORE -->
+    <div class="scoreboard">
+        <h3>Live Scoreboard</h3>
+        <div id="scoreList"></div>
+    </div>
+
+</div>
+
+
+<!-- 🔥 JOIN POPUP -->
+<div id="joinPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <div class="popup-top">
+            <button onclick="closePopup()">←</button>
+            <button onclick="closePopup()">✖</button>
+        </div>
+
+        <h3>Join Match</h3>
+
+        <p>Entry Fee: ₹<span id="joinEntry"></span></p>
+
+        <!-- TEAM NAME -->
+        <input type="text" id="teamInput" placeholder="Enter Name / Team (required)">
+
+        <button class="play-btn" onclick="confirmJoin()">
+            Confirm Join
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- 🎉 SUCCESS POPUP -->
+<div id="successPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <h3>Joined Successfully 🎉</h3>
+
+        <p>Your Slot: <span id="slotNumber"></span></p>
+        <p>Match Time: <span id="matchTime"></span></p>
+
+        <button class="play-btn" onclick="closePopup()">
+            OK
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- SCRIPT -->
+<script type="module" src="js/match.js"></script>
+
+<script>
+function goBack(){
+    window.history.back();
+}
+</script>
+
+</body>
+</html>
