@@ -33,7 +33,7 @@ body {
     color: #FFD000;
 
     /* ENTRY + GLOW */
-    animation: entry 1s ease-out, glowPulse 2s infinite alternate;
+    animation: entry 1s ease-out, glowPulse 0.9s infinite alternate;
 
     text-shadow:
         0 0 10px #FFD000,
