@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament - IGNITE SCRIMS</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tournament.css">
+</head>
+<body>
+
+<!-- 🔥 TOP BAR -->
+<div class="top-bar">
+    <button onclick="goBack()">←</button>
+    <h2>Tournament</h2>
+</div>
+
+<div class="tournament-container">
+
+    <!-- 🏆 TOURNAMENT INFO -->
+    <div class="tournament-box">
+        <p>Mode: <span id="mode"></span></p>
+        <p>Entry: ₹<span id="entry"></span></p>
+        <p>Total Matches: <span id="matches"></span></p>
+        <p>Per Kill Points: <span id="perKill"></span></p>
+    </div>
+
+    <!-- 🔘 JOIN -->
+    <button class="play-btn" onclick="openJoinPopup()">
+        Join Tournament
+    </button>
+
+    <!-- 🏆 LEADERBOARD -->
+    <div class="leaderboard">
+        <h3>🔥 Live Leaderboard</h3>
+
+        <div class="leaderboard-head">
+            <span>POS</span>
+            <span>TEAM</span>
+            <span>KILLS</span>
+            <span>POINTS</span>
+            <span>WINS</span>
+        </div>
+
+        <div id="leaderboardList"></div>
+    </div>
+
+</div>
+
+
+<!-- 🔥 JOIN POPUP -->
+<div id="joinPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <div class="popup-top">
+            <button onclick="closePopup()">←</button>
+            <button onclick="closePopup()">✖</button>
+        </div>
+
+        <h3>Join Tournament</h3>
+
+        <p>Entry Fee: ₹<span id="joinEntry"></span></p>
+
+        <!-- TEAM NAME -->
+        <input type="text" id="teamInput" placeholder="Enter Team Name (required)">
+
+        <button class="play-btn" onclick="confirmJoin()">
+            Confirm Join
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- 🎉 SUCCESS -->
+<div id="successPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <h3>Joined Successfully 🎉</h3>
+
+        <p>Your Slot: <span id="slotNumber"></span></p>
+
+        <button class="play-btn" onclick="closePopup()">
+            OK
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- SCRIPT -->
+<script type="module" src="js/tournament.js"></script>
+
+<script>
+function goBack(){
+    window.history.back();
+}
+</script>
+
+</body>
+</html>
