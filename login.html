@@ -1,70 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - IGNITE SCRIMS</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="login-container">
+    <!-- 🔐 LOGIN CONTAINER -->
+    <div class="login-container">
 
-    <h1 class="logo">IGNITE SCRIMS</h1>
-    <p>Login to continue</p>
+        <h1 class="logo">IGNITE SCRIMS</h1>
+        <p class="tagline">Login to continue</p>
 
-    <button class="play-btn" onclick="googleLogin()">
-        Continue with Google
-    </button>
+        <button class="play-btn" onclick="googleLogin()">
+            Continue with Google
+        </button>
 
-</div>
-
-<!-- 🔥 WELCOME POPUP -->
-<div id="welcomePopup" class="popup hidden">
-    <div class="popup-box">
-        <h2>🔥 Welcome to IGNITE SCRIMS</h2>
-        <p>Play matches. Get kills. Earn money 💰</p>
-        <button onclick="closePopup()">Got It</button>
     </div>
-</div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <!-- 🎉 WELCOME POPUP -->
+    <div id="welcomePopup" class="popup hidden">
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCgyT_wRam-8FWkq5VePffFtymUMbRnXCQ",
-  authDomain: "ignite-scrims.firebaseapp.com",
-  projectId: "ignite-scrims",
-  storageBucket: "ignite-scrims.firebasestorage.app",
-  messagingSenderId: "497561769270",
-  appId: "1:497561769270:web:ef4f215a253e984f2dcf97"
-};
+        <div class="popup-box">
 
-firebase.initializeApp(firebaseConfig);
+            <!-- TOP BAR -->
+            <div class="popup-top">
+                <span></span>
+                <span onclick="closePopup()">❌</span>
+            </div>
 
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+            <h2>🔥 Welcome to IGNITE SCRIMS</h2>
 
-function googleLogin() {
-    auth.signInWithPopup(provider)
-    .then((result) => {
-        let isNewUser = result.additionalUserInfo.isNewUser;
+            <p style="margin-top:10px;">
+                Play matches, get kills, and earn real money 💰
+            </p>
 
-        if (isNewUser) {
-            document.getElementById("welcomePopup").classList.remove("hidden");
-        } else {
-            window.location.href = "dashboard.html";
-        }
-    })
-    .catch((error) => {
-        alert(error.message);
-    });
-}
+            <button class="play-btn" onclick="closePopup()" style="margin-top:15px;">
+                Got It
+            </button>
 
-function closePopup() {
-    window.location.href = "dashboard.html";
-}
-</script>
+        </div>
+
+    </div>
+
+    <!-- 🔥 FIREBASE CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+
+    <!-- 🔥 YOUR JS FILES -->
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
 
 </body>
 </html>
