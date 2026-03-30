@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - IGNITE SCRIMS</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+<!-- 🔥 TOP BAR -->
+<div class="top-bar">
+    <button onclick="goBack()">←</button>
+    <h2>Profile</h2>
+</div>
+
+<div class="profile-container">
+
+    <!-- 🟢 BASIC INFO -->
+    <div class="profile-section">
+        <h3>Basic Info</h3>
+
+        <input type="text" id="name" placeholder="Your Name">
+        <input type="email" id="email" placeholder="Email" disabled>
+
+        <div class="phone-box">
+            <span>+91</span>
+            <input type="number" id="phone" placeholder="Mobile Number">
+        </div>
+    </div>
+
+    <!-- 🎮 GAME INFO -->
+    <div class="profile-section">
+        <h3>Game Details</h3>
+
+        <input type="text" id="uid" placeholder="Free Fire UID (required)">
+        <input type="text" id="ign" placeholder="In-Game Name (required)">
+    </div>
+
+    <!-- 💳 PAYMENT INFO -->
+    <div class="profile-section">
+        <h3>Payment Details</h3>
+
+        <input type="text" id="upi" placeholder="UPI ID (for withdraw)">
+    </div>
+
+    <!-- ℹ️ ABOUT -->
+    <div class="profile-section">
+        <h3>About IGNITE SCRIMS</h3>
+
+        <p class="about-text">
+            IGNITE SCRIMS is a platform where players join custom matches and earn real money based on performance.
+            Kills = Earnings 💰 | Fast UPI withdrawals.
+        </p>
+    </div>
+
+    <!-- 📞 SUPPORT -->
+    <div class="profile-section">
+        <h3>Support</h3>
+        <a href="https://t.me/IgniteScrimsFF_Support" target="_blank">
+            Contact on Telegram
+        </a>
+    </div>
+
+    <!-- 📄 LEGAL -->
+    <div class="profile-section">
+        <h3>Legal</h3>
+        <p>Privacy Policy</p>
+        <p>Terms & Conditions</p>
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <button class="play-btn" onclick="saveProfile()">Save Profile</button>
+
+</div>
+
+<!-- SCRIPT -->
+<script type="module" src="js/profile.js"></script>
+
+<script>
+function goBack(){
+    window.history.back();
+}
+</script>
+
+</body>
+</html>
