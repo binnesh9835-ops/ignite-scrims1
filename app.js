@@ -1,37 +1,33 @@
-// 🔐 GOOGLE LOGIN FUNCTION
-function googleLogin() {
-    auth.signInWithPopup(provider)
+import { auth, provider } from "./firebase.js";
+import { signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// 🔐 LOGIN
+window.googleLogin = function () {
+    signInWithPopup(auth, provider)
     .then((result) => {
 
-        const user = result.user;
-        const isNewUser = result.additionalUserInfo.isNewUser;
+        const isNewUser = result._tokenResponse.isNewUser;
 
-        console.log("User:", user);
-
-        // 🆕 FIRST TIME USER
         if (isNewUser) {
             document.getElementById("welcomePopup").classList.remove("hidden");
-        } 
-        // 🔁 EXISTING USER
-        else {
+        } else {
             window.location.href = "dashboard.html";
         }
 
     })
     .catch((error) => {
-        console.error(error);
-        alert("Login failed: " + error.message);
+        alert(error.message);
     });
-}
+};
 
 // 🎉 CLOSE POPUP
-function closePopup() {
+window.closePopup = function () {
     window.location.href = "dashboard.html";
-}
+};
 
-// 🔄 AUTO LOGIN CHECK (optional but useful)
-auth.onAuthStateChanged((user) => {
+// 🔄 AUTO LOGIN
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log("Already logged in:", user.email);
+        console.log("Logged in:", user.email);
     }
 });
