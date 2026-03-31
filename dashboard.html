@@ -46,6 +46,97 @@
 
 <div id="profile" class="section">
 
+    <div class="card">
+
+        <h3>Your Profile</h3>
+
+        <p><b>Name:</b> <span id="pName"></span></p>
+        <p><b>Email:</b> <span id="pEmail"></span></p>
+        <p><b>Phone:</b> +91 <span id="pPhone"></span></p>
+        <p><b>IGN:</b> <span id="pIgn"></span></p>
+
+        <button class="play-btn" onclick="openEditProfile()">
+            Edit Profile
+        </button>
+
+    </div>
+
+
+    <!-- 🔥 ABOUT + OTHER -->
+    <div class="card">
+
+        <div class="info-box">
+            <h3>🔥 About Us</h3>
+            <p>
+            IGNITE SCRIMS is a competitive gaming platform designed to help players enhance their skills while also providing opportunities to earn.
+
+This platform was created by Vishal, a Class 12 student, whose vision is to empower gamers by giving them a strong and reliable space to grow. Despite being a student, Vishal has shown great initiative and passion for esports by building a platform that supports both skill development and financial growth.
+
+IGNITE SCRIMS aims to create a professional and competitive environment where players can showcase their talent, participate in organized scrims, and gain real match experience, while also building a community that helps emerging gamers move toward a successful esports career.
+
+            </p>
+        </div>
+
+        <div class="info-box" onclick="openTelegram()">
+            💬 Contact Us (Tap to open Telegram)
+        </div>
+
+        <div class="info-box">
+            <h3>🔒 Privacy Policy</h3>
+            <p>
+            At IGNITE SCRIMS, we value your privacy and are committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our platform.
+
+We may collect personal information such as your name, email address, contact details, and gaming-related data when you register or interact with our services. This information is used to improve user experience, manage competitions, provide support, and ensure smooth platform operations.
+
+IGNITE SCRIMS does not sell, trade, or rent users’ personal information to third parties. However, we may share limited data with trusted partners only when necessary to operate the platform or comply with legal obligations.
+
+We implement appropriate security measures to protect your data from unauthorized access, alteration, or disclosure. Despite our efforts, no online platform can guarantee complete security.
+
+By using IGNITE SCRIMS, you agree to the terms of this Privacy Policy. We reserve the right to update or modify this policy at any time, and users are encouraged to review it periodically.
+
+If you have any questions or concerns regarding this Privacy Policy, please contact us through our official support channels.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>📜 Terms & Conditions</h3>
+            <p>
+            Welcome to IGNITE SCRIMS. By accessing or using our platform, you agree to comply with and be bound by the following terms and conditions.
+
+1. Use of the Platform
+IGNITE SCRIMS provides a competitive gaming environment for players to improve their skills and participate in matches. Users must use the platform responsibly and only for lawful purposes.
+
+2. User Accounts
+To access certain features, users may be required to create an account. You are responsible for maintaining the confidentiality of your account details and for all activities that occur under your account.
+
+3. Fair Play Policy
+All players are expected to maintain fair gameplay. Any form of cheating, hacking, exploiting bugs, or using unauthorized tools will result in strict action, including suspension or permanent ban.
+
+4. Payments and Earnings
+IGNITE SCRIMS may offer opportunities to earn through competitions. All payments, rewards, and withdrawals are subject to platform rules and verification processes. The platform reserves the right to modify or cancel rewards in case of suspicious activity.
+
+5. Platform Changes
+IGNITE SCRIMS reserves the right to modify, update, or discontinue any part of the platform at any time without prior notice.
+
+6. Limitation of Liability
+IGNITE SCRIMS is not responsible for any losses, damages, or technical issues arising from the use of the platform. Users participate at their own risk.
+
+7. Termination
+We reserve the right to suspend or terminate user accounts that violate these terms without prior notice.
+
+8. Acceptance of Terms
+By using IGNITE SCRIMS, you acknowledge that you have read, understood, and agreed to these Terms and Conditions.
+            </p>
+        </div>
+
+        <button class="play-btn" onclick="logoutUser()">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
     <!-- 🔥 EDIT BUTTON -->
     <button id="editProfileBtn" class="play-btn"
     onclick="window.location.href='profile.html'">
@@ -79,6 +170,7 @@ function showSection(section) {
     }
 }
 
+<script type="module" src="js/profile.js"></script>
 </script>
 
 </body>
