@@ -10,41 +10,81 @@
 
 <body>
 
-<div class="logo">Profile</div>
+<div class="logo">PROFILE</div>
 
 <div class="card">
 
-    <input type="text" placeholder="Name">
-    <input type="email" placeholder="Email" disabled>
+    <h3>Complete Your Profile</h3>
+
+    <input type="text" id="name" placeholder="Name">
+
+    <input type="email" id="email" disabled>
 
     <div class="phone-box">
         <span>+91</span>
-        <input type="number" placeholder="Phone Number">
+        <input type="number" id="phone"
+        placeholder="Phone Number (required)">
     </div>
 
-    <input type="text"
-    placeholder="In Game Name (exact copy paste)">
+    <input type="text" id="ign"
+    placeholder="In Game Name (required - exact copy paste)">
 
-    <input type="text"
-    placeholder="UPI ID">
+    <input type="text" id="upi"
+    placeholder="UPI ID (required)">
 
-    <input type="text"
-    placeholder="UPI Name (e.g. Akash)">
+    <input type="text" id="upiName"
+    placeholder="UPI Name (required - e.g. Akash)">
 
-    <button class="play-btn">Save Profile</button>
+    <button class="play-btn" onclick="saveProfile()">
+        Save Profile
+    </button>
 
 </div>
 
+
+<!-- 👤 PROFILE INFO -->
 <div class="card">
 
-    <div class="info-box">About Us</div>
-    <div class="info-box">Contact: @IgniteScrimsFF_Support</div>
-    <div class="info-box">Privacy Policy</div>
-    <div class="info-box">Terms & Conditions</div>
+    <div class="info-box">
+        <h3>🔥 About Us</h3>
+        <p>
+        IGNITE SCRIMS ek competitive gaming platform hai jaha players apni skill ko improve kar sakte hain aur real money earn bhi kar sakte hain.
+        Kuch players isse earning source ke roop me use karenge aur kuch esports practice ke liye.
 
-    <button class="play-btn">Logout</button>
+        Yeh platform Vishal (Class 12 student) ne banaya hai with the vision ki gamers ko ek aisa platform mile jaha wo apni gaming skill aur earning dono badha sake.
+
+        Iska main goal hai ki beginners se lekar pro players tak sabko ek fair aur competitive environment mile.
+        </p>
+    </div>
+
+    <div class="info-box" onclick="openTelegram()">
+        💬 Contact Us (Tap to open Telegram)
+    </div>
+
+    <div class="info-box">
+        <h3>🔒 Privacy Policy</h3>
+        <p>
+        Hum aapka data secure rakhte hain. Aapka personal information (email, phone, UPI) sirf platform ke use ke liye store hota hai.
+        Kisi bhi third party ke sath bina permission share nahi kiya jayega.
+        </p>
+    </div>
+
+    <div class="info-box">
+        <h3>📜 Terms & Conditions</h3>
+        <p>
+        Platform use karte waqt fair play zaruri hai. Koi cheating, hacking ya fraud activity allowed nahi hai.
+        Payment aur winnings admin verification ke baad process honge.
+        Rules violate karne par account suspend ho sakta hai.
+        </p>
+    </div>
+
+    <button class="play-btn" onclick="logoutUser()">
+        Logout
+    </button>
 
 </div>
+
+<script type="module" src="js/profile.js"></script>
 
 </body>
 </html>
