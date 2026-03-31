@@ -72,9 +72,7 @@
 <div class="tagline">PLAY • KILL • EARN</div>
 
 <div style="text-align:center; margin:10px;">
-<button id="startBtn" class="play-btn" onclick="openLogin()">
-    START PLAYING
-</button>
+<button onclick="loginUser()">START PLAYING</button>
 </div>
 
 <!-- NAV -->
@@ -153,14 +151,6 @@ If any user violates the rules, their account may be suspended or permanently ba
 </div>
 
 <!-- POPUPS -->
-<div id="loginPopup" class="popup">
-  <div class="popup-box">
-    <span onclick="closePopup('loginPopup')" class="close">×</span>
-    <h2>Select Email</h2>
-    <button onclick="loginUser()">Continue with Google</button>
-  </div>
-</div>
-
 <div id="welcomePopup" class="popup">
   <div class="popup-box">
     <span onclick="nextPopup()" class="close">×</span>
@@ -197,7 +187,6 @@ function checkAuth(section){
 
 window.onload=()=>setTimeout(()=>loader.style.display="none",1200);
 
-function openLogin(){ loginPopup.style.display="block"; }
 function closePopup(id){ document.getElementById(id).style.display="none"; }
 
 function openProfile(){ window.location.href="profile.html"; }
