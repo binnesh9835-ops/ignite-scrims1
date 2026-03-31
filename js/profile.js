@@ -24,10 +24,6 @@ onAuthStateChanged(auth, async (user) => {
 
     currentUser = user;
 
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-
-    // 🟢 AUTO EMAIL + NAME
     document.getElementById("email").value = user.email;
 
     const firstName = user.displayName
@@ -36,10 +32,16 @@ onAuthStateChanged(auth, async (user) => {
 
     document.getElementById("name").value = firstName;
 
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
     if (snap.exists()) {
-        showProfile(snap.data());
-    } else {
-        document.getElementById("profileForm").classList.remove("hidden");
+        const data = snap.data();
+
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("ign").value = data.ign || "";
+        document.getElementById("upi").value = data.upi || "";
+        document.getElementById("upiName").value = data.upiName || "";
     }
 
 });
@@ -48,47 +50,48 @@ onAuthStateChanged(auth, async (user) => {
 // 💾 SAVE PROFILE
 window.saveProfile = async function () {
 
-    const data = {
-        name: document.getElementById("name").value,
-        email: currentUser.email,
-        phone: document.getElementById("phone").value,
-        ign: document.getElementById("ign").value,
-        upi: document.getElementById("upi").value,
-        upiName: document.getElementById("upiName").value
-    };
+    const phone = document.getElementById("phone").value.trim();
+    const ign = document.getElementById("ign").value.trim();
+    const upi = document.getElementById("upi").value.trim();
+    const upiName = document.getElementById("upiName").value.trim();
 
-    if (!data.ign) {
-        alert("IGN required!");
+    // 🔥 VALIDATION
+    if (phone.length !== 10) {
+        alert("Enter valid 10 digit phone number");
         return;
     }
 
-    await setDoc(doc(db, "users", currentUser.uid), data);
+    if (!ign || !upi || !upiName) {
+        alert("All fields are required!");
+        return;
+    }
 
-    showProfile(data);
+    await setDoc(doc(db, "users", currentUser.uid), {
+        name: document.getElementById("name").value,
+        email: currentUser.email,
+        phone,
+        ign,
+        upi,
+        upiName
+    });
+
+    alert("Profile Saved ✅");
 };
 
 
-// 👁️ SHOW PROFILE
-function showProfile(data) {
-
-    document.getElementById("profileForm").classList.add("hidden");
-    document.getElementById("profileView").classList.remove("hidden");
-
-    document.getElementById("vName").innerText = data.name;
-    document.getElementById("vEmail").innerText = data.email;
-    document.getElementById("vPhone").innerText = data.phone;
-    document.getElementById("vIgn").innerText = data.ign;
-}
+// 📞 TELEGRAM
+window.openTelegram = function () {
+    window.open("https://t.me/IgniteScrimsFF_Support", "_blank");
+};
 
 
-// 🔓 LOGOUT CONFIRM
-window.confirmLogout = function () {
+// 🔓 LOGOUT
+window.logoutUser = function () {
 
-    const ok = confirm("Are you sure you want to logout?");
+    const ok = confirm("Logout?");
     if (!ok) return;
 
     signOut(auth).then(() => {
         window.location.href = "login.html";
     });
-
 };
