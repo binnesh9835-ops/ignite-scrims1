@@ -6,12 +6,82 @@
 <title>Dashboard - IGNITE SCRIMS</title>
 
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+/* 🔥 Loader */
+#loader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.logo-glow {
+    font-size: 40px;
+    color: orange;
+    animation: glow 1.5s infinite alternate;
+}
+@keyframes glow {
+    from { text-shadow: 0 0 10px orange; }
+    to { text-shadow: 0 0 30px yellow; }
+}
+
+/* 🔥 Tagline */
+.tagline {
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: white;
+    margin-top: -10px;
+}
+
+/* 🔥 Popup */
+.popup {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    top: 0;
+    left: 0;
+}
+.popup-box {
+    background: #111;
+    padding: 20px;
+    margin: 100px auto;
+    width: 300px;
+    text-align: center;
+    border-radius: 12px;
+    color: white;
+}
+.close {
+    float: right;
+    cursor: pointer;
+    font-size: 20px;
+}
+</style>
+
 </head>
 
 <body>
 
+<!-- 🔥 LOADER -->
+<div id="loader">
+    <div class="logo-glow">IGNITE SCRIMS</div>
+</div>
+
 <!-- 🔥 LOGO -->
 <div class="logo">IGNITE SCRIMS</div>
+<div class="tagline">PLAY • KILL • EARN 💰</div>
+
+<!-- 🔥 START BUTTON -->
+<div style="text-align:center; margin:10px;">
+<button class="play-btn" onclick="openLogin()">START PLAYING</button>
+</div>
 
 <!-- 🔻 TOP NAV -->
 <div class="top-nav">
@@ -29,9 +99,7 @@
     <button>Squad</button>
 </div>
 
-
 <!-- 📦 SECTIONS -->
-
 <div id="matches" class="section active">
     <div class="card">Match cards yaha aayenge</div>
 </div>
@@ -47,7 +115,6 @@
 <div id="profile" class="section">
 
     <div class="card">
-
         <h3>Your Profile</h3>
 
         <p><b>Name:</b> <span id="pName"></span></p>
@@ -58,22 +125,13 @@
         <button class="play-btn" onclick="openEditProfile()">
             Edit Profile
         </button>
-
     </div>
 
-
-    <!-- 🔥 ABOUT + OTHER -->
     <div class="card">
-
         <div class="info-box">
-            <h3>🔥 About Us</h3>
-            <p>
-            IGNITE SCRIMS is a competitive gaming platform designed to help players enhance their skills while also providing opportunities to earn.
-
-This platform was created by Vishal, a Class 12 student, whose vision is to empower gamers by giving them a strong and reliable space to grow. Despite being a student, Vishal has shown great initiative and passion for esports by building a platform that supports both skill development and financial growth.
-
-IGNITE SCRIMS aims to create a professional and competitive environment where players can showcase their talent, participate in organized scrims, and gain real match experience, while also building a community that helps emerging gamers move toward a successful esports career.
-
+            <h3 onclick="toggle('about')">🔥 About Us</h3>
+            <p id="about" style="display:none;">
+            IGNITE SCRIMS is a competitive gaming platform...
             </p>
         </div>
 
@@ -82,94 +140,88 @@ IGNITE SCRIMS aims to create a professional and competitive environment where pl
         </div>
 
         <div class="info-box">
-            <h3>🔒 Privacy Policy</h3>
-            <p>
-            At IGNITE SCRIMS, we value your privacy and are committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our platform.
-
-We may collect personal information such as your name, email address, contact details, and gaming-related data when you register or interact with our services. This information is used to improve user experience, manage competitions, provide support, and ensure smooth platform operations.
-
-IGNITE SCRIMS does not sell, trade, or rent users’ personal information to third parties. However, we may share limited data with trusted partners only when necessary to operate the platform or comply with legal obligations.
-
-We implement appropriate security measures to protect your data from unauthorized access, alteration, or disclosure. Despite our efforts, no online platform can guarantee complete security.
-
-By using IGNITE SCRIMS, you agree to the terms of this Privacy Policy. We reserve the right to update or modify this policy at any time, and users are encouraged to review it periodically.
-
-If you have any questions or concerns regarding this Privacy Policy, please contact us through our official support channels.
-            </p>
+            <h3 onclick="toggle('privacy')">🔒 Privacy Policy</h3>
+            <p id="privacy" style="display:none;">Your policy text...</p>
         </div>
 
         <div class="info-box">
-            <h3>📜 Terms & Conditions</h3>
-            <p>
-            Welcome to IGNITE SCRIMS. By accessing or using our platform, you agree to comply with and be bound by the following terms and conditions.
-
-1. Use of the Platform
-IGNITE SCRIMS provides a competitive gaming environment for players to improve their skills and participate in matches. Users must use the platform responsibly and only for lawful purposes.
-
-2. User Accounts
-To access certain features, users may be required to create an account. You are responsible for maintaining the confidentiality of your account details and for all activities that occur under your account.
-
-3. Fair Play Policy
-All players are expected to maintain fair gameplay. Any form of cheating, hacking, exploiting bugs, or using unauthorized tools will result in strict action, including suspension or permanent ban.
-
-4. Payments and Earnings
-IGNITE SCRIMS may offer opportunities to earn through competitions. All payments, rewards, and withdrawals are subject to platform rules and verification processes. The platform reserves the right to modify or cancel rewards in case of suspicious activity.
-
-5. Platform Changes
-IGNITE SCRIMS reserves the right to modify, update, or discontinue any part of the platform at any time without prior notice.
-
-6. Limitation of Liability
-IGNITE SCRIMS is not responsible for any losses, damages, or technical issues arising from the use of the platform. Users participate at their own risk.
-
-7. Termination
-We reserve the right to suspend or terminate user accounts that violate these terms without prior notice.
-
-8. Acceptance of Terms
-By using IGNITE SCRIMS, you acknowledge that you have read, understood, and agreed to these Terms and Conditions.
-            </p>
+            <h3 onclick="toggle('terms')">📜 Terms & Conditions</h3>
+            <p id="terms" style="display:none;">Your terms text...</p>
         </div>
 
-        <button class="play-btn" onclick="logoutUser()">
-            Logout
-        </button>
-
+        <button class="play-btn" onclick="logoutUser()">Logout</button>
     </div>
 
 </div>
 
-    <!-- 🔥 EDIT BUTTON -->
-    <button id="editProfileBtn" class="play-btn"
-    onclick="window.location.href='profile.html'">
-        Edit / Complete Profile
-    </button>
+<!-- 🔥 POPUPS -->
 
-    <div class="card">
-        Profile details yaha show honge
-    </div>
-
+<div id="loginPopup" class="popup">
+  <div class="popup-box">
+    <span onclick="closePopup('loginPopup')" class="close">×</span>
+    <h2>Select Email</h2>
+    <button onclick="loginUser()">Continue with Google</button>
+  </div>
 </div>
 
+<div id="welcomePopup" class="popup">
+  <div class="popup-box">
+    <span onclick="nextPopup()" class="close">×</span>
+    <p>Welcome to Ignite Scrims! Improve skills & earn.</p>
+    <button onclick="nextPopup()">OK</button>
+  </div>
+</div>
+
+<div id="guidePopup" class="popup">
+  <div class="popup-box">
+    <span onclick="closePopup('guidePopup')" class="close">×</span>
+    <p>Complete your profile to unlock features.</p>
+    <button onclick="openProfile()">Okay</button>
+  </div>
+</div>
 
 <script>
 
 function showSection(section) {
-
-    document.querySelectorAll(".section").forEach(s => {
-        s.classList.remove("active");
-    });
-
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
     document.getElementById(section).classList.add("active");
-
-    // 🔥 BUTTON CONTROL
-    const btn = document.getElementById("editProfileBtn");
-
-    if(section === "profile"){
-        btn.style.display = "block";
-    } else {
-        btn.style.display = "none";
-    }
 }
 
+/* Loader */
+window.onload = () => {
+    setTimeout(() => {
+        document.getElementById("loader").style.display = "none";
+    }, 1200);
+};
+
+/* Popup Logic */
+function openLogin(){
+    document.getElementById("loginPopup").style.display="block";
+}
+function closePopup(id){
+    document.getElementById(id).style.display="none";
+}
+function loginUser(){
+    closePopup("loginPopup");
+    document.getElementById("welcomePopup").style.display="block";
+}
+function nextPopup(){
+    closePopup("welcomePopup");
+    document.getElementById("guidePopup").style.display="block";
+}
+function openProfile(){
+    window.location.href="profile.html";
+}
+
+/* Toggle */
+function toggle(id){
+    let el=document.getElementById(id);
+    el.style.display = el.style.display==="none"?"block":"none";
+}
+
+</script>
+
+<!-- ✅ FIXED -->
 <script type="module" src="js/profile.js"></script>
 
 </body>
