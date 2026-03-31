@@ -3,81 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile - IGNITE SCRIMS</title>
+<title>Profile</title>
 
 <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<div class="top-bar">
-    <h2>Profile</h2>
-</div>
+<div class="logo">Profile</div>
 
-<div class="container">
+<div class="card">
 
-    <!-- 🔥 PROFILE FORM -->
-    <div id="profileForm" class="card">
+    <input type="text" placeholder="Name">
+    <input type="email" placeholder="Email" disabled>
 
-        <h3>Complete Your Profile</h3>
-
-        <input type="text" id="name" placeholder="Your Name">
-        <input type="email" id="email" disabled>
-
-        <div class="phone-box">
-            <span>+91</span>
-            <input type="number" id="phone" placeholder="Phone Number">
-        </div>
-
-        <input type="text" id="ign"
-        placeholder="In Game Name (exact copy paste)">
-
-        <input type="text" id="upi"
-        placeholder="Enter correct UPI ID">
-
-        <input type="text" id="upiName"
-        placeholder="UPI Name (e.g. Akash)">
-
-        <button class="play-btn" onclick="saveProfile()">
-            Save Profile
-        </button>
-
+    <div class="phone-box">
+        <span>+91</span>
+        <input type="number" placeholder="Phone Number">
     </div>
 
+    <input type="text"
+    placeholder="In Game Name (exact copy paste)">
 
-    <!-- ✅ COMPLETE PROFILE VIEW -->
-    <div id="profileView" class="card hidden">
+    <input type="text"
+    placeholder="UPI ID">
 
-        <h3>Your Profile</h3>
+    <input type="text"
+    placeholder="UPI Name (e.g. Akash)">
 
-        <p><b>Name:</b> <span id="vName"></span></p>
-        <p><b>Email:</b> <span id="vEmail"></span></p>
-        <p><b>Phone:</b> +91 <span id="vPhone"></span></p>
-        <p><b>IGN:</b> <span id="vIgn"></span></p>
-
-        <hr>
-
-        <h4>About Us</h4>
-        <p>IGNITE SCRIMS is a competitive platform for FF players.</p>
-
-        <h4>Contact Us</h4>
-        <p>@IgniteScrimsFF_Support</p>
-
-        <h4>Privacy Policy</h4>
-        <p>We respect your data.</p>
-
-        <h4>Terms & Conditions</h4>
-        <p>Fair play required.</p>
-
-        <button class="play-btn" onclick="confirmLogout()">
-            Logout
-        </button>
-
-    </div>
+    <button class="play-btn">Save Profile</button>
 
 </div>
 
-<script type="module" src="js/profile.js"></script>
+<div class="card">
+
+    <div class="info-box">About Us</div>
+    <div class="info-box">Contact: @IgniteScrimsFF_Support</div>
+    <div class="info-box">Privacy Policy</div>
+    <div class="info-box">Terms & Conditions</div>
+
+    <button class="play-btn">Logout</button>
+
+</div>
 
 </body>
 </html>
