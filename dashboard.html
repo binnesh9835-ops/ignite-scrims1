@@ -68,11 +68,9 @@
     <div class="logo-glow">IGNITE SCRIMS</div>
 </div>
 
-<!-- 🔥 LOGO -->
 <div class="logo">IGNITE SCRIMS</div>
 <div class="tagline">PLAY • KILL • EARN</div>
 
-<!-- 🔥 START -->
 <div style="text-align:center; margin:10px;">
 <button id="startBtn" class="play-btn" onclick="openLogin()">
     START PLAYING
@@ -81,10 +79,10 @@
 
 <!-- NAV -->
 <div class="top-nav">
-    <button onclick="showSection('matches')">Matches</button>
-    <button onclick="showSection('tournaments')">Tournaments</button>
-    <button onclick="showSection('wallet')">Wallet</button>
-    <button onclick="showSection('profile')">Profile</button>
+    <button onclick="checkAuth('matches')">Matches</button>
+    <button onclick="checkAuth('tournaments')">Tournaments</button>
+    <button onclick="checkAuth('wallet')">Wallet</button>
+    <button onclick="checkAuth('profile')">Profile</button>
 </div>
 
 <div class="sub-nav">
@@ -120,7 +118,6 @@
     </div>
 
     <div class="card">
-
         <div class="info-box">
             <h3 onclick="toggle('about')">🔥 About Us</h3>
             <p id="about" style="display:none;">IGNITE SCRIMS is a competitive gaming platform where players can improve their skills while also earning real money. Some players use it as a source of income, while others join to practice and prepare for esports competitions.
@@ -136,7 +133,9 @@ The platform was created by Vishal, a Class 12 student, with the vision of provi
             <h3 onclick="toggle('privacy')">🔒 Privacy Policy</h3>
             <p id="privacy" style="display:none;">We value your privacy and are committed to keeping your data secure. Your personal information—such as your email, phone number, and UPI details—is collected and stored only for the purpose of using the platform effectively.
 
-We do not share your personal information with any third party without your permission.</p>
+We do not share your personal information with any third party without your permission.
+
+</p>
         </div>
 
         <div class="info-box">
@@ -180,9 +179,20 @@ If any user violates the rules, their account may be suspended or permanently ba
 
 <!-- NORMAL JS -->
 <script>
+let currentUser = null;
+
 function showSection(section){
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(section).classList.add("active");
+}
+
+// 🔥 AUTH CHECK
+function checkAuth(section){
+    if(!currentUser){
+        document.getElementById("loginPopup").style.display = "block";
+        return;
+    }
+    showSection(section);
 }
 
 window.onload=()=>setTimeout(()=>loader.style.display="none",1200);
@@ -203,11 +213,13 @@ function toggle(id){
 import { loginWithGoogle, auth } from "./js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// 🔥 LOGIN FUNCTION
+// 🔥 LOGIN
 window.loginUser = async function () {
     const user = await loginWithGoogle();
 
     if(user){
+        window.currentUser = user;
+
         loginPopup.style.display="none";
         welcomePopup.style.display="block";
 
@@ -227,15 +239,16 @@ onAuthStateChanged(auth, (user) => {
     const btn = document.getElementById("startBtn");
 
     if (user) {
+        window.currentUser = user;
         if(btn) btn.style.display = "none";
     } else {
+        window.currentUser = null;
         if(btn) btn.style.display = "block";
     }
 
 });
 </script>
 
-<!-- PROFILE DATA -->
 <script type="module" src="js/profile.js"></script>
 
 </body>
