@@ -120,3 +120,30 @@ input {
     padding: 10px;
     border-radius: 6px;
 }
+/* ✨ PREMIUM EFFECT */
+.card {
+    background: #111;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 15px;
+    box-shadow: 0 0 10px rgba(255,0,0,0.2);
+}
+
+.info-box {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #ff0000, #ffcc00);
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.info-box:hover {
+    transform: scale(1.03);
+}
+
+h3 {
+    margin-bottom: 8px;
+}
