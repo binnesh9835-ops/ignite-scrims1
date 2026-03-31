@@ -70,11 +70,13 @@
 
 <!-- 🔥 LOGO -->
 <div class="logo">IGNITE SCRIMS</div>
-<div class="tagline">PLAY • KILL • EARN </div>
+<div class="tagline">PLAY • KILL • EARN</div>
 
 <!-- 🔥 START -->
 <div style="text-align:center; margin:10px;">
-<button class="play-btn" onclick="openLogin()">START PLAYING</button>
+<button id="startBtn" class="play-btn" onclick="openLogin()">
+    START PLAYING
+</button>
 </div>
 
 <!-- NAV -->
@@ -198,20 +200,39 @@ function toggle(id){
 
 <!-- 🔥 FIREBASE LOGIN -->
 <script type="module">
-import { loginWithGoogle } from "./js/firebase.js";
+import { loginWithGoogle, auth } from "./js/firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// 🔥 LOGIN FUNCTION
 window.loginUser = async function () {
     const user = await loginWithGoogle();
+
     if(user){
         loginPopup.style.display="none";
         welcomePopup.style.display="block";
+
+        document.getElementById("startBtn").style.display = "none";
     }
 };
 
+// 🔥 POPUP FLOW
 window.nextPopup = function(){
     welcomePopup.style.display="none";
     guidePopup.style.display="block";
 };
+
+// 🔥 AUTO LOGIN CHECK
+onAuthStateChanged(auth, (user) => {
+
+    const btn = document.getElementById("startBtn");
+
+    if (user) {
+        if(btn) btn.style.display = "none";
+    } else {
+        if(btn) btn.style.display = "block";
+    }
+
+});
 </script>
 
 <!-- PROFILE DATA -->
