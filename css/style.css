@@ -1,14 +1,4 @@
-/* 🔥 THEME VARIABLES */
-:root {
-    --bg: #0a0a0a;
-    --card: #111;
-    --accent: #ffcc00;
-    --danger: #ff0000;
-    --text: #ffffff;
-    --muted: #888;
-}
-
-/* RESET */
+/* 🔥 RESET */
 * {
     margin: 0;
     padding: 0;
@@ -16,94 +6,97 @@
     font-family: Arial, sans-serif;
 }
 
-/* BODY */
+/* 🌑 BODY */
 body {
-    background: var(--bg);
-    color: var(--text);
+    background: #0a0a0a;
+    color: white;
 }
 
 /* 🔥 LOGO */
 .logo {
-    font-size: 36px;
-    font-weight: bold;
     text-align: center;
-    margin-top: 40px;
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent),
-                 0 0 20px var(--danger);
+    font-size: 32px;
+    padding: 20px;
+    color: #ffcc00;
+    text-shadow: 0 0 10px #ffcc00, 0 0 20px red;
+}
+
+/* 🔻 NAV */
+.top-nav {
+    display: flex;
+    justify-content: space-around;
+    background: #111;
+    padding: 10px;
+}
+
+.top-nav button {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-weight: bold;
+}
+
+.top-nav button:hover {
+    color: #ffcc00;
+}
+
+/* 🎮 FILTER */
+.sub-nav {
+    display: flex;
+    justify-content: space-around;
+    background: #0d0d0d;
+    padding: 8px;
+}
+
+.sub-nav button {
+    background: none;
+    border: none;
+    color: #888;
+}
+
+.sub-nav button:hover {
+    color: #ffcc00;
+}
+
+/* 📦 SECTIONS */
+.section {
+    display: none;
+    padding: 15px;
+}
+
+.section.active {
+    display: block;
+}
+
+/* 🎴 CARD */
+.card {
+    background: #111;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
 /* 🎮 BUTTON */
 .play-btn {
-    background: linear-gradient(45deg, var(--danger), var(--accent));
-    border: none;
+    width: 100%;
     padding: 12px;
+    border: none;
     border-radius: 8px;
-    color: #000;
+    background: linear-gradient(45deg, red, yellow);
+    color: black;
     font-weight: bold;
-    cursor: pointer;
-    width: 100%;
     margin-top: 10px;
+    cursor: pointer;
 }
 
-/* 📦 CARD */
-.card {
-    background: var(--card);
-    padding: 15px;
-    border-radius: 10px;
-    margin: 10px;
-}
-
-/* 🔝 TOP BAR */
-.top-bar {
-    background: var(--card);
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-/* 📱 NAV */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: var(--card);
-    display: flex;
-}
-
-.nav-btn {
-    flex: 1;
+/* 👤 PROFILE BOX */
+.info-box {
+    margin-top: 10px;
     padding: 12px;
-    background: none;
-    border: none;
-    color: var(--muted);
-}
-
-.nav-btn.active {
-    color: var(--accent);
-}
-
-/* 🔥 POPUP */
-.popup {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.popup.hidden {
-    display: none;
-}
-
-.popup-box {
-    background: var(--card);
-    padding: 20px;
     border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
+    background: linear-gradient(45deg, red, yellow);
+    color: black;
+    font-weight: bold;
 }
 
 /* INPUT */
@@ -115,10 +108,15 @@ input {
     border: none;
 }
 
-/* 📊 LIST */
-.list-item {
-    background: var(--card);
+/* PHONE */
+.phone-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.phone-box span {
+    background: #222;
     padding: 10px;
-    margin-top: 5px;
     border-radius: 6px;
 }
