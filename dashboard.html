@@ -72,7 +72,7 @@
 <div class="tagline">PLAY • KILL • EARN</div>
 
 <div style="text-align:center; margin:10px;">
-<button onclick="loginUser()">START PLAYING</button>
+<button id="startBtn" onclick="loginUser()">START PLAYING</button>
 </div>
 
 <!-- NAV -->
@@ -131,9 +131,7 @@ The platform was created by Vishal, a Class 12 student, with the vision of provi
             <h3 onclick="toggle('privacy')">🔒 Privacy Policy</h3>
             <p id="privacy" style="display:none;">We value your privacy and are committed to keeping your data secure. Your personal information—such as your email, phone number, and UPI details—is collected and stored only for the purpose of using the platform effectively.
 
-We do not share your personal information with any third party without your permission.
-
-</p>
+We do not share your personal information with any third party without your permission.</p>
         </div>
 
         <div class="info-box">
@@ -176,10 +174,10 @@ function showSection(section){
     document.getElementById(section).classList.add("active");
 }
 
-// 🔥 AUTH CHECK
+// ✅ FIXED
 function checkAuth(section){
     if(!currentUser){
-        document.getElementById("loginPopup").style.display = "block";
+        loginUser(); // direct login
         return;
     }
     showSection(section);
@@ -202,29 +200,23 @@ function toggle(id){
 import { loginWithGoogle, auth } from "./js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// 🔥 LOGIN
 window.loginUser = async function () {
     const user = await loginWithGoogle();
 
     if(user){
         window.currentUser = user;
 
-        loginPopup.style.display="none";
-        welcomePopup.style.display="block";
-
+        document.getElementById("welcomePopup").style.display="block";
         document.getElementById("startBtn").style.display = "none";
     }
 };
 
-// 🔥 POPUP FLOW
 window.nextPopup = function(){
-    welcomePopup.style.display="none";
-    guidePopup.style.display="block";
+    document.getElementById("welcomePopup").style.display="none";
+    document.getElementById("guidePopup").style.display="block";
 };
 
-// 🔥 AUTO LOGIN CHECK
 onAuthStateChanged(auth, (user) => {
-
     const btn = document.getElementById("startBtn");
 
     if (user) {
@@ -234,7 +226,6 @@ onAuthStateChanged(auth, (user) => {
         window.currentUser = null;
         if(btn) btn.style.display = "block";
     }
-
 });
 </script>
 
