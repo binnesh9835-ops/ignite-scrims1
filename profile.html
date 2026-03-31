@@ -6,6 +6,29 @@
 <title>Profile</title>
 
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+.phone-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.phone-box span {
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+}
+</style>
+
 </head>
 
 <body>
@@ -47,14 +70,7 @@
 
     <div class="info-box">
         <h3>🔥 About Us</h3>
-        <p>
-        IGNITE SCRIMS ek competitive gaming platform hai jaha players apni skill ko improve kar sakte hain aur real money earn bhi kar sakte hain.
-        Kuch players isse earning source ke roop me use karenge aur kuch esports practice ke liye.
-
-        Yeh platform Vishal (Class 12 student) ne banaya hai with the vision ki gamers ko ek aisa platform mile jaha wo apni gaming skill aur earning dono badha sake.
-
-        Iska main goal hai ki beginners se lekar pro players tak sabko ek fair aur competitive environment mile.
-        </p>
+        <p>IGNITE SCRIMS ek competitive gaming platform hai...</p>
     </div>
 
     <div class="info-box" onclick="openTelegram()">
@@ -63,19 +79,12 @@
 
     <div class="info-box">
         <h3>🔒 Privacy Policy</h3>
-        <p>
-        Hum aapka data secure rakhte hain. Aapka personal information (email, phone, UPI) sirf platform ke use ke liye store hota hai.
-        Kisi bhi third party ke sath bina permission share nahi kiya jayega.
-        </p>
+        <p>Hum aapka data secure rakhte hain...</p>
     </div>
 
     <div class="info-box">
         <h3>📜 Terms & Conditions</h3>
-        <p>
-        Platform use karte waqt fair play zaruri hai. Koi cheating, hacking ya fraud activity allowed nahi hai.
-        Payment aur winnings admin verification ke baad process honge.
-        Rules violate karne par account suspend ho sakta hai.
-        </p>
+        <p>Platform use karte waqt fair play zaruri hai...</p>
     </div>
 
     <button class="play-btn" onclick="logoutUser()">
@@ -83,6 +92,64 @@
     </button>
 
 </div>
+
+<script type="module">
+
+import { auth, db } from "./js/firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// 🔥 AUTO LOAD USER
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    document.getElementById("email").value = user.email;
+
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+        const data = snap.data();
+
+        document.getElementById("name").value = data.name || "";
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("ign").value = data.ign || "";
+        document.getElementById("upi").value = data.upi || "";
+        document.getElementById("upiName").value = data.upiName || "";
+    }
+});
+
+
+// 🔥 SAVE PROFILE
+window.saveProfile = async function () {
+
+    const user = auth.currentUser;
+
+    const data = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        ign: document.getElementById("ign").value,
+        upi: document.getElementById("upi").value,
+        upiName: document.getElementById("upiName").value,
+        email: user.email
+    };
+
+    await setDoc(doc(db, "users", user.uid), data, { merge: true });
+
+    alert("Profile Saved ✅");
+};
+
+
+// 🔥 TELEGRAM
+window.openTelegram = function () {
+    window.open("https://t.me/IgniteScrimsFF_Support", "_blank");
+};
+
+</script>
 
 <script type="module" src="js/profile.js"></script>
 
