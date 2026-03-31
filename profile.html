@@ -167,6 +167,7 @@ window.saveProfile = async function () {
     await setDoc(doc(db, "users", user.uid), data, { merge: true });
 
     alert("Profile Saved ✅");
+window.location.href = "index.html";
 
     // 🔥 redirect to dashboard
     window.location.href = "dashboard.html";
