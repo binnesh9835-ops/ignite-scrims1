@@ -11,10 +11,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
-// 🔐 LOAD USER DATA IN DASHBOARD
+// 🔐 AUTO LOAD USER DATA
 onAuthStateChanged(auth, async (user) => {
 
-    if (!user) return;
+    if (!user) {
+        // ❌ Agar login nahi hai → dashboard pe hi rehne de (normal mode)
+        return;
+    }
 
     const ref = doc(db, "users", user.uid);
     const snap = await getDoc(ref);
@@ -33,7 +36,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
-// 🔧 EDIT PROFILE PAGE OPEN
+// 🔧 EDIT PROFILE
 window.openEditProfile = function () {
     window.location.href = "profile.html";
 };
@@ -45,13 +48,20 @@ window.openTelegram = function () {
 };
 
 
-// 🔓 LOGOUT
+// 🔓 LOGOUT (WITH CONFIRM)
 window.logoutUser = function () {
 
-    const ok = confirm("Logout?");
+    const ok = confirm("Are you sure you want to logout?");
     if (!ok) return;
 
     signOut(auth).then(() => {
-        window.location.href = "login.html";
+
+        // 🔥 Logout ke baad start button wapas dikhega
+        const btn = document.getElementById("startBtn");
+        if(btn) btn.style.display = "block";
+
+        // 🔥 optional redirect
+        location.reload();
     });
+
 };
