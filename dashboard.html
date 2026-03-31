@@ -1,7 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - IGNITE SCRIMS</title>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
 <!-- 🔥 LOGO -->
 <div class="logo">IGNITE SCRIMS</div>
 
-<!-- 🔻 NAVBAR (AB TOP PE) -->
+<!-- 🔻 TOP NAV -->
 <div class="top-nav">
     <button onclick="showSection('matches')">Matches</button>
     <button onclick="showSection('tournaments')">Tournaments</button>
@@ -9,10 +21,65 @@
     <button onclick="showSection('profile')">Profile</button>
 </div>
 
-<!-- 🎮 MATCH FILTER -->
+<!-- 🎮 FILTER -->
 <div class="sub-nav">
     <button>All</button>
     <button>Solo</button>
     <button>Duo</button>
     <button>Squad</button>
 </div>
+
+
+<!-- 📦 SECTIONS -->
+
+<div id="matches" class="section active">
+    <div class="card">Match cards yaha aayenge</div>
+</div>
+
+<div id="tournaments" class="section">
+    <div class="card">Tournament cards yaha aayenge</div>
+</div>
+
+<div id="wallet" class="section">
+    <div class="card">Wallet section</div>
+</div>
+
+<div id="profile" class="section">
+
+    <!-- 🔥 EDIT BUTTON -->
+    <button id="editProfileBtn" class="play-btn"
+    onclick="window.location.href='profile.html'">
+        Edit / Complete Profile
+    </button>
+
+    <div class="card">
+        Profile details yaha show honge
+    </div>
+
+</div>
+
+
+<script>
+
+function showSection(section) {
+
+    document.querySelectorAll(".section").forEach(s => {
+        s.classList.remove("active");
+    });
+
+    document.getElementById(section).classList.add("active");
+
+    // 🔥 BUTTON CONTROL
+    const btn = document.getElementById("editProfileBtn");
+
+    if(section === "profile"){
+        btn.style.display = "block";
+    } else {
+        btn.style.display = "none";
+    }
+}
+
+</script>
+
+</body>
+</html>
