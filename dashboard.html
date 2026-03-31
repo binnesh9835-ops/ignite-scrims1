@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="css/style.css">
 
 <style>
-/* 🔥 Loader */
 #loader {
     position: fixed;
     width: 100%;
@@ -29,7 +28,6 @@
     to { text-shadow: 0 0 30px yellow; }
 }
 
-/* 🔥 Tagline */
 .tagline {
     text-align: center;
     font-size: 13px;
@@ -39,15 +37,12 @@
     margin-top: -10px;
 }
 
-/* 🔥 Popup */
 .popup {
     display: none;
     position: fixed;
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.8);
-    top: 0;
-    left: 0;
 }
 .popup-box {
     background: #111;
@@ -64,7 +59,6 @@
     font-size: 20px;
 }
 </style>
-
 </head>
 
 <body>
@@ -78,12 +72,12 @@
 <div class="logo">IGNITE SCRIMS</div>
 <div class="tagline">PLAY • KILL • EARN 💰</div>
 
-<!-- 🔥 START BUTTON -->
+<!-- 🔥 START -->
 <div style="text-align:center; margin:10px;">
 <button class="play-btn" onclick="openLogin()">START PLAYING</button>
 </div>
 
-<!-- 🔻 TOP NAV -->
+<!-- NAV -->
 <div class="top-nav">
     <button onclick="showSection('matches')">Matches</button>
     <button onclick="showSection('tournaments')">Tournaments</button>
@@ -91,7 +85,6 @@
     <button onclick="showSection('profile')">Profile</button>
 </div>
 
-<!-- 🎮 FILTER -->
 <div class="sub-nav">
     <button>All</button>
     <button>Solo</button>
@@ -99,7 +92,7 @@
     <button>Squad</button>
 </div>
 
-<!-- 📦 SECTIONS -->
+<!-- SECTIONS -->
 <div id="matches" class="section active">
     <div class="card">Match cards yaha aayenge</div>
 </div>
@@ -116,23 +109,19 @@
 
     <div class="card">
         <h3>Your Profile</h3>
-
         <p><b>Name:</b> <span id="pName"></span></p>
         <p><b>Email:</b> <span id="pEmail"></span></p>
         <p><b>Phone:</b> +91 <span id="pPhone"></span></p>
         <p><b>IGN:</b> <span id="pIgn"></span></p>
 
-        <button class="play-btn" onclick="openEditProfile()">
-            Edit Profile
-        </button>
+        <button class="play-btn" onclick="openEditProfile()">Edit Profile</button>
     </div>
 
     <div class="card">
+
         <div class="info-box">
             <h3 onclick="toggle('about')">🔥 About Us</h3>
-            <p id="about" style="display:none;">
-            IGNITE SCRIMS is a competitive gaming platform...
-            </p>
+            <p id="about" style="display:none;">IGNITE SCRIMS is a competitive gaming platform...</p>
         </div>
 
         <div class="info-box" onclick="openTelegram()">
@@ -154,8 +143,7 @@
 
 </div>
 
-<!-- 🔥 POPUPS -->
-
+<!-- POPUPS -->
 <div id="loginPopup" class="popup">
   <div class="popup-box">
     <span onclick="closePopup('loginPopup')" class="close">×</span>
@@ -175,53 +163,50 @@
 <div id="guidePopup" class="popup">
   <div class="popup-box">
     <span onclick="closePopup('guidePopup')" class="close">×</span>
-    <p>Complete your profile to unlock features.</p>
+    <p>Complete your profile to unlock matches, withdrawals & support.</p>
     <button onclick="openProfile()">Okay</button>
   </div>
 </div>
 
+<!-- NORMAL JS -->
 <script>
-
-function showSection(section) {
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+function showSection(section){
+    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(section).classList.add("active");
 }
 
-/* Loader */
-window.onload = () => {
-    setTimeout(() => {
-        document.getElementById("loader").style.display = "none";
-    }, 1200);
-};
+window.onload=()=>setTimeout(()=>loader.style.display="none",1200);
 
-/* Popup Logic */
-function openLogin(){
-    document.getElementById("loginPopup").style.display="block";
-}
-function closePopup(id){
-    document.getElementById(id).style.display="none";
-}
-function loginUser(){
-    closePopup("loginPopup");
-    document.getElementById("welcomePopup").style.display="block";
-}
-function nextPopup(){
-    closePopup("welcomePopup");
-    document.getElementById("guidePopup").style.display="block";
-}
-function openProfile(){
-    window.location.href="profile.html";
-}
+function openLogin(){ loginPopup.style.display="block"; }
+function closePopup(id){ document.getElementById(id).style.display="none"; }
 
-/* Toggle */
+function openProfile(){ window.location.href="profile.html"; }
+
 function toggle(id){
     let el=document.getElementById(id);
     el.style.display = el.style.display==="none"?"block":"none";
 }
-
 </script>
 
-<!-- ✅ FIXED -->
+<!-- 🔥 FIREBASE LOGIN -->
+<script type="module">
+import { loginWithGoogle } from "./js/firebase.js";
+
+window.loginUser = async function () {
+    const user = await loginWithGoogle();
+    if(user){
+        loginPopup.style.display="none";
+        welcomePopup.style.display="block";
+    }
+};
+
+window.nextPopup = function(){
+    welcomePopup.style.display="none";
+    guidePopup.style.display="block";
+};
+</script>
+
+<!-- PROFILE DATA -->
 <script type="module" src="js/profile.js"></script>
 
 </body>
