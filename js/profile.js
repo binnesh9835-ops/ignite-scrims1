@@ -11,13 +11,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
-// 🔐 AUTO LOAD USER DATA
+// 🔐 AUTO LOAD USER DATA (SAFE)
 onAuthStateChanged(auth, async (user) => {
 
-    if (!user) {
-        // ❌ Agar login nahi hai → dashboard pe hi rehne de (normal mode)
-        return;
-    }
+    if (!user) return;
 
     const ref = doc(db, "users", user.uid);
     const snap = await getDoc(ref);
@@ -26,11 +23,18 @@ onAuthStateChanged(auth, async (user) => {
 
         const data = snap.data();
 
-        document.getElementById("pName").innerText = data.name || "";
-        document.getElementById("pEmail").innerText = data.email || "";
-        document.getElementById("pPhone").innerText = data.phone || "";
-        document.getElementById("pIgn").innerText = data.ign || "";
+        // ✅ SAFE CHECK (important)
+        if (document.getElementById("pName"))
+            document.getElementById("pName").innerText = data.name || "";
 
+        if (document.getElementById("pEmail"))
+            document.getElementById("pEmail").innerText = data.email || "";
+
+        if (document.getElementById("pPhone"))
+            document.getElementById("pPhone").innerText = data.phone || "";
+
+        if (document.getElementById("pIgn"))
+            document.getElementById("pIgn").innerText = data.ign || "";
     }
 
 });
@@ -48,7 +52,7 @@ window.openTelegram = function () {
 };
 
 
-// 🔓 LOGOUT (WITH CONFIRM)
+// 🔓 LOGOUT
 window.logoutUser = function () {
 
     const ok = confirm("Are you sure you want to logout?");
@@ -56,11 +60,9 @@ window.logoutUser = function () {
 
     signOut(auth).then(() => {
 
-        // 🔥 Logout ke baad start button wapas dikhega
         const btn = document.getElementById("startBtn");
         if(btn) btn.style.display = "block";
 
-        // 🔥 optional redirect
         location.reload();
     });
 
