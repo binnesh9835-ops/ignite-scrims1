@@ -7,75 +7,35 @@ import {
 
 import {
     doc,
-    getDoc,
-    setDoc
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-let currentUser = null;
 
-
-// 🔐 LOAD USER
+// 🔐 LOAD USER DATA IN DASHBOARD
 onAuthStateChanged(auth, async (user) => {
 
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    currentUser = user;
-
-    document.getElementById("email").value = user.email;
-
-    const firstName = user.displayName
-        ? user.displayName.split(" ")[0]
-        : "";
-
-    document.getElementById("name").value = firstName;
+    if (!user) return;
 
     const ref = doc(db, "users", user.uid);
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
+
         const data = snap.data();
 
-        document.getElementById("phone").value = data.phone || "";
-        document.getElementById("ign").value = data.ign || "";
-        document.getElementById("upi").value = data.upi || "";
-        document.getElementById("upiName").value = data.upiName || "";
+        document.getElementById("pName").innerText = data.name || "";
+        document.getElementById("pEmail").innerText = data.email || "";
+        document.getElementById("pPhone").innerText = data.phone || "";
+        document.getElementById("pIgn").innerText = data.ign || "";
+
     }
 
 });
 
 
-// 💾 SAVE PROFILE
-window.saveProfile = async function () {
-
-    const phone = document.getElementById("phone").value.trim();
-    const ign = document.getElementById("ign").value.trim();
-    const upi = document.getElementById("upi").value.trim();
-    const upiName = document.getElementById("upiName").value.trim();
-
-    // 🔥 VALIDATION
-    if (phone.length !== 10) {
-        alert("Enter valid 10 digit phone number");
-        return;
-    }
-
-    if (!ign || !upi || !upiName) {
-        alert("All fields are required!");
-        return;
-    }
-
-    await setDoc(doc(db, "users", currentUser.uid), {
-        name: document.getElementById("name").value,
-        email: currentUser.email,
-        phone,
-        ign,
-        upi,
-        upiName
-    });
-
-    alert("Profile Saved ✅");
+// 🔧 EDIT PROFILE PAGE OPEN
+window.openEditProfile = function () {
+    window.location.href = "profile.html";
 };
 
 
