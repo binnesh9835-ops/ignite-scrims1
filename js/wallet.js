@@ -186,3 +186,11 @@ async function loadHistory() {
         list.innerHTML = "No transactions yet";
     }
 }
+
+// ✅ CLOSE ONLY PENDING POPUP
+window.closePending = function(){
+    const el = document.getElementById("pendingPopup");
+    if(el){
+        el.classList.add("hidden");
+    }
+};
