@@ -112,6 +112,53 @@
 <button onclick="openWithdraw()">Withdraw</button>
     </div>
 
+    <!-- 💰 ADD MONEY POPUP -->
+<div id="addMoneyPopup" class="popup hidden">
+  <div class="popup-box">
+    <h3>Add Money</h3>
+    <input type="number" id="amount" placeholder="Enter amount">
+
+    <button onclick="nextAddStep()">Next</button>
+    <button onclick="closePopup()">Cancel</button>
+  </div>
+</div>
+
+<!-- 💳 PAYMENT POPUP -->
+<div id="paymentPopup" class="popup hidden">
+  <div class="popup-box">
+    <h3>Pay via UPI</h3>
+
+    <p>UPI: 9279072936@axl</p>
+    <p>Name: Vishal Kumar</p>
+
+    <input type="text" id="sender" placeholder="Your Name">
+    <input type="text" id="utr" placeholder="UTR Number">
+
+    <button onclick="submitPayment()">Submit</button>
+    <button onclick="backToAdd()">Back</button>
+  </div>
+</div>
+
+<!-- ⏳ PENDING -->
+<div id="pendingPopup" class="popup hidden">
+  <div class="popup-box">
+    <p>Payment under review ⏳</p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
+
+<!-- 💸 WITHDRAW -->
+<div id="withdrawPopup" class="popup hidden">
+  <div class="popup-box">
+    <h3>Withdraw</h3>
+
+    <input type="number" id="withdrawAmount" placeholder="Enter amount">
+
+    <button onclick="submitWithdraw()">Submit</button>
+    <button onclick="closePopup()">Cancel</button>
+  </div>
+</div>
+    
     <!-- 📜 TRANSACTIONS -->
     <div class="card">
         <h3>Transactions</h3>
