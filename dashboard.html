@@ -36,14 +36,7 @@
     font-weight: bold;
     color: white;
 }
-
-.popup {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-}
+    
 .popup-box {
     background: #111;
     padding: 20px;
@@ -109,8 +102,16 @@
     <!-- 🔥 ACTION BUTTONS -->
     <div style="text-align:center; margin-top:15px;">
         <button onclick="openAddMoney()">Add Money</button>
-<button onclick="openWithdraw()">Withdraw</button>
+        <button onclick="openWithdraw()">Withdraw</button>
     </div>
+
+    <!-- 📜 TRANSACTIONS -->
+    <div class="card">
+        <h3>Transactions</h3>
+        <div id="historyList">No transactions</div>
+    </div>
+
+</div> <!-- ✅ IMPORTANT CLOSE -->
 
 <!-- POPUP -->
 <div id="welcomePopup" class="popup">
@@ -253,14 +254,6 @@ onAuthStateChanged(auth, (user) => {
     <button onclick="submitWithdraw()">Submit</button>
     <button onclick="closePopup()">Cancel</button>
   </div>
-</div>
-    
-    <!-- 📜 TRANSACTIONS -->
-    <div class="card">
-        <h3>Transactions</h3>
-        <div id="historyList">No transactions</div>
-    </div>
-
 </div>
 
 <div id="profile" class="section">
