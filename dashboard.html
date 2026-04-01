@@ -177,8 +177,7 @@ If any user violates the rules, their account may be suspended or permanently ba
 
 <!-- NORMAL JS -->
 <script>
-let currentUser = null;
-
+window.currentUser = null;
 function showSection(section){
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(section).classList.add("active");
@@ -186,13 +185,17 @@ function showSection(section){
 
 // ✅ FIXED
 function checkAuth(section){
-    if(!currentUser){
-        loginUser(); // 🔥 direct login trigger
+    if(!window.currentUser){
+        loginUser();
         return;
     }
     showSection(section);
 }
-window.onload=()=>setTimeout(()=>loader.style.display="none",1200);
+window.onload = () => {
+    setTimeout(() => {
+        document.getElementById("loader").style.display = "none";
+    }, 1200);
+};
 
 function closePopup(id){ document.getElementById(id).style.display="none"; }
 
@@ -218,17 +221,21 @@ window.loginUser = async function () {
     if(user){
         window.currentUser = user;
 
-        // 🔥 start button hide
         document.getElementById("startBtn").style.display = "none";
 
-        // 🔥 name extract
         let name = user.displayName || user.email.split("@")[0];
 
-        // 🔥 welcome text set
-        const text = document.getElementById("welcomeText");
-        if(text){
-            text.innerText = `Welcome ${name} to IGNITE SCRIMS`;
-        }
+        document.getElementById("welcomeText").innerText =
+        `Welcome ${name} to IGNITE SCRIMS`;
+
+        document.getElementById("welcomePopup").style.display="block";
+
+        // 🔥 IMPORTANT FIX
+        setTimeout(()=>{
+            showSection("profile");
+        }, 300);
+    }
+};
 
         // 🔥 show popup
         document.getElementById("welcomePopup").style.display="block";
