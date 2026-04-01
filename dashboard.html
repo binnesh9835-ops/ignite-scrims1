@@ -71,8 +71,20 @@
 <div class="logo">IGNITE SCRIMS</div>
 <div class="tagline">PLAY • KILL • EARN</div>
 
+<style>
+.tagline{
+    text-align:center;
+    font-size:14px;
+    letter-spacing:3px;
+    margin-top:-8px;
+    font-weight:bold;
+}
+</style>
+
 <div style="text-align:center; margin:10px;">
-<button id="startBtn" onclick="loginUser()">START PLAYING</button>
+<button id="startBtn" class="play-btn" onclick="loginUser()">
+    START PLAYING
+</button>
 </div>
 
 <!-- NAV -->
@@ -151,17 +163,15 @@ If any user violates the rules, their account may be suspended or permanently ba
 <!-- POPUPS -->
 <div id="welcomePopup" class="popup">
   <div class="popup-box">
-    <span onclick="nextPopup()" class="close">×</span>
-    <p>Welcome to Ignite Scrims! Improve skills & earn.</p>
-    <button onclick="nextPopup()">OK</button>
-  </div>
-</div>
+    <h2 id="welcomeText"></h2>
 
-<div id="guidePopup" class="popup">
-  <div class="popup-box">
-    <span onclick="closePopup('guidePopup')" class="close">×</span>
-    <p>Complete your profile to unlock matches, withdrawals & support.</p>
-    <button onclick="openProfile()">Okay</button>
+    <div style="margin-top:15px; padding:10px; background:#222; border-radius:10px;">
+        Complete your profile now to unlock matches & earnings 🚀
+    </div>
+
+    <button onclick="goToProfile()" style="margin-top:15px;">
+        Start Editing Profile
+    </button>
   </div>
 </div>
 
