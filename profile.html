@@ -144,30 +144,18 @@ window.saveProfile = async function () {
 
     const user = auth.currentUser;
 
-    if (!user) {
-        alert("Login required!");
-        return;
-    }
-
     const data = {
-        name: document.getElementById("name").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        ign: document.getElementById("ign").value.trim(),
-        upi: document.getElementById("upi").value.trim(),
-        upiName: document.getElementById("upiName").value.trim(),
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        ign: document.getElementById("ign").value,
+        upi: document.getElementById("upi").value,
+        upiName: document.getElementById("upiName").value,
         email: user.email
     };
-
-    // basic validation
-    if (!data.phone || !data.ign || !data.upi || !data.upiName) {
-        alert("Please fill all required fields!");
-        return;
-    }
 
     await setDoc(doc(db, "users", user.uid), data, { merge: true });
 
     alert("Profile Saved ✅");
-window.location.href = "index.html";
 
     // 🔥 redirect to dashboard
     window.location.href = "dashboard.html";
