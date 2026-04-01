@@ -165,6 +165,8 @@ h3 {
     box-shadow:0 0 10px gold;
 }
 
-.hidden{
-    display:none;
+.popup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
