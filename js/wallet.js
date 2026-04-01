@@ -1,3 +1,5 @@
+console.log("wallet loaded");
+
 // 🔥 IMPORTS
 import { auth, db } from "./firebase.js";
 
