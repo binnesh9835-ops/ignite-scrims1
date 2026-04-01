@@ -120,6 +120,7 @@ input {
     padding: 10px;
     border-radius: 6px;
 }
+
 /* ✨ PREMIUM EFFECT */
 .card {
     background: #111;
@@ -148,6 +149,7 @@ h3 {
     margin-bottom: 8px;
 }
 
+/* 💰 WALLET */
 .wallet-stats{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -165,6 +167,7 @@ h3 {
     box-shadow:0 0 10px gold;
 }
 
+/* 🔥 FIXED POPUP SYSTEM */
 .popup {
     position: fixed;
     top: 0;
@@ -172,14 +175,16 @@ h3 {
     width: 100%;
     height: 100%;
 
-    display: flex;
     justify-content: center;
     align-items: center;
 
     background: rgba(0,0,0,0.8);
     z-index: 9999;
+
+    display: none; /* 🔥 IMPORTANT FIX */
 }
 
-.hidden {
-    display: none;
+/* 🔥 SHOW POPUP */
+.popup.show {
+    display: flex;
 }
