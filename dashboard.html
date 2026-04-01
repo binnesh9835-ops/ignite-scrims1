@@ -97,7 +97,27 @@
 </div>
 
 <div id="wallet" class="section">
-    <div class="card">Wallet section</div>
+
+    <!-- 💰 PREMIUM STATS -->
+    <div class="wallet-stats">
+        <div class="gold-box">💰 Balance: ₹<span id="balance">0</span></div>
+        <div class="gold-box">🏆 Total Winning: ₹<span id="totalWinning">0</span></div>
+        <div class="gold-box">💸 Total Spent: ₹<span id="totalSpent">0</span></div>
+        <div class="gold-box">🏦 Withdrawn: ₹<span id="totalWithdraw">0</span></div>
+    </div>
+
+    <!-- 🔥 ACTION BUTTONS -->
+    <div style="text-align:center; margin-top:15px;">
+        <button onclick="addMoney()">Add Money</button>
+        <button onclick="withdrawMoney()">Withdraw</button>
+    </div>
+
+    <!-- 📜 TRANSACTIONS -->
+    <div class="card">
+        <h3>Transactions</h3>
+        <div id="txList">No transactions</div>
+    </div>
+
 </div>
 
 <div id="profile" class="section">
@@ -234,6 +254,7 @@ onAuthStateChanged(auth, (user) => {
 </script>
 
 <script type="module" src="js/profile.js"></script>
-
+<script type="module" src="js/wallet.js"></script>
+    
 </body>
 </html>
