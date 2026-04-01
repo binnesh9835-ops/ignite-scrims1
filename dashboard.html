@@ -80,7 +80,7 @@
     <button onclick="checkAuth('profile')">Profile</button>
 </div>
 
-<div class="sub-nav">
+<div class="sub-nav" id="subNav" style="display:none;">
     <button>All</button>
     <button>Solo</button>
     <button>Duo</button>
@@ -159,6 +159,15 @@ window.currentUser = null;
 function showSection(section){
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(section).classList.add("active");
+
+    // 🔥 sub-nav control
+    const subNav = document.getElementById("subNav");
+
+    if(section === "matches" || section === "tournaments"){
+        subNav.style.display = "block";
+    } else {
+        subNav.style.display = "none";
+    }
 }
 
 function checkAuth(section){
