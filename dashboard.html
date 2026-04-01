@@ -209,25 +209,50 @@ function toggle(id){
 import { loginWithGoogle, auth } from "./js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+window.currentUser = null;
+
+// 🔥 LOGIN
 window.loginUser = async function () {
     const user = await loginWithGoogle();
 
     if(user){
         window.currentUser = user;
 
-        document.getElementById("welcomePopup").style.display="block";
+        // 🔥 start button hide
         document.getElementById("startBtn").style.display = "none";
 
-        // 🔥 important
-        showSection("profile"); 
+        // 🔥 name extract
+        let name = user.displayName || user.email.split("@")[0];
+
+        // 🔥 welcome text set
+        const text = document.getElementById("welcomeText");
+        if(text){
+            text.innerText = `Welcome ${name} to IGNITE SCRIMS`;
+        }
+
+        // 🔥 show popup
+        document.getElementById("welcomePopup").style.display="block";
     }
 };
+
+// 🔥 NEXT POPUP (optional agar use kar raha hai)
 window.nextPopup = function(){
     document.getElementById("welcomePopup").style.display="none";
-    document.getElementById("guidePopup").style.display="block";
+
+    const guide = document.getElementById("guidePopup");
+    if(guide){
+        guide.style.display="block";
+    }
 };
 
+// 🔥 GO PROFILE
+window.goToProfile = function(){
+    window.location.href = "profile.html";
+};
+
+// 🔥 AUTO LOGIN CHECK
 onAuthStateChanged(auth, (user) => {
+
     const btn = document.getElementById("startBtn");
 
     if (user) {
@@ -239,6 +264,7 @@ onAuthStateChanged(auth, (user) => {
 
         if(btn) btn.style.display = "block";
     }
+
 });
 </script>
 
