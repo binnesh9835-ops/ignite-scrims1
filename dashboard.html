@@ -177,12 +177,11 @@ function showSection(section){
 // ✅ FIXED
 function checkAuth(section){
     if(!currentUser){
-        alert("Please login first");
+        loginUser(); // 🔥 direct login trigger
         return;
     }
     showSection(section);
 }
-
 window.onload=()=>setTimeout(()=>loader.style.display="none",1200);
 
 function closePopup(id){ document.getElementById(id).style.display="none"; }
@@ -208,9 +207,11 @@ window.loginUser = async function () {
 
         document.getElementById("welcomePopup").style.display="block";
         document.getElementById("startBtn").style.display = "none";
+
+        // 🔥 important
+        showSection("profile"); 
     }
 };
-
 window.nextPopup = function(){
     document.getElementById("welcomePopup").style.display="none";
     document.getElementById("guidePopup").style.display="block";
@@ -221,9 +222,6 @@ onAuthStateChanged(auth, (user) => {
 
     if (user) {
         window.currentUser = user;
-
-        // 🔥 auto show profile/matches (optional)
-        // showSection("matches");
 
         if(btn) btn.style.display = "none";
     } else {
