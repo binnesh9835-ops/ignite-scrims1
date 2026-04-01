@@ -70,9 +70,9 @@ function togglePopup(id, show) {
     if(!el) return;
 
     if(show){
-        el.classList.remove("hidden");
+       el.classList.add("show");
     } else {
-        el.classList.add("hidden");
+       el.classList.remove("show");
     }
 }
 
