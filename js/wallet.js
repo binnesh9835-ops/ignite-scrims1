@@ -22,10 +22,7 @@ let currentUser = null;
 // 🔐 LOAD USER DATA
 onAuthStateChanged(auth, async (user) => {
 
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+    if (!user) return;
 
     currentUser = user;
 
@@ -35,16 +32,28 @@ onAuthStateChanged(auth, async (user) => {
     if (snap.exists()) {
         const data = snap.data();
 
-        document.getElementById("balance").innerText = data.balance || 0;
-        document.getElementById("winning").innerText = data.winningBalance || 0;
+        // 🔥 SAFE SET
+        if(document.getElementById("balance"))
+            document.getElementById("balance").innerText = data.balance || 0;
+
+        if(document.getElementById("winning"))
+            document.getElementById("winning").innerText = data.winningBalance || 0;
+
+        if(document.getElementById("totalWinning"))
+            document.getElementById("totalWinning").innerText = data.totalWinning || 0;
+
+        if(document.getElementById("totalSpent"))
+            document.getElementById("totalSpent").innerText = data.totalSpent || 0;
+
+        if(document.getElementById("totalWithdraw"))
+            document.getElementById("totalWithdraw").innerText = data.totalWithdraw || 0;
     }
 
     loadHistory();
-
 });
 
 
-// 💰 OPEN POPUPS
+// 💰 POPUPS
 window.openAddMoney = () => togglePopup("addMoneyPopup", true);
 window.openWithdraw = () => togglePopup("withdrawPopup", true);
 
@@ -53,6 +62,7 @@ window.closePopup = () => {
 };
 
 window.backToWallet = () => closePopup();
+
 window.backToAdd = () => {
     togglePopup("paymentPopup", false);
     togglePopup("addMoneyPopup", true);
@@ -61,14 +71,16 @@ window.backToAdd = () => {
 
 // 🔁 POPUP TOGGLE
 function togglePopup(id, show) {
-    document.getElementById(id).classList.toggle("hidden", !show);
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.toggle("hidden", !show);
 }
 
 
 // ➡️ ADD MONEY STEP 2
 window.nextAddStep = function () {
 
-    const amount = document.getElementById("amount").value;
+    const amount = Number(document.getElementById("amount").value);
 
     if (!amount || amount <= 0) {
         alert("Enter valid amount");
@@ -80,10 +92,10 @@ window.nextAddStep = function () {
 };
 
 
-// 📤 SUBMIT PAYMENT
+// 📤 SUBMIT PAYMENT (ADD MONEY REQUEST)
 window.submitPayment = async function () {
 
-    const amount = document.getElementById("amount").value;
+    const amount = Number(document.getElementById("amount").value);
     const utr = document.getElementById("utr").value.trim();
     const sender = document.getElementById("sender").value.trim();
 
@@ -97,7 +109,7 @@ window.submitPayment = async function () {
         await addDoc(collection(db, "transactions"), {
             userId: currentUser.uid,
             type: "add",
-            amount: Number(amount),
+            amount,
             utr,
             sender,
             status: "pending",
@@ -115,13 +127,13 @@ window.submitPayment = async function () {
 };
 
 
-// 💸 WITHDRAW
+// 💸 WITHDRAW REQUEST
 window.submitWithdraw = async function () {
 
     const amount = Number(document.getElementById("withdrawAmount").value);
 
-    if (amount < 100 || amount > 1000) {
-        alert("Withdraw limit ₹100 - ₹1000");
+    if (!amount || amount < 100) {
+        alert("Minimum withdraw ₹100");
         return;
     }
 
@@ -129,8 +141,10 @@ window.submitWithdraw = async function () {
     const snap = await getDoc(userRef);
     const data = snap.data();
 
-    if (amount > data.winningBalance) {
-        alert("Insufficient winning balance");
+    const winningBalance = data.winningBalance || 0;
+
+    if (amount > winningBalance) {
+        alert("Only winning balance withdraw allowed");
         return;
     }
 
@@ -145,7 +159,7 @@ window.submitWithdraw = async function () {
         });
 
         closePopup();
-        alert("Withdraw request submitted");
+        alert("Withdraw request sent ✅");
 
         loadHistory();
 
@@ -155,11 +169,13 @@ window.submitWithdraw = async function () {
 };
 
 
-// 📜 LOAD HISTORY
+// 📜 LOAD HISTORY (ONLY USER DATA)
 async function loadHistory() {
 
     const list = document.getElementById("historyList");
-    list.innerHTML = "";
+    if(!list) return;
+
+    list.innerHTML = "Loading...";
 
     const q = query(
         collection(db, "transactions"),
@@ -168,19 +184,30 @@ async function loadHistory() {
 
     const snapshot = await getDocs(q);
 
-    snapshot.forEach(doc => {
+    list.innerHTML = "";
 
-        const d = doc.data();
+    snapshot.forEach(docSnap => {
 
+        const d = docSnap.data();
+
+        // ✅ FILTER USER ONLY
         if (d.userId !== currentUser.uid) return;
+
+        const color =
+            d.status === "approved" ? "green" :
+            d.status === "pending" ? "orange" : "red";
 
         const item = `
         <div class="history-item">
             <p>₹${d.amount} (${d.type})</p>
-            <span class="${d.status}">${d.status}</span>
+            <span style="color:${color}">${d.status}</span>
         </div>
         `;
 
         list.innerHTML += item;
     });
+
+    if(list.innerHTML === ""){
+        list.innerHTML = "No transactions yet";
+    }
 }
