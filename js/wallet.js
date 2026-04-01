@@ -50,29 +50,32 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
-// 💰 POPUPS
-window.openAddMoney = () => togglePopup("addMoneyPopup", true);
-window.openWithdraw = () => togglePopup("withdrawPopup", true);
+// 💰 POPUPS (GLOBAL)
+window.openAddMoney = () => showPopup("addMoneyPopup");
+window.openWithdraw = () => showPopup("withdrawPopup");
 
 window.closePopup = () => {
     document.querySelectorAll(".popup").forEach(p => p.classList.add("hidden"));
 };
 
 window.backToAdd = () => {
-    togglePopup("paymentPopup", false);
-    togglePopup("addMoneyPopup", true);
+    hidePopup("paymentPopup");
+    showPopup("addMoneyPopup");
 };
 
 
-// 🔁 POPUP TOGGLE
-function togglePopup(id, show) {
+// ✅ SHOW / HIDE (FIXED)
+function showPopup(id){
     const el = document.getElementById(id);
-    if(!el) return;
+    if(el){
+        el.classList.remove("hidden");
+    }
+}
 
-    if(show){
-       el.classList.add("show");
-    } else {
-       el.classList.remove("show");
+function hidePopup(id){
+    const el = document.getElementById(id);
+    if(el){
+        el.classList.add("hidden");
     }
 }
 
@@ -87,8 +90,8 @@ window.nextAddStep = function () {
         return;
     }
 
-    togglePopup("addMoneyPopup", false);
-    togglePopup("paymentPopup", true);
+    hidePopup("addMoneyPopup");
+    showPopup("paymentPopup");
 };
 
 
@@ -115,7 +118,7 @@ window.submitPayment = async function () {
     });
 
     closePopup();
-    togglePopup("pendingPopup", true);
+    showPopup("pendingPopup");
 
     loadHistory();
 };
@@ -158,7 +161,7 @@ window.submitWithdraw = async function () {
 // 📜 HISTORY
 async function loadHistory() {
 
-    const list = document.getElementById("historyList");
+    const list = document.getElementById("txList");
     if(!list) return;
 
     list.innerHTML = "Loading...";
@@ -187,10 +190,20 @@ async function loadHistory() {
     }
 }
 
-// ✅ CLOSE ONLY PENDING POPUP
+
+// ✅ CLOSE PENDING POPUP (FINAL)
 window.closePending = function(){
     const el = document.getElementById("pendingPopup");
     if(el){
         el.classList.add("hidden");
     }
+
+    // reset form
+    const amount = document.getElementById("amount");
+    const utr = document.getElementById("utr");
+    const sender = document.getElementById("sender");
+
+    if(amount) amount.value = "";
+    if(utr) utr.value = "";
+    if(sender) sender.value = "";
 };
