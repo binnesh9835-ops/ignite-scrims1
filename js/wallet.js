@@ -33,17 +33,10 @@ onAuthStateChanged(auth, async (user) => {
     if (snap.exists()) {
         const data = snap.data();
 
-        if(document.getElementById("balance"))
-            document.getElementById("balance").innerText = data.balance || 0;
-
-        if(document.getElementById("totalWinning"))
-            document.getElementById("totalWinning").innerText = data.totalWinning || 0;
-
-        if(document.getElementById("totalSpent"))
-            document.getElementById("totalSpent").innerText = data.totalSpent || 0;
-
-        if(document.getElementById("totalWithdraw"))
-            document.getElementById("totalWithdraw").innerText = data.totalWithdraw || 0;
+        document.getElementById("balance").innerText = data.balance || 0;
+        document.getElementById("totalWinning").innerText = data.totalWinning || 0;
+        document.getElementById("totalSpent").innerText = data.totalSpent || 0;
+        document.getElementById("totalWithdraw").innerText = data.totalWithdraw || 0;
     }
 
     loadHistory();
@@ -64,7 +57,7 @@ window.backToAdd = () => {
 };
 
 
-// ✅ SHOW / HIDE (FIXED)
+// ✅ SHOW / HIDE (FINAL FIX)
 function showPopup(id){
     const el = document.getElementById(id);
     if(el){
@@ -80,7 +73,7 @@ function hidePopup(id){
 }
 
 
-// ➡️ NEXT STEP
+// ➡️ NEXT STEP (ADD MONEY)
 window.nextAddStep = function () {
 
     const amount = Number(document.getElementById("amount").value);
@@ -95,7 +88,7 @@ window.nextAddStep = function () {
 };
 
 
-// 📤 SUBMIT PAYMENT
+// 📤 SUBMIT PAYMENT (ADD MONEY REQUEST)
 window.submitPayment = async function () {
 
     const amount = Number(document.getElementById("amount").value);
@@ -107,20 +100,25 @@ window.submitPayment = async function () {
         return;
     }
 
-    await addDoc(collection(db, "transactions"), {
-        userId: currentUser.uid,
-        type: "add",
-        amount,
-        utr,
-        sender,
-        status: "pending",
-        createdAt: new Date()
-    });
+    try {
+        await addDoc(collection(db, "transactions"), {
+            userId: currentUser.uid,
+            type: "add",
+            amount,
+            utr,
+            sender,
+            status: "pending",
+            createdAt: new Date()
+        });
 
-    closePopup();
-    showPopup("pendingPopup");
+        closePopup();
+        showPopup("pendingPopup");
 
-    loadHistory();
+        loadHistory();
+
+    } catch (err) {
+        alert(err.message);
+    }
 };
 
 
@@ -134,39 +132,48 @@ window.submitWithdraw = async function () {
         return;
     }
 
-    const userRef = doc(db, "users", currentUser.uid);
-    const snap = await getDoc(userRef);
-    const data = snap.data();
+    try {
+        const userRef = doc(db, "users", currentUser.uid);
+        const snap = await getDoc(userRef);
+        const data = snap.data();
 
-    if (amount > (data.winningBalance || 0)) {
-        alert("Only winning balance allowed");
-        return;
+        if (amount > (data.winningBalance || 0)) {
+            alert("Only winning balance allowed");
+            return;
+        }
+
+        await addDoc(collection(db, "transactions"), {
+            userId: currentUser.uid,
+            type: "withdraw",
+            amount,
+            status: "pending",
+            createdAt: new Date()
+        });
+
+        closePopup();
+        alert("Withdraw request sent ✅");
+
+        loadHistory();
+
+    } catch (err) {
+        alert(err.message);
     }
-
-    await addDoc(collection(db, "transactions"), {
-        userId: currentUser.uid,
-        type: "withdraw",
-        amount,
-        status: "pending",
-        createdAt: new Date()
-    });
-
-    closePopup();
-    alert("Withdraw request sent");
-
-    loadHistory();
 };
 
 
 // 📜 HISTORY
 async function loadHistory() {
 
-    const list = document.getElementById("txList");
+    const list = document.getElementById("historyList");
     if(!list) return;
 
     list.innerHTML = "Loading...";
 
-    const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
+    const q = query(
+        collection(db, "transactions"),
+        orderBy("createdAt", "desc")
+    );
+
     const snapshot = await getDocs(q);
 
     list.innerHTML = "";
@@ -176,9 +183,14 @@ async function loadHistory() {
         const d = docSnap.data();
         if (d.userId !== currentUser.uid) return;
 
+        const color =
+            d.status === "approved" ? "green" :
+            d.status === "pending" ? "orange" : "red";
+
         const item = `
         <div class="card">
-            ₹${d.amount} (${d.type}) - ${d.status}
+            ₹${d.amount} (${d.type}) - 
+            <span style="color:${color}">${d.status}</span>
         </div>
         `;
 
@@ -191,12 +203,10 @@ async function loadHistory() {
 }
 
 
-// ✅ CLOSE PENDING POPUP (FINAL)
+// ✅ CLOSE PENDING POPUP
 window.closePending = function(){
-    const el = document.getElementById("pendingPopup");
-    if(el){
-        el.classList.add("hidden");
-    }
+
+    hidePopup("pendingPopup");
 
     // reset form
     const amount = document.getElementById("amount");
