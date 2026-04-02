@@ -48,7 +48,7 @@ window.openAddMoney = () => showPopup("addMoneyPopup");
 window.openWithdraw = () => showPopup("withdrawPopup");
 
 window.closePopup = () => {
-    document.querySelectorAll(".popup").forEach(p => p.classList.add("hidden"));
+    document.querySelectorAll(".popup").forEach(p => p.classList.remove("show"));
 };
 
 window.backToAdd = () => {
@@ -61,14 +61,14 @@ window.backToAdd = () => {
 function showPopup(id){
     const el = document.getElementById(id);
     if(el){
-        el.classList.remove("hidden");
+        el.classList.add("show");   // ✅ SHOW CLASS
     }
 }
 
 function hidePopup(id){
     const el = document.getElementById(id);
     if(el){
-        el.classList.add("hidden");
+        el.classList.remove("show"); // ✅ REMOVE SHOW
     }
 }
 
