@@ -292,7 +292,7 @@ onAuthStateChanged(auth, (user) => {
     <div class="card">
         <div class="info-box">
             <h3 onclick="toggle('about')">🔥 About Us</h3>
-            <p id="about" style="display:none;">IGNITE SCRIMS is a competitive gaming platform...</p>
+            <p id="about" style="display:none;">IGNITE SCRIMS is a competitive gaming platform where players can improve their skills and also earn real money. Some players will use it as a source of income, while others will use it for esports practice. This platform was created by Vishal (a Class 12 student) with the vision of providing gamers a place where they can enhance both their gaming skills and their earnings. Its main goal is to offer a fair and competitive environment for everyone, from beginners to professional players.</p>
         </div>
 
         <div class="info-box" onclick="openTelegram()">
@@ -301,12 +301,14 @@ onAuthStateChanged(auth, (user) => {
 
         <div class="info-box">
             <h3 onclick="toggle('privacy')">🔒 Privacy Policy</h3>
-            <p id="privacy" style="display:none;">We value your privacy...</p>
+            <p id="privacy" style="display:none;">We keep your data secure. Your personal information (email, phone number, UPI) is stored only for the use of the platform. It will not be shared with any third party without your permission.
+</p>
         </div>
 
         <div class="info-box">
             <h3 onclick="toggle('terms')">📜 Terms & Conditions</h3>
-            <p id="terms" style="display:none;">Fair play is mandatory...</p>
+            <p id="terms" style="display:none;">Fair play is essential while using the platform. Any cheating, hacking, or fraudulent activity is strictly not allowed. Payments and winnings will be processed after admin verification. If the rules are violated, the account may be suspended.
+</p>
         </div>
 
         <button class="play-btn" onclick="logoutUser()">Logout</button>
