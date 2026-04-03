@@ -327,3 +327,58 @@ window.saveTournament = async function (tId, teamId) {
         alert(err.message);
     }
 };
+
+// =============================
+// ⏳ OPEN PENDING POPUP
+// =============================
+window.openPending = async function(){
+
+    const popup = document.getElementById("pendingPopup");
+    const list = document.getElementById("pendingList");
+
+    if(!popup || !list) return;
+
+    popup.style.display = "flex";
+    list.innerHTML = "Loading...";
+
+    const snap = await getDocs(collection(db, "transactions"));
+
+    list.innerHTML = "";
+
+    let found = false;
+
+    snap.forEach(docSnap => {
+
+        const d = docSnap.data();
+
+        if(d.status === "pending"){
+            found = true;
+
+            const item = document.createElement("div");
+            item.className = "card";
+
+            item.innerHTML = `
+                <p>₹${d.amount} (${d.type})</p>
+                <p>User: ${d.userId}</p>
+                <p>Status: ${d.status}</p>
+            `;
+
+            list.appendChild(item);
+        }
+    });
+
+    if(!found){
+        list.innerHTML = "No pending requests";
+    }
+};
+
+
+// =============================
+// ❌ CLOSE POPUP
+// =============================
+window.closePendingAdmin = function(){
+    const popup = document.getElementById("pendingPopup");
+    if(popup){
+        popup.style.display = "none";
+    }
+};
