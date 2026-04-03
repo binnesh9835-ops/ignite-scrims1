@@ -17,7 +17,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
-// 🔐 ADMIN EMAILS LIST (future ready)
+// 🔐 ADMIN EMAILS (FUTURE READY)
 const ADMIN_EMAILS = [
     "vishalpandey25288@gmail.com"
     // future:
@@ -27,7 +27,9 @@ const ADMIN_EMAILS = [
 let currentUser = null;
 
 
-// 🔐 ADMIN AUTH CHECK (ONLY ONE TIME)
+// =============================
+// 🔐 ADMIN AUTH CHECK
+// =============================
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
@@ -44,12 +46,14 @@ onAuthStateChanged(auth, (user) => {
 
     currentUser = user;
 
-    // ✅ LOAD STATS
+    // ✅ LOAD ALL STATS
     loadAdminStats();
 });
 
 
+// =============================
 // 🔓 LOGOUT
+// =============================
 window.logout = function () {
     signOut(auth).then(() => {
         window.location.href = "index.html";
@@ -57,12 +61,11 @@ window.logout = function () {
 };
 
 
-
 // =============================
 // 📊 ADMIN STATS SYSTEM
 // =============================
 
-// 📅 CURRENT MONTH RANGE
+// 📅 MONTH RANGE
 function getMonthRange(){
     const now = new Date();
 
@@ -70,6 +73,13 @@ function getMonthRange(){
     const end = new Date(now.getFullYear(), now.getMonth()+1, 0, 23,59,59);
 
     return { start, end };
+}
+
+
+// 🔁 SAFE DATE CONVERTER (IMPORTANT)
+function parseDate(d){
+    if(!d) return null;
+    return d.toDate ? d.toDate() : d; // supports both Timestamp & JS Date
 }
 
 
@@ -84,12 +94,10 @@ async function loadMonthlyUsers(){
     snap.forEach(docSnap => {
         const d = docSnap.data();
 
-        if(d.createdAt){
-            const date = d.createdAt.toDate();
+        const date = parseDate(d.createdAt);
 
-            if(date >= start && date <= end){
-                count++;
-            }
+        if(date && date >= start && date <= end){
+            count++;
         }
     });
 
@@ -109,12 +117,10 @@ async function loadMonthlyTransactions(){
     snap.forEach(docSnap => {
         const d = docSnap.data();
 
-        if(d.createdAt){
-            const date = d.createdAt.toDate();
+        const date = parseDate(d.createdAt);
 
-            if(date >= start && date <= end){
-                total += Number(d.amount || 0);
-            }
+        if(date && date >= start && date <= end){
+            total += Number(d.amount || 0);
         }
     });
 
@@ -123,7 +129,7 @@ async function loadMonthlyTransactions(){
 }
 
 
-// ⏳ PENDING REQUESTS
+// ⏳ PENDING COUNT
 async function loadPending(){
 
     const snap = await getDocs(collection(db, "transactions"));
@@ -143,13 +149,12 @@ async function loadPending(){
 }
 
 
-// 🚀 LOAD ALL STATS
+// 🚀 LOAD ALL
 async function loadAdminStats(){
     await loadMonthlyUsers();
     await loadMonthlyTransactions();
     await loadPending();
 }
-
 
 
 // =============================
@@ -184,7 +189,9 @@ window.createMatch = async function () {
 };
 
 
+// =============================
 // 🏆 CREATE TOURNAMENT
+// =============================
 window.createTournament = async function () {
 
     const mode = document.getElementById("tMode").value;
@@ -210,7 +217,6 @@ window.createTournament = async function () {
 };
 
 
-
 // =============================
 // 👥 MATCH PLAYERS
 // =============================
@@ -229,6 +235,7 @@ window.loadPlayers = async function () {
         const p = docSnap.data();
 
         const row = document.createElement("div");
+
         row.innerHTML = `
             <p>Slot ${p.slot} - ${p.teamName}</p>
             <input type="number" placeholder="Kills" id="kills-${docSnap.id}">
@@ -256,7 +263,6 @@ window.savePlayer = async function (matchId, playerId) {
         alert(err.message);
     }
 };
-
 
 
 // =============================
