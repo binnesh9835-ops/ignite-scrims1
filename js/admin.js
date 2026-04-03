@@ -19,6 +19,13 @@ const ADMIN_EMAIL = "vishalpandey25288@gmail.com";
 let currentUser = null;
 
 
+// 🔐 ADMIN EMAILS LIST
+const ADMIN_EMAILS = [
+  "vishalpandey25288@gmail.com"
+  // future me yaha aur add kar sakta hai
+  // "example@gmail.com"
+];
+
 // 🔐 ADMIN CHECK
 onAuthStateChanged(auth, (user) => {
 
