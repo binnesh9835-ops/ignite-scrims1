@@ -171,6 +171,12 @@ function toggle(id){
 import { loginWithGoogle, auth } from "./js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// 🔐 ADMIN EMAILS
+const ADMIN_EMAILS = [
+    "vishalpandey25288@gmail.com"
+];
+
+// 🔑 LOGIN
 window.loginUser = async function () {
     const user = await loginWithGoogle();
 
@@ -184,7 +190,7 @@ window.loginUser = async function () {
         document.getElementById("welcomeText").innerText =
         `Welcome ${name} to IGNITE SCRIMS`;
 
-        document.getElementById("welcomePopup").style.display="block";
+        document.getElementById("welcomePopup").style.display = "block";
 
         setTimeout(()=>{
             showSection("profile");
@@ -192,23 +198,38 @@ window.loginUser = async function () {
     }
 };
 
+// 👤 PROFILE PAGE
 window.goToProfile = function(){
     window.location.href = "profile.html";
 };
 
+// 🔄 AUTH STATE (SINGLE CLEAN LISTENER)
 onAuthStateChanged(auth, (user) => {
     const btn = document.getElementById("startBtn");
+    const adminBtn = document.getElementById("adminBtn");
 
     if (user) {
         window.currentUser = user;
+
         if(btn) btn.style.display = "none";
+
+        // ✅ ADMIN CHECK
+        if(adminBtn && ADMIN_EMAILS.includes(user.email)){
+            adminBtn.style.display = "block";
+        } else if(adminBtn){
+            adminBtn.style.display = "none";
+        }
+
     } else {
         window.currentUser = null;
+
         if(btn) btn.style.display = "block";
+        if(adminBtn) adminBtn.style.display = "none";
     }
 });
 </script>
 
+    
 <!-- 💰 ADD MONEY POPUP -->
 <div id="addMoneyPopup" class="popup hidden">
   <div class="popup-box">
@@ -292,7 +313,9 @@ onAuthStateChanged(auth, (user) => {
     </div>
 
 </div>
-        <button onclick="openAdmin()">Admin</button>
+        <button id="adminBtn" onclick="openAdmin()" style="display:none;">
+    Admin
+</button>
 <script>
 function openAdmin(){
     window.location.href = "admin.html";
