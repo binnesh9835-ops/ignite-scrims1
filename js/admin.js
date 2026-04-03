@@ -1,22 +1,23 @@
-// 🔥 IMPORTS
-import { auth, db } from "./firebase.js";
+import { auth } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import {
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+onAuthStateChanged(auth, (user) => {
 
-import {
-    collection,
-    addDoc,
-    getDocs,
-    doc,
-    updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    if(!user){
+        alert("Login required");
+        window.location.href = "index.html";
+        return;
+    }
 
-const ADMIN_EMAIL = "vishalpandey25288@gmail.com";
+    if(!ADMIN_EMAILS.includes(user.email)){
+        alert("Access Denied ❌ (Not Admin)");
+        window.location.href = "dashboard.html";
+        return;
+    }
 
-let currentUser = null;
+    // ✅ admin allowed
+    loadAdminStats();
+});
 
 
 // 🔐 ADMIN EMAILS LIST
