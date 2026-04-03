@@ -21,6 +21,7 @@
     ₹<span id="monthlyAmount">0</span>
   </div>
 
+  <!-- ✅ CLICKABLE PENDING -->
   <div class="gold-box" onclick="openPending()">
     ⏳ Pending Requests <br>
     <span id="pendingCount">0</span>
@@ -28,19 +29,22 @@
 
 </div>
 
-<!-- 🔥 LOGOUT BUTTON (important) -->
+<!-- ✅ POPUP (BODY ke niche hona chahiye) -->
+<div id="pendingPopup" class="popup">
+  <div class="popup-box">
+    <h3>Pending Requests</h3>
+    <div id="pendingList">Loading...</div>
+
+    <button onclick="closePendingAdmin()">Close</button>
+  </div>
+</div>
+
+<!-- 🔥 LOGOUT -->
 <div style="text-align:center; margin-top:20px;">
   <button onclick="logout()" class="play-btn">Logout</button>
 </div>
 
 <script type="module" src="js/admin.js"></script>
-
-<!-- 🔥 TEMP FUNCTION (abhi error na aaye) -->
-<script>
-function openPending(){
-    alert("Next step me banayenge 🔥");
-}
-</script>
 
 </body>
 </html>
