@@ -1,59 +1,160 @@
-import { auth } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+console.log("admin loaded");
 
+// 🔥 IMPORTS
+import { auth, db } from "./firebase.js";
+
+import {
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    doc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+// 🔐 ADMIN EMAILS LIST (future ready)
+const ADMIN_EMAILS = [
+    "vishalpandey25288@gmail.com"
+    // future:
+    // "admin2@gmail.com"
+];
+
+let currentUser = null;
+
+
+// 🔐 ADMIN AUTH CHECK (ONLY ONE TIME)
 onAuthStateChanged(auth, (user) => {
 
-    if(!user){
+    if (!user) {
         alert("Login required");
         window.location.href = "index.html";
         return;
     }
 
-    if(!ADMIN_EMAILS.includes(user.email)){
+    if (!ADMIN_EMAILS.includes(user.email)) {
         alert("Access Denied ❌ (Not Admin)");
         window.location.href = "dashboard.html";
         return;
     }
 
-    // ✅ admin allowed
-    loadAdminStats();
-});
-
-
-// 🔐 ADMIN EMAILS LIST
-const ADMIN_EMAILS = [
-  "vishalpandey25288@gmail.com"
-  // future me yaha aur add kar sakta hai
-  // "example@gmail.com"
-];
-
-// 🔐 ADMIN CHECK
-onAuthStateChanged(auth, (user) => {
-
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    if (user.email !== ADMIN_EMAIL) {
-        alert("Access Denied ❌");
-        window.location.href = "dashboard.html";
-        return;
-    }
-
     currentUser = user;
+
+    // ✅ LOAD STATS
+    loadAdminStats();
 });
 
 
 // 🔓 LOGOUT
 window.logout = function () {
     signOut(auth).then(() => {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
     });
 };
 
 
+
+// =============================
+// 📊 ADMIN STATS SYSTEM
+// =============================
+
+// 📅 CURRENT MONTH RANGE
+function getMonthRange(){
+    const now = new Date();
+
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth()+1, 0, 23,59,59);
+
+    return { start, end };
+}
+
+
+// 👤 MONTHLY USERS
+async function loadMonthlyUsers(){
+
+    const { start, end } = getMonthRange();
+    const snap = await getDocs(collection(db, "users"));
+
+    let count = 0;
+
+    snap.forEach(docSnap => {
+        const d = docSnap.data();
+
+        if(d.createdAt){
+            const date = d.createdAt.toDate();
+
+            if(date >= start && date <= end){
+                count++;
+            }
+        }
+    });
+
+    const el = document.getElementById("monthlyUsers");
+    if(el) el.innerText = count;
+}
+
+
+// 💰 MONTHLY TRANSACTIONS
+async function loadMonthlyTransactions(){
+
+    const { start, end } = getMonthRange();
+    const snap = await getDocs(collection(db, "transactions"));
+
+    let total = 0;
+
+    snap.forEach(docSnap => {
+        const d = docSnap.data();
+
+        if(d.createdAt){
+            const date = d.createdAt.toDate();
+
+            if(date >= start && date <= end){
+                total += Number(d.amount || 0);
+            }
+        }
+    });
+
+    const el = document.getElementById("monthlyAmount");
+    if(el) el.innerText = total;
+}
+
+
+// ⏳ PENDING REQUESTS
+async function loadPending(){
+
+    const snap = await getDocs(collection(db, "transactions"));
+
+    let count = 0;
+
+    snap.forEach(docSnap => {
+        const d = docSnap.data();
+
+        if(d.status === "pending"){
+            count++;
+        }
+    });
+
+    const el = document.getElementById("pendingCount");
+    if(el) el.innerText = count;
+}
+
+
+// 🚀 LOAD ALL STATS
+async function loadAdminStats(){
+    await loadMonthlyUsers();
+    await loadMonthlyTransactions();
+    await loadPending();
+}
+
+
+
+// =============================
 // 🎮 CREATE MATCH
+// =============================
 window.createMatch = async function () {
 
     const mode = document.getElementById("mode").value;
@@ -109,7 +210,10 @@ window.createTournament = async function () {
 };
 
 
-// 📊 LOAD MATCH PLAYERS
+
+// =============================
+// 👥 MATCH PLAYERS
+// =============================
 window.loadPlayers = async function () {
 
     const matchId = document.getElementById("matchIdInput").value;
@@ -125,8 +229,6 @@ window.loadPlayers = async function () {
         const p = docSnap.data();
 
         const row = document.createElement("div");
-        row.className = "admin-row";
-
         row.innerHTML = `
             <p>Slot ${p.slot} - ${p.teamName}</p>
             <input type="number" placeholder="Kills" id="kills-${docSnap.id}">
@@ -139,7 +241,7 @@ window.loadPlayers = async function () {
 };
 
 
-// 💾 SAVE PLAYER DATA (MATCH)
+// 💾 SAVE PLAYER
 window.savePlayer = async function (matchId, playerId) {
 
     const kills = Number(document.getElementById(`kills-${playerId}`).value);
@@ -148,21 +250,18 @@ window.savePlayer = async function (matchId, playerId) {
     const ref = doc(db, "matches", matchId, "players", playerId);
 
     try {
-
-        await updateDoc(ref, {
-            kills,
-            booyah
-        });
-
+        await updateDoc(ref, { kills, booyah });
         alert("Updated ✅");
-
     } catch (err) {
         alert(err.message);
     }
 };
 
 
-// 🏆 LOAD TOURNAMENT TEAMS
+
+// =============================
+// 🏆 TOURNAMENT TEAMS
+// =============================
 window.loadTeams = async function () {
 
     const tId = document.getElementById("tournamentIdInput").value;
@@ -178,12 +277,11 @@ window.loadTeams = async function () {
         const t = docSnap.data();
 
         const row = document.createElement("div");
-        row.className = "admin-row";
 
         row.innerHTML = `
             <p>${t.teamName}</p>
             <input type="number" placeholder="Kills" id="tk-${docSnap.id}">
-            <input type="number" placeholder="Placement (1-10)" id="tp-${docSnap.id}">
+            <input type="number" placeholder="Placement" id="tp-${docSnap.id}">
             <button onclick="saveTournament('${tId}', '${docSnap.id}')">Save</button>
         `;
 
@@ -192,7 +290,7 @@ window.loadTeams = async function () {
 };
 
 
-// 💾 SAVE TOURNAMENT DATA
+// 💾 SAVE TOURNAMENT
 window.saveTournament = async function (tId, teamId) {
 
     const kills = Number(document.getElementById(`tk-${teamId}`).value);
@@ -200,7 +298,6 @@ window.saveTournament = async function (tId, teamId) {
 
     const ref = doc(db, "tournaments", tId, "teams", teamId);
 
-    // 🧠 POINT SYSTEM
     let placementPoints = 0;
 
     if (placement === 1) placementPoints = 15;
@@ -208,8 +305,7 @@ window.saveTournament = async function (tId, teamId) {
     else if (placement === 3) placementPoints = 10;
     else placementPoints = 5;
 
-    const killPoints = kills * 2;
-    const total = killPoints + placementPoints;
+    const total = (kills * 2) + placementPoints;
 
     try {
 
