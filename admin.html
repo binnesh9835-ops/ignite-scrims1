@@ -1,91 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - IGNITE SCRIMS</title>
-
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/admin.css">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<!-- 🔥 TOP BAR -->
-<div class="top-bar">
-    <h2>ADMIN PANEL</h2>
-    <button onclick="logout()">Logout</button>
-</div>
+<h2 style="text-align:center;">🔥 Admin Dashboard</h2>
 
-<div class="admin-container">
+<div class="wallet-stats">
 
-    <!-- 🟢 CREATE MATCH -->
-    <div class="admin-box">
-        <h3>Create Match</h3>
+  <div class="gold-box">
+    👤 Monthly Users <br>
+    <span id="monthlyUsers">0</span>
+  </div>
 
-        <select id="mode">
-            <option value="solo">Solo</option>
-            <option value="duo">Duo</option>
-            <option value="squad">Squad</option>
-        </select>
+  <div class="gold-box">
+    💰 Monthly Transactions <br>
+    ₹<span id="monthlyAmount">0</span>
+  </div>
 
-        <input type="number" id="entry" placeholder="Entry Fee ₹">
-        <input type="number" id="perKill" placeholder="Per Kill ₹">
-        <input type="number" id="booyah" placeholder="Booyah Prize ₹">
-        <input type="number" id="slots" placeholder="Total Slots">
-        <input type="text" id="time" placeholder="Match Time (e.g. 9 PM)">
-
-        <button class="play-btn" onclick="createMatch()">Create Match</button>
-    </div>
-
-
-    <!-- 🏆 CREATE TOURNAMENT -->
-    <div class="admin-box">
-        <h3>Create Tournament</h3>
-
-        <select id="tMode">
-            <option value="solo">Solo</option>
-            <option value="duo">Duo</option>
-            <option value="squad">Squad</option>
-        </select>
-
-        <input type="number" id="tEntry" placeholder="Entry Fee ₹">
-        <input type="number" id="tMatches" placeholder="Total Matches (e.g. 6)">
-        <input type="number" id="tKill" placeholder="Per Kill Points">
-
-        <button class="play-btn" onclick="createTournament()">
-            Create Tournament
-        </button>
-    </div>
-
-
-    <!-- 📊 MATCH PLAYERS -->
-    <div class="admin-box">
-        <h3>Match Players</h3>
-
-        <input type="text" id="matchIdInput" placeholder="Enter Match ID">
-
-        <button onclick="loadPlayers()">Load Players</button>
-
-        <div id="playerList"></div>
-    </div>
-
-
-    <!-- 🏆 TOURNAMENT CONTROL -->
-    <div class="admin-box">
-        <h3>Tournament Control</h3>
-
-        <input type="text" id="tournamentIdInput" placeholder="Tournament ID">
-        <input type="number" id="matchNumber" placeholder="Match No (1-6)">
-
-        <button onclick="loadTeams()">Load Teams</button>
-
-        <div id="teamList"></div>
-    </div>
+  <div class="gold-box" onclick="openPending()">
+    ⏳ Pending Requests <br>
+    <span id="pendingCount">0</span>
+  </div>
 
 </div>
 
-
-<!-- SCRIPT -->
 <script type="module" src="js/admin.js"></script>
 
 </body>
