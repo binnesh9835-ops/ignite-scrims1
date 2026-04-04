@@ -33,6 +33,13 @@
 <div class="card" style="margin:20px;">
   <h3>Create Match</h3>
 
+  <!-- 🔥 TYPE -->
+  <select id="type">
+    <option value="match">Match</option>
+    <option value="tournament">Tournament</option>
+  </select>
+
+  <!-- 🔥 MODE -->
   <select id="mode">
     <option value="Solo">Solo</option>
     <option value="Duo">Duo</option>
@@ -44,6 +51,9 @@
   <input type="number" id="booyah" placeholder="Booyah Bonus ₹">
   <input type="number" id="slots" placeholder="Total Slots">
   <input type="text" id="time" placeholder="Match Time (e.g. 9:00 PM)">
+
+  <!-- 🔥 RULES -->
+  <textarea id="rules" placeholder="Enter match rules..." style="width:100%; height:80px;"></textarea>
 
   <button onclick="createMatch()" class="play-btn" style="margin-top:10px;">
     Create Match
