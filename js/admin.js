@@ -14,7 +14,8 @@ import {
     getDocs,
     doc,
     updateDoc,
-    getDoc   // ✅ ADD THIS
+    getDoc,
+    increment
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -412,20 +413,62 @@ window.closePendingAdmin = function(){
 
 
 // =============================
-// 🟢 APPROVE
+// 🟢 APPROVE (REAL MONEY LOGIC)
 // =============================
 window.approveTx = async function(txId){
 
-    const ref = doc(db, "transactions", txId);
+    try{
 
-    await updateDoc(ref, {
-        status: "approved"
-    });
+        const txRef = doc(db, "transactions", txId);
+        const txSnap = await getDoc(txRef);
 
-    alert("Approved ✅");
+        if(!txSnap.exists()){
+            alert("Transaction not found");
+            return;
+        }
 
-    openPending();
-    loadAdminStats();
+        const tx = txSnap.data();
+
+        if(tx.status !== "pending"){
+            alert("Already processed");
+            return;
+        }
+
+        const userRef = doc(db, "users", tx.userId);
+
+        // 🔥 ADD MONEY
+        if(tx.type === "add"){
+
+            await updateDoc(userRef, {
+                balance: increment(tx.amount),
+                totalSpent: increment(tx.amount)
+            });
+
+        }
+
+        // 🔥 WITHDRAW
+        if(tx.type === "withdraw"){
+
+            await updateDoc(userRef, {
+                winningBalance: increment(-tx.amount),
+                totalWithdraw: increment(tx.amount)
+            });
+
+        }
+
+        // ✅ UPDATE STATUS
+        await updateDoc(txRef, {
+            status: "approved"
+        });
+
+        alert("Approved & Balance Updated ✅");
+
+        openPending();
+        loadAdminStats();
+
+    }catch(err){
+        alert(err.message);
+    }
 };
 
 // =============================
