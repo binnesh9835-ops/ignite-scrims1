@@ -13,7 +13,8 @@ import {
     addDoc,
     getDocs,
     doc,
-    updateDoc
+    updateDoc,
+    getDoc   // ✅ ADD THIS
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -347,25 +348,51 @@ window.openPending = async function(){
 
     let found = false;
 
-    snap.forEach(docSnap => {
+    for (const docSnap of snap.docs) {
 
         const d = docSnap.data();
 
         if(d.status === "pending"){
+
             found = true;
+
+            // 🔥 USER NAME FETCH
+            let userName = "Unknown";
+
+            try{
+                const userRef = doc(db, "users", d.userId);
+                const userSnap = await getDoc(userRef);
+
+                if(userSnap.exists()){
+                    const u = userSnap.data();
+                    userName = u.name || u.email || "User";
+                }
+            }catch(err){}
 
             const item = document.createElement("div");
             item.className = "card";
 
             item.innerHTML = `
+                <p><b>${userName}</b></p>
                 <p>₹${d.amount} (${d.type})</p>
-                <p>User: ${d.userId}</p>
-                <p>Status: ${d.status}</p>
+                <p>UTR: ${d.utr || "N/A"}</p>
+
+                <div style="margin-top:10px;">
+                    <button style="background:green;color:white;padding:8px;border:none;border-radius:6px;"
+                        onclick="approveTx('${docSnap.id}')">
+                        Approve
+                    </button>
+
+                    <button style="background:red;color:white;padding:8px;border:none;border-radius:6px;margin-left:5px;"
+                        onclick="rejectTx('${docSnap.id}')">
+                        Reject
+                    </button>
+                </div>
             `;
 
             list.appendChild(item);
         }
-    });
+    }
 
     if(!found){
         list.innerHTML = "No pending requests";
@@ -381,4 +408,39 @@ window.closePendingAdmin = function(){
     if(popup){
         popup.style.display = "none";
     }
+};
+
+
+// =============================
+// 🟢 APPROVE
+// =============================
+window.approveTx = async function(txId){
+
+    const ref = doc(db, "transactions", txId);
+
+    await updateDoc(ref, {
+        status: "approved"
+    });
+
+    alert("Approved ✅");
+
+    openPending();
+    loadAdminStats();
+};
+
+// =============================
+// 🔴 REJECT
+// =============================
+window.rejectTx = async function(txId){
+
+    const ref = doc(db, "transactions", txId);
+
+    await updateDoc(ref, {
+        status: "rejected"
+    });
+
+    alert("Rejected ❌");
+
+    openPending();
+    loadAdminStats();
 };
