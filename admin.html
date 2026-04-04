@@ -21,8 +21,15 @@
     ₹<span id="monthlyAmount">0</span>
   </div>
 
+  <!-- ✅ CLICKABLE PENDING -->
+  <div class="gold-box" onclick="openPending()">
+    ⏳ Pending Requests <br>
+    <span id="pendingCount">0</span>
+  </div>
 
-  <!-- 🎮 CREATE MATCH -->
+</div>
+
+<!-- 🎮 CREATE MATCH (ALAG SECTION) -->
 <div class="card" style="margin:20px;">
   <h3>Create Match</h3>
 
@@ -33,13 +40,9 @@
   </select>
 
   <input type="number" id="entry" placeholder="Entry Fee ₹">
-
   <input type="number" id="perKill" placeholder="Per Kill ₹">
-
   <input type="number" id="booyah" placeholder="Booyah Bonus ₹">
-
   <input type="number" id="slots" placeholder="Total Slots">
-
   <input type="text" id="time" placeholder="Match Time (e.g. 9:00 PM)">
 
   <button onclick="createMatch()" class="play-btn" style="margin-top:10px;">
