@@ -10,7 +10,8 @@ import {
 import { 
   getFirestore,
   doc,
-  setDoc
+  setDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -38,17 +39,31 @@ const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 
-// 🔥 GOOGLE LOGIN FUNCTION (REAL)
+// 🔥 GOOGLE LOGIN FUNCTION (UPDATED SAFE)
 async function loginWithGoogle() {
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // 🔥 USER AUTO SAVE (FIRST TIME)
-    await setDoc(doc(db, "users", user.uid), {
-      name: user.displayName || "",
-      email: user.email || ""
-    }, { merge: true });
+    const userRef = doc(db, "users", user.uid);
+
+    // 🔍 check user exists ya nahi
+    const snap = await getDoc(userRef);
+
+    // 🔥 ONLY FIRST TIME USER
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        name: user.displayName || "",
+        email: user.email || "",
+
+        // 💰 DEFAULT WALLET
+        balance: 0,
+        winningBalance: 0,
+        totalSpent: 0,
+        totalWinning: 0,
+        totalWithdraw: 0
+      });
+    }
 
     return user;
 
@@ -56,7 +71,6 @@ async function loginWithGoogle() {
     alert(error.message);
   }
 }
-
 
 // 🔓 LOGOUT FUNCTION
 function logout() {
