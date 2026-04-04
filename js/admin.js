@@ -164,14 +164,15 @@ async function loadAdminStats(){
 // 🎮 CREATE MATCH
 // =============================
 window.createMatch = async function () {
-
+    const type = document.getElementById("type").value;
     const mode = document.getElementById("mode").value;
     const entry = Number(document.getElementById("entry").value);
     const perKill = Number(document.getElementById("perKill").value);
     const booyah = Number(document.getElementById("booyah").value);
     const slots = Number(document.getElementById("slots").value);
     const time = document.getElementById("time").value;
-
+    const type = document.getElementById("type").value;
+    
     // ❌ validation
     if(!entry || !perKill || !booyah || !slots || !time){
         alert("Fill all fields ❌");
