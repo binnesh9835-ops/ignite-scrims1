@@ -156,6 +156,7 @@ async function loadAdminStats(){
     await loadMonthlyUsers();
     await loadMonthlyTransactions();
     await loadPending();
+    await loadAdminHistory();
 }
 
 
@@ -438,30 +439,72 @@ window.approveTx = async function(txId){
 
         // 🔥 ADD MONEY
         if(tx.type === "add"){
-
             await updateDoc(userRef, {
-                balance: increment(tx.amount),
-                totalSpent: increment(tx.amount)
+                balance: increment(tx.amount)
             });
-
         }
 
         // 🔥 WITHDRAW
         if(tx.type === "withdraw"){
-
             await updateDoc(userRef, {
                 winningBalance: increment(-tx.amount),
                 totalWithdraw: increment(tx.amount)
             });
-
         }
 
-        // ✅ UPDATE STATUS
+        // ✅ STATUS UPDATE
         await updateDoc(txRef, {
             status: "approved"
         });
 
-        alert("Approved & Balance Updated ✅");
+        // 📝 SAVE LOG (FIXED POSITION)
+        await addDoc(collection(db, "adminLogs"), {
+            userId: tx.userId,
+            amount: tx.amount,
+            type: tx.type,
+            action: "approved",
+            adminEmail: currentUser.email,
+            createdAt: new Date()
+        });
+
+        alert("Approved ✅");
+
+        openPending();
+        loadAdminStats();
+
+    }catch(err){
+        alert(err.message);
+    }
+};
+    
+// =============================
+// 🔴 REJECT
+// =============================
+    window.rejectTx = async function(txId){
+
+    try{
+
+        const ref = doc(db, "transactions", txId);
+
+        const txSnap = await getDoc(ref);
+        const tx = txSnap.data();
+
+        // ❌ STATUS UPDATE
+        await updateDoc(ref, {
+            status: "rejected"
+        });
+
+        // 📝 SAVE LOG
+        await addDoc(collection(db, "adminLogs"), {
+            userId: tx.userId,
+            amount: tx.amount,
+            type: tx.type,
+            action: "rejected",
+            adminEmail: currentUser.email,
+            createdAt: new Date()
+        });
+
+        alert("Rejected ❌");
 
         openPending();
         loadAdminStats();
@@ -472,18 +515,39 @@ window.approveTx = async function(txId){
 };
 
 // =============================
-// 🔴 REJECT
+// 📝 LOAD ADMIN HISTORY
 // =============================
-window.rejectTx = async function(txId){
+async function loadAdminHistory(){
 
-    const ref = doc(db, "transactions", txId);
+    const list = document.getElementById("adminHistory");
+    if(!list) return;
 
-    await updateDoc(ref, {
-        status: "rejected"
+    list.innerHTML = "Loading...";
+
+    const snap = await getDocs(collection(db, "adminLogs"));
+
+    list.innerHTML = "";
+
+    if(snap.empty){
+        list.innerHTML = "No history yet";
+        return;
+    }
+
+    snap.forEach(docSnap => {
+
+        const d = docSnap.data();
+
+        const item = document.createElement("div");
+        item.className = "card";
+
+        item.innerHTML = `
+            <p><b>${d.adminEmail}</b></p>
+            <p>${d.type.toUpperCase()} ₹${d.amount}</p>
+            <p style="color:${d.action === "approved" ? "lime" : "red"};">
+                ${d.action.toUpperCase()}
+            </p>
+        `;
+
+        list.appendChild(item);
     });
-
-    alert("Rejected ❌");
-
-    openPending();
-    loadAdminStats();
-};
+}
