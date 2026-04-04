@@ -172,6 +172,12 @@ window.createMatch = async function () {
     const slots = Number(document.getElementById("slots").value);
     const time = document.getElementById("time").value;
 
+    // ❌ validation
+    if(!entry || !perKill || !booyah || !slots || !time){
+        alert("Fill all fields ❌");
+        return;
+    }
+
     try {
 
         await addDoc(collection(db, "matches"), {
@@ -180,11 +186,20 @@ window.createMatch = async function () {
             perKill,
             booyah,
             totalSlots: slots,
+            joined: 0,              // 🔥 IMPORTANT
             time,
+            status: "open",         // 🔥 AUTO SYSTEM BASE
             createdAt: new Date()
         });
 
         alert("Match Created ✅");
+
+        // 🔄 reset form
+        document.getElementById("entry").value = "";
+        document.getElementById("perKill").value = "";
+        document.getElementById("booyah").value = "";
+        document.getElementById("slots").value = "";
+        document.getElementById("time").value = "";
 
     } catch (err) {
         alert(err.message);
