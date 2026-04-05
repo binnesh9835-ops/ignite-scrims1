@@ -171,7 +171,7 @@ window.createMatch = async function () {
     const booyah = Number(document.getElementById("booyah").value);
     const slots = Number(document.getElementById("slots").value);
     const time = document.getElementById("time").value;
-    const type = document.getElementById("type").value;
+    
     
     // ❌ validation
     if(!entry || !perKill || !booyah || !slots || !time){
@@ -182,6 +182,7 @@ window.createMatch = async function () {
     try {
 
         await addDoc(collection(db, "matches"), {
+            type,
             mode,
             entry,
             perKill,
