@@ -8,11 +8,13 @@ import {
 
 import {
     doc,
-    getDoc
+    getDoc,
+    collection,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
-// 🔐 CHECK USER
+// 🔐 USER CHECK
 onAuthStateChanged(auth, async (user) => {
 
     if (!user) {
@@ -20,7 +22,7 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
-    // 🧾 FETCH USER DATA
+    // 👤 USER DATA
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
@@ -33,6 +35,9 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById("winning").innerText = data.winningBalance || 0;
     }
 
+    // 🔥 LOAD REAL DATA
+    loadMatches("all");
+    loadTournaments("all");
 });
 
 
@@ -46,69 +51,47 @@ window.logout = function () {
 
 // 🔁 SECTION SWITCH
 window.showSection = function (id) {
-
-    document.querySelectorAll(".section").forEach(sec => {
-        sec.classList.remove("active");
-    });
-
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
     document.getElementById(id).classList.add("active");
-
-    // nav active
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    event.target.classList.add("active");
 };
 
 
-// 🎮 MATCH TAB SWITCH
+// 🎮 MATCH TAB
 window.switchTab = function (type) {
-
-    document.querySelectorAll(".tab").forEach(tab => {
-        tab.classList.remove("active");
-    });
-
-    event.target.classList.add("active");
-
     loadMatches(type);
 };
 
 
-// 🏆 TOURNAMENT TAB SWITCH
+// 🏆 TOURNAMENT TAB
 window.switchTournamentTab = function (type) {
-
-    document.querySelectorAll("#tournamentSection .tab").forEach(tab => {
-        tab.classList.remove("active");
-    });
-
-    event.target.classList.add("active");
-
     loadTournaments(type);
 };
 
 
-// 🎴 LOAD MATCHES (DUMMY FOR NOW)
-function loadMatches(type) {
+// =============================
+// 🎮 LOAD MATCHES (REAL)
+// =============================
+async function loadMatches(type) {
 
     const container = document.getElementById("matchList");
+    container.innerHTML = "Loading...";
+
+    const snap = await getDocs(collection(db, "matches"));
+
     container.innerHTML = "";
 
-    const matches = [
-        { mode: "solo", entry: 10 },
-        { mode: "duo", entry: 30 },
-        { mode: "squad", entry: 80 }
-    ];
+    snap.forEach(docSnap => {
 
-    matches.forEach(m => {
+        const m = docSnap.data();
 
-        if (type !== "all" && m.mode !== type) return;
+        if (type !== "all" && m.mode.toLowerCase() !== type) return;
 
         const card = `
         <div class="card">
-            <p>${m.mode.toUpperCase()} Match</p>
+            <p>🎮 ${m.mode} Match</p>
             <p>Entry: ₹${m.entry}</p>
-            <button onclick="joinMatch('${m.mode}')">Join</button>
+            <p>Time: ${m.time}</p>
+            <button onclick="openMatch('${docSnap.id}')">Join</button>
         </div>
         `;
 
@@ -117,26 +100,29 @@ function loadMatches(type) {
 }
 
 
-// 🏆 LOAD TOURNAMENTS (DUMMY)
-function loadTournaments(type) {
+// =============================
+// 🏆 LOAD TOURNAMENTS (REAL)
+// =============================
+async function loadTournaments(type) {
 
     const container = document.getElementById("tournamentList");
+    container.innerHTML = "Loading...";
+
+    const snap = await getDocs(collection(db, "tournaments"));
+
     container.innerHTML = "";
 
-    const tournaments = [
-        { mode: "squad", entry: 200 },
-        { mode: "duo", entry: 80 }
-    ];
+    snap.forEach(docSnap => {
 
-    tournaments.forEach(t => {
+        const t = docSnap.data();
 
-        if (type !== "all" && t.mode !== type) return;
+        if (type !== "all" && t.mode.toLowerCase() !== type) return;
 
         const card = `
-        <div class="card">
-            <p>${t.mode.toUpperCase()} Tournament</p>
+        <div class="card gold">
+            <p>🏆 ${t.mode} Tournament</p>
             <p>Entry: ₹${t.entry}</p>
-            <button onclick="joinTournament('${t.mode}')">Join</button>
+            <button onclick="openTournament('${docSnap.id}')">Join</button>
         </div>
         `;
 
@@ -145,28 +131,17 @@ function loadTournaments(type) {
 }
 
 
-// 🔘 JOIN MATCH
-window.joinMatch = function (mode) {
-    alert("Join " + mode + " match (next step me popup banega)");
+// 🔘 OPEN MATCH PAGE
+window.openMatch = function(id){
+    window.location.href = "match.html?id=" + id;
+};
+
+// 🔘 OPEN TOURNAMENT
+window.openTournament = function(id){
+    window.location.href = "tournament.html?id=" + id;
 };
 
 
-// 🔘 JOIN TOURNAMENT
-window.joinTournament = function (mode) {
-    alert("Join " + mode + " tournament (next step me banega)");
-};
-
-
-// 🔗 NAVIGATION
-window.goWallet = function () {
-    window.location.href = "wallet.html";
-};
-
-window.goProfile = function () {
-    window.location.href = "profile.html";
-};
-
-
-// 🔥 DEFAULT LOAD
-loadMatches("all");
-loadTournaments("all");
+// 🔗 NAV
+window.goWallet = () => window.location.href = "wallet.html";
+window.goProfile = () => window.location.href = "profile.html";
