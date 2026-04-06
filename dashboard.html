@@ -81,14 +81,38 @@
 </div>
 
 <!-- SECTIONS -->
+<!-- 🎮 MATCHES -->
 <div id="matches" class="section active">
-    <div class="card">Match cards yaha aayenge</div>
+
+    <!-- 🔥 FILTER TABS -->
+    <div style="text-align:center; margin-bottom:10px;">
+        <button class="tab active" onclick="switchTab('all')">All</button>
+        <button class="tab" onclick="switchTab('solo')">Solo</button>
+        <button class="tab" onclick="switchTab('duo')">Duo</button>
+        <button class="tab" onclick="switchTab('squad')">Squad</button>
+    </div>
+
+    <!-- ✅ REAL MATCH LIST -->
+    <div id="matchList"></div>
+
 </div>
 
+
+<!-- 🏆 TOURNAMENTS -->
 <div id="tournaments" class="section">
-    <div class="card">Tournament cards yaha aayenge</div>
-</div>
 
+    <!-- 🔥 FILTER TABS -->
+    <div style="text-align:center; margin-bottom:10px;">
+        <button class="tab active" onclick="switchTournamentTab('all')">All</button>
+        <button class="tab" onclick="switchTournamentTab('solo')">Solo</button>
+        <button class="tab" onclick="switchTournamentTab('duo')">Duo</button>
+        <button class="tab" onclick="switchTournamentTab('squad')">Squad</button>
+    </div>
+
+    <!-- ✅ REAL TOURNAMENT LIST -->
+    <div id="tournamentList"></div>
+
+</div>
 <div id="wallet" class="section">
 
     <!-- 💰 PREMIUM STATS -->
