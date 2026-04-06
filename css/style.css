@@ -188,3 +188,23 @@ h3 {
 .popup.show {
     display: flex;
 }
+
+/* 🎮 Normal Match */
+.match-card {
+  background: #1e1e1e;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+/* 🏆 Tournament (Golden Premium) */
+.tournament-card {
+  background: linear-gradient(135deg, gold, orange);
+  color: black;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 10px;
+  box-shadow: 0 0 10px gold;
+  font-weight: bold;
+}
