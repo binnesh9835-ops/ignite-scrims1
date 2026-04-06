@@ -1,4 +1,3 @@
-// 🔥 IMPORTS
 import { auth, db } from "./firebase.js";
 
 import {
@@ -12,24 +11,22 @@ import {
     collection,
     addDoc,
     getDocs,
-    query
+    increment
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let currentUser = null;
-
-// 🧠 CURRENT MATCH (TEMP DEMO DATA)
-let matchData = {
-    id: "match1",
-    mode: "squad",
-    entry: 50,
-    perKill: 10,
-    booyah: 100,
-    totalSlots: 12,
-    time: "Tonight 9:00 PM"
-};
+let matchId = null;
+let matchData = null;
 
 
-// 🔐 CHECK USER
+// 🔐 GET URL ID
+function getMatchId(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+}
+
+
+// 🔐 AUTH
 onAuthStateChanged(auth, async (user) => {
 
     if (!user) {
@@ -38,14 +35,25 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     currentUser = user;
+    matchId = getMatchId();
 
-    loadMatch();
+    await loadMatch();
     loadScoreboard();
 });
 
 
-// 🎮 LOAD MATCH DATA
-function loadMatch() {
+// 🎮 LOAD MATCH FROM FIRESTORE
+async function loadMatch(){
+
+    const ref = doc(db, "matches", matchId);
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()){
+        alert("Match not found");
+        return;
+    }
+
+    matchData = snap.data();
 
     document.getElementById("mode").innerText = matchData.mode;
     document.getElementById("entry").innerText = matchData.entry;
@@ -58,109 +66,79 @@ function loadMatch() {
 }
 
 
-// 🔘 OPEN JOIN POPUP
-window.openJoinPopup = function () {
-    togglePopup("joinPopup", true);
-};
-
-// ❌ CLOSE POPUP
-window.closePopup = function () {
-    document.querySelectorAll(".popup").forEach(p => p.classList.add("hidden"));
-};
-
-
-// 🔁 POPUP TOGGLE
-function togglePopup(id, show) {
-    document.getElementById(id).classList.toggle("hidden", !show);
-}
-
-
-// 🎯 CONFIRM JOIN
-window.confirmJoin = async function () {
+// 🎯 JOIN MATCH
+window.confirmJoin = async function(){
 
     const teamName = document.getElementById("teamInput").value.trim();
 
     if (!teamName) {
-        alert("Enter name / team!");
+        alert("Enter team name");
         return;
     }
 
-    try {
+    try{
 
-        // 🧾 GET USER DATA
         const userRef = doc(db, "users", currentUser.uid);
         const userSnap = await getDoc(userRef);
-        const userData = userSnap.data();
+        const user = userSnap.data();
 
-        // 💰 CHECK BALANCE
-        if (userData.balance < matchData.entry) {
-            alert("Insufficient balance!");
+        if(user.balance < matchData.entry){
+            alert("Not enough balance");
             return;
         }
 
-        // 🔢 GET CURRENT PLAYERS
-        const playersRef = collection(db, "matches", matchData.id, "players");
+        const playersRef = collection(db, "matches", matchId, "players");
         const snap = await getDocs(playersRef);
 
-        const currentCount = snap.size;
-
-        if (currentCount >= matchData.totalSlots) {
-            alert("Match full!");
+        if(snap.size >= matchData.totalSlots){
+            alert("Match full");
             return;
         }
 
-        const slotNumber = currentCount + 1;
+        const slot = snap.size + 1;
 
-        // 💾 SAVE PLAYER
+        // ✅ SAVE PLAYER
         await addDoc(playersRef, {
             userId: currentUser.uid,
-            teamName: teamName,
-            slot: slotNumber,
+            teamName,
+            slot,
             kills: 0,
-            booyah: false,
             createdAt: new Date()
         });
 
-        // 💸 DEDUCT BALANCE
+        // 💸 DEDUCT MONEY
         await updateDoc(userRef, {
-            balance: userData.balance - matchData.entry
+            balance: increment(-matchData.entry)
         });
 
-        // 🎉 SHOW SUCCESS
-        closePopup();
-        togglePopup("successPopup", true);
-
-        document.getElementById("slotNumber").innerText = slotNumber;
-        document.getElementById("matchTime").innerText = matchData.time;
+        alert("Joined Successfully ✅");
 
         loadScoreboard();
 
-    } catch (err) {
+    }catch(err){
         alert(err.message);
     }
 };
 
 
-// 📊 LOAD SCOREBOARD
-async function loadScoreboard() {
+// 📊 SCOREBOARD
+async function loadScoreboard(){
 
     const list = document.getElementById("scoreList");
     list.innerHTML = "";
 
-    const playersRef = collection(db, "matches", matchData.id, "players");
+    const playersRef = collection(db, "matches", matchId, "players");
     const snap = await getDocs(playersRef);
 
-    snap.forEach(doc => {
+    snap.forEach(docSnap => {
 
-        const p = doc.data();
+        const p = docSnap.data();
 
-        const row = `
+        list.innerHTML += `
         <div class="score-row">
             <p>Slot ${p.slot} - ${p.teamName}</p>
             <p>Kills: ${p.kills}</p>
         </div>
         `;
-
-        list.innerHTML += row;
     });
 }
