@@ -80,6 +80,11 @@ async function loadMatches(type) {
 
     container.innerHTML = "";
 
+    if (snap.empty) {
+        container.innerHTML = "No matches available ❌";
+        return;
+    }
+
     snap.forEach(docSnap => {
 
         const m = docSnap.data();
@@ -91,7 +96,10 @@ async function loadMatches(type) {
             <p>🎮 ${m.mode} Match</p>
             <p>Entry: ₹${m.entry}</p>
             <p>Time: ${m.time}</p>
-            <button onclick="openMatch('${docSnap.id}')">Join</button>
+
+            <button onclick="openMatch('${docSnap.id}')">
+                Join
+            </button>
         </div>
         `;
 
@@ -112,6 +120,11 @@ async function loadTournaments(type) {
 
     container.innerHTML = "";
 
+    if (snap.empty) {
+        container.innerHTML = "No tournaments available ❌";
+        return;
+    }
+
     snap.forEach(docSnap => {
 
         const t = docSnap.data();
@@ -122,14 +135,16 @@ async function loadTournaments(type) {
         <div class="card gold">
             <p>🏆 ${t.mode} Tournament</p>
             <p>Entry: ₹${t.entry}</p>
-            <button onclick="openTournament('${docSnap.id}')">Join</button>
+
+            <button onclick="openTournament('${docSnap.id}')">
+                Join
+            </button>
         </div>
         `;
 
         container.innerHTML += card;
     });
 }
-
 
 // 🔘 OPEN MATCH PAGE
 window.openMatch = function(id){
