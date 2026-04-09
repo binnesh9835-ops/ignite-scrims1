@@ -190,6 +190,7 @@ window.createMatch = async function () {
             totalSlots: slots,
             joined: 0,              // 🔥 IMPORTANT
             time,
+            rules,
             status: "open",         // 🔥 AUTO SYSTEM BASE
             createdAt: new Date()
         });
