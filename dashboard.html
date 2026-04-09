@@ -160,7 +160,6 @@ function showSection(section){
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
     document.getElementById(section).classList.add("active");
 
-    // 🔥 sub-nav control
     const subNav = document.getElementById("subNav");
 
     if(section === "matches" || section === "tournaments"){
@@ -168,8 +167,49 @@ function showSection(section){
     } else {
         subNav.style.display = "none";
     }
+
+    // ✅ ADD THIS PART (IMPORTANT)
+    resetTabs(section);
 }
 
+function resetTabs(section){
+
+    if(section === "matches"){
+
+        // ❌ remove all active
+        document.querySelectorAll("#matches .tab").forEach(tab=>{
+            tab.classList.remove("active");
+        });
+
+        // ✅ set ALL active
+        const firstTab = document.querySelector("#matches .tab");
+        if(firstTab){
+            firstTab.classList.add("active");
+        }
+
+        // 🔁 reload matches
+        if(window.switchTab){
+            switchTab("all");
+        }
+    }
+
+    if(section === "tournaments"){
+
+        document.querySelectorAll("#tournaments .tab").forEach(tab=>{
+            tab.classList.remove("active");
+        });
+
+        const firstTab = document.querySelector("#tournaments .tab");
+        if(firstTab){
+            firstTab.classList.add("active");
+        }
+
+        if(window.switchTournamentTab){
+            switchTournamentTab("all");
+        }
+    }
+}
+    
 function checkAuth(section){
     if(!window.currentUser){
         loginUser();
