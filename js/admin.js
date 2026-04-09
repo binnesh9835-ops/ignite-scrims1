@@ -171,7 +171,7 @@ window.createMatch = async function () {
     const booyah = Number(document.getElementById("booyah").value);
     const slots = Number(document.getElementById("slots").value);
     const time = document.getElementById("time").value;
-    
+    const rules = document.getElementById("rules").value;
     
     // ❌ validation
     if(!entry || !perKill || !booyah || !slots || !time){
