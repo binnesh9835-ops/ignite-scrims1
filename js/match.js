@@ -4,6 +4,8 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+import { runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 import {
     doc,
     getDoc,
@@ -107,9 +109,21 @@ window.confirmJoin = async function(){
         });
 
         // 💸 DEDUCT MONEY
-        await updateDoc(userRef, {
-            balance: increment(-matchData.entry)
-        });
+        await runTransaction(db, async (transaction) => {
+
+    const userDoc = await transaction.get(userRef);
+    const userData = userDoc.data();
+
+    if (userData.balance < matchData.entry) {
+        throw new Error("Insufficient balance!");
+    }
+
+    // 💸 SAFE DEDUCT
+    transaction.update(userRef, {
+        balance: userData.balance - matchData.entry
+    });
+
+});
 
         alert("Joined Successfully ✅");
 
