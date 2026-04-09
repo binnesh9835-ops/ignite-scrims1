@@ -1,106 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match - IGNITE SCRIMS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Details</title>
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/match.css">
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.card {
+    background: #111;
+    padding: 15px;
+    margin: 15px;
+    border-radius: 12px;
+    color: white;
+}
+
+#roomBox {
+    border: 1px solid orange;
+}
+
+#countdown {
+    font-size: 18px;
+    color: yellow;
+}
+</style>
 </head>
+
 <body>
 
-<!-- 🔥 TOP BAR -->
-<div class="top-bar">
-    <button onclick="goBack()">←</button>
-    <h2>Match Details</h2>
+<h2 style="text-align:center;">🎮 Match Details</h2>
+
+<!-- 🎮 MATCH INFO -->
+<div class="card">
+  <h2 id="mode"></h2>
+
+  <p>💰 Entry: ₹<span id="entry"></span></p>
+  <p>🎯 Per Kill: ₹<span id="perKill"></span></p>
+  <p>🏆 Booyah: ₹<span id="booyah"></span></p>
+  <p>🕒 Time: <span id="time"></span></p>
 </div>
 
-<div class="match-container">
+<!-- 📜 RULES -->
+<div class="card">
+  <h3>📜 Rules</h3>
+  <p id="rulesText">No rules</p>
+</div>
 
-    <!-- 🎮 MATCH INFO -->
-    <div class="match-box">
-        <p>Mode: <span id="mode"></span></p>
-        <p>Entry: ₹<span id="entry"></span></p>
-        <p>Per Kill: ₹<span id="perKill"></span></p>
-        <p>Booyah: ₹<span id="booyah"></span></p>
-        <p>Slots: <span id="slots"></span></p>
-        <p>Start Time: <span id="time"></span></p>
-    </div>
+<!-- 🔐 ROOM BOX -->
+<div class="card" id="roomBox">
 
-    <!-- 🔘 JOIN BUTTON -->
-    <button class="play-btn" onclick="openJoinPopup()">
-        Join Match
-    </button>
+  <h3>🔐 Room Details</h3>
 
-    <!-- 🎮 ROOM DETAILS -->
-    <div id="roomBox" class="room-box hidden">
-        <h3>Room Details</h3>
-        <p>ID: <span id="roomId"></span></p>
-        <p>Password: <span id="roomPass"></span></p>
-    </div>
+  <p id="countdown">Loading...</p>
 
-    <!-- 📊 LIVE SCORE -->
-    <div class="scoreboard">
-        <h3>Live Scoreboard</h3>
-        <div id="scoreList"></div>
-    </div>
+  <div id="roomDetails" style="display:none;">
+    <p>Room ID: 123456</p>
+    <p>Password: 9999</p>
+  </div>
 
 </div>
 
-
-<!-- 🔥 JOIN POPUP -->
-<div id="joinPopup" class="popup hidden">
-
-    <div class="popup-box">
-
-        <div class="popup-top">
-            <button onclick="closePopup()">←</button>
-            <button onclick="closePopup()">✖</button>
-        </div>
-
-        <h3>Join Match</h3>
-
-        <p>Entry Fee: ₹<span id="joinEntry"></span></p>
-
-        <!-- TEAM NAME -->
-        <input type="text" id="teamInput" placeholder="Enter Name / Team (required)">
-
-        <button class="play-btn" onclick="confirmJoin()">
-            Confirm Join
-        </button>
-
-    </div>
-
+<!-- 🔙 BACK -->
+<div style="text-align:center;">
+  <button onclick="goBack()">⬅ Back</button>
 </div>
 
+<script type="module">
 
-<!-- 🎉 SUCCESS POPUP -->
-<div id="successPopup" class="popup hidden">
+import { db } from "./js/firebase.js";
 
-    <div class="popup-box">
-
-        <h3>Joined Successfully 🎉</h3>
-
-        <p>Your Slot: <span id="slotNumber"></span></p>
-        <p>Match Time: <span id="matchTime"></span></p>
-
-        <button class="play-btn" onclick="closePopup()">
-            OK
-        </button>
-
-    </div>
-
-</div>
+import {
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
-<!-- SCRIPT -->
-<script type="module" src="js/match.js"></script>
-
-<script>
-function goBack(){
-    window.history.back();
+// 🔍 GET MATCH ID FROM URL
+function getMatchId(){
+    const url = new URL(window.location.href);
+    return url.searchParams.get("id");
 }
+
+
+// 🎮 LOAD MATCH DATA
+async function loadMatch(){
+
+    const id = getMatchId();
+
+    const ref = doc(db, "matches", id);
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()){
+        alert("Match not found");
+        return;
+    }
+
+    const m = snap.data();
+
+    // 🎮 DATA SHOW
+    document.getElementById("mode").innerText = m.mode + " Match";
+    document.getElementById("entry").innerText = m.entry;
+    document.getElementById("perKill").innerText = m.perKill;
+    document.getElementById("booyah").innerText = m.booyah;
+    document.getElementById("time").innerText = m.time;
+
+    // 📜 RULES
+    document.getElementById("rulesText").innerText = m.rules || "No rules";
+
+    // ⏳ START TIMER
+    startTimer(m.time);
+}
+
+
+// ⏳ TIMER SYSTEM
+function startTimer(matchTime){
+
+    const countdown = document.getElementById("countdown");
+    const roomDetails = document.getElementById("roomDetails");
+
+    function update(){
+
+        const now = new Date();
+
+        // ⚠️ TIME FORMAT: 21:00 (24h)
+        const target = new Date();
+        const parts = matchTime.split(":");
+
+        if(parts.length < 2){
+            countdown.innerText = "Invalid time format";
+            return;
+        }
+
+        const hour = parseInt(parts[0]);
+        const minute = parseInt(parts[1]);
+
+        target.setHours(hour);
+        target.setMinutes(minute);
+        target.setSeconds(0);
+
+        const diff = target - now;
+
+        if(diff <= 0){
+            countdown.innerText = "Match Live 🔥";
+            roomDetails.style.display = "block";
+            return;
+        }
+
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        countdown.innerText = `Starting in ${h}h ${m}m`;
+    }
+
+    update();
+    setInterval(update, 1000); // 🔥 auto update
+}
+
+
+// 🔙 BACK
+window.goBack = function(){
+    window.location.href = "dashboard.html";
+};
+
+
+// 🚀 INIT
+loadMatch();
+
 </script>
 
 </body>
