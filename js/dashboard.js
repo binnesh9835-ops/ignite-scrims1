@@ -10,7 +10,9 @@ import {
     doc,
     getDoc,
     collection,
-    getDocs
+    getDocs,
+    query,
+    orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -75,8 +77,6 @@ async function loadMatches(type) {
 
     const container = document.getElementById("matchList");
     container.innerHTML = "Loading...";
-
-    import { query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const q = query(collection(db, "matches"), orderBy("createdAt", "desc"));
 const snap = await getDocs(q);
