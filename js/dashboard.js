@@ -31,11 +31,15 @@ onAuthStateChanged(auth, async (user) => {
     if (userSnap.exists()) {
         const data = userSnap.data();
 
-        document.getElementById("userName").innerText = data.name || "";
-        document.getElementById("userEmail").innerText = data.email || "";
-        document.getElementById("balance").innerText = data.balance || 0;
-        document.getElementById("winning").innerText = data.winningBalance || 0;
-    }
+        const nameEl = document.getElementById("userName");
+const emailEl = document.getElementById("userEmail");
+const balanceEl = document.getElementById("balance");
+const winEl = document.getElementById("winning");
+
+if(nameEl) nameEl.innerText = data.name || "";
+if(emailEl) emailEl.innerText = data.email || "";
+if(balanceEl) balanceEl.innerText = data.balance || 0;
+if(winEl) winEl.innerText = data.winningBalance || 0;
 
     // 🔥 LOAD REAL DATA
     loadMatches("all");
