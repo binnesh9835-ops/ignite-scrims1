@@ -569,3 +569,39 @@ async function loadAdminHistory(){
         list.appendChild(item);
     });
 }
+
+async function loadMatchesForDelete(){
+
+    const list = document.getElementById("matchDeleteList");
+    if(!list) return;
+
+    list.innerHTML = "Loading...";
+
+    const snap = await getDocs(collection(db, "matches"));
+
+    list.innerHTML = "";
+
+    snap.forEach(docSnap => {
+
+        const m = docSnap.data();
+
+        const item = document.createElement("div");
+        item.className = "card";
+
+        item.innerHTML = `
+            <p><b>${m.mode}</b> | ₹${m.entry}</p>
+            <p>${m.time}</p>
+
+            <button style="background:red;color:white;padding:6px;border:none;border-radius:6px;"
+                onclick="deleteMatch('${docSnap.id}')">
+                Delete
+            </button>
+        `;
+
+        list.appendChild(item);
+    });
+
+    if(snap.empty){
+        list.innerHTML = "No matches";
+    }
+}
