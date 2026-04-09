@@ -44,7 +44,7 @@ if(winEl) winEl.innerText = data.winningBalance || 0;
     // 🔥 LOAD REAL DATA
     loadMatches("all");
     loadTournaments("all");
-});
+
 
 
 // 🔓 LOGOUT
