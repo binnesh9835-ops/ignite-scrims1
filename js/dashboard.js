@@ -190,4 +190,4 @@ setTimeout(() => {
     if(tourAll) tourAll.classList.add("active");
 
 }, 500);
-};
+});
