@@ -134,16 +134,15 @@ async function loadTournaments(type) {
         if (type !== "all" && t.mode.toLowerCase() !== type) return;
 
         const card = `
-        <div class="card gold">
-            <p>🏆 ${t.mode} Tournament</p>
-            <p>Entry: ₹${t.entry}</p>
+<div class="card gold auto-shine">
+    <p>🏆 ${t.mode} Tournament</p>
+    <p>Entry: ₹${t.entry}</p>
 
-            <button onclick="openTournament('${docSnap.id}')">
-                Join
-            </button>
-        </div>
-        `;
-
+    <button onclick="openTournament('${docSnap.id}')">
+        Join
+    </button>
+</div>
+`;
         container.innerHTML += card;
     });
 }
