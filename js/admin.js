@@ -157,6 +157,7 @@ async function loadAdminStats(){
     await loadMonthlyTransactions();
     await loadPending();
     await loadAdminHistory();
+    await loadMatchesForDelete();
 }
 
 
@@ -570,6 +571,23 @@ async function loadAdminHistory(){
     });
 }
 
+import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+window.deleteMatch = async function(id){
+
+    const confirmDelete = confirm("Delete this match?");
+
+    if(!confirmDelete) return;
+
+    try{
+        await deleteDoc(doc(db, "matches", id));
+        alert("Match deleted 🗑️");
+
+        loadMatchesForDelete(); // refresh
+    }catch(err){
+        alert(err.message);
+    }
+};
 async function loadMatchesForDelete(){
 
     const list = document.getElementById("matchDeleteList");
