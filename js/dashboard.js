@@ -60,12 +60,25 @@ window.showSection = function (id) {
 
 // 🎮 MATCH TAB
 window.switchTab = function (type) {
+
+    document.querySelectorAll("#matches .tab").forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    event.target.classList.add("active");
+
     loadMatches(type);
 };
 
-
 // 🏆 TOURNAMENT TAB
 window.switchTournamentTab = function (type) {
+
+    document.querySelectorAll("#tournaments .tab").forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    event.target.classList.add("active");
+
     loadTournaments(type);
 };
 
@@ -161,3 +174,15 @@ window.openTournament = function(id){
 // 🔗 NAV
 window.goWallet = () => window.location.href = "wallet.html";
 window.goProfile = () => window.location.href = "profile.html";
+
+
+// 🔥 DEFAULT TAB SET
+setTimeout(() => {
+
+    const matchAll = document.querySelector("#matches .tab");
+    if(matchAll) matchAll.classList.add("active");
+
+    const tourAll = document.querySelector("#tournaments .tab");
+    if(tourAll) tourAll.classList.add("active");
+
+}, 500);
