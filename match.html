@@ -24,6 +24,11 @@
     font-size: 18px;
     color: yellow;
 }
+
+.join-box {
+    text-align: center;
+    margin: 15px;
+}
 </style>
 </head>
 
@@ -39,12 +44,24 @@
   <p>🎯 Per Kill: ₹<span id="perKill"></span></p>
   <p>🏆 Booyah: ₹<span id="booyah"></span></p>
   <p>🕒 Time: <span id="time"></span></p>
+  <p>👥 Slots: <span id="slots">0</span></p>
 </div>
 
 <!-- 📜 RULES -->
 <div class="card">
   <h3>📜 Rules</h3>
   <p id="rulesText">No rules</p>
+</div>
+
+<!-- 🎯 JOIN BOX -->
+<div class="join-box">
+    <input type="text" id="teamInput" placeholder="Team Name">
+
+    <br><br>
+
+    <button id="joinBtn" onclick="confirmJoin()">
+        Join Match
+    </button>
 </div>
 
 <!-- 🔐 ROOM BOX -->
@@ -57,8 +74,16 @@
   <div id="roomDetails" style="display:none;">
     <p>Room ID: 123456</p>
     <p>Password: 9999</p>
+
+    <button onclick="shareRoom()">Share Room</button>
   </div>
 
+</div>
+
+<!-- 📊 SCOREBOARD -->
+<div class="card">
+    <h3>📊 Players</h3>
+    <div id="scoreList"></div>
 </div>
 
 <!-- 🔙 BACK -->
@@ -66,29 +91,59 @@
   <button onclick="goBack()">⬅ Back</button>
 </div>
 
+
 <script type="module">
 
-import { db } from "./js/firebase.js";
+import { auth, db } from "./js/firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
     doc,
-    getDoc
+    getDoc,
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    increment,
+    runTransaction,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+let currentUser = null;
+let matchId = null;
+let matchData = null;
 
-// 🔍 GET MATCH ID FROM URL
+
+// 🔍 GET ID
 function getMatchId(){
     const url = new URL(window.location.href);
     return url.searchParams.get("id");
 }
 
 
-// 🎮 LOAD MATCH DATA
+// 🔐 AUTH
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    currentUser = user;
+    matchId = getMatchId();
+
+    await loadMatch();
+    loadScoreboard();
+});
+
+
+// 🎮 LOAD MATCH
 async function loadMatch(){
 
-    const id = getMatchId();
-
-    const ref = doc(db, "matches", id);
+    const ref = doc(db, "matches", matchId);
     const snap = await getDoc(ref);
 
     if(!snap.exists()){
@@ -96,24 +151,132 @@ async function loadMatch(){
         return;
     }
 
-    const m = snap.data();
+    matchData = snap.data();
 
-    // 🎮 DATA SHOW
-    document.getElementById("mode").innerText = m.mode + " Match";
-    document.getElementById("entry").innerText = m.entry;
-    document.getElementById("perKill").innerText = m.perKill;
-    document.getElementById("booyah").innerText = m.booyah;
-    document.getElementById("time").innerText = m.time;
+    document.getElementById("mode").innerText = matchData.mode + " Match";
+    document.getElementById("entry").innerText = matchData.entry;
+    document.getElementById("perKill").innerText = matchData.perKill;
+    document.getElementById("booyah").innerText = matchData.booyah;
+    document.getElementById("time").innerText = matchData.time;
 
-    // 📜 RULES
-    document.getElementById("rulesText").innerText = m.rules || "No rules";
+    document.getElementById("rulesText").innerText = matchData.rules || "No rules";
 
-    // ⏳ START TIMER
-    startTimer(m.time);
+    startTimer(matchData.time);
+
+    // 🔥 LIVE SLOT COUNTER
+    const playersRef = collection(db, "matches", matchId, "players");
+
+    onSnapshot(playersRef, (snap) => {
+
+        const joined = snap.size;
+
+        document.getElementById("slots").innerText =
+            `${joined} / ${matchData.totalSlots}`;
+
+        if (joined >= matchData.totalSlots) {
+            document.getElementById("joinBtn").disabled = true;
+            document.getElementById("joinBtn").innerText = "Match Full 🔒";
+        }
+    });
 }
 
 
-// ⏳ TIMER SYSTEM
+// 🎯 JOIN MATCH (AUTO SLOT SYSTEM)
+window.confirmJoin = async function(){
+
+    const teamName = document.getElementById("teamInput").value.trim();
+
+    if (!teamName) {
+        alert("Enter team name");
+        return;
+    }
+
+    try{
+
+        const userRef = doc(db, "users", currentUser.uid);
+
+        await runTransaction(db, async (transaction) => {
+
+            const matchRef = doc(db, "matches", matchId);
+            const matchSnap = await transaction.get(matchRef);
+            const match = matchSnap.data();
+
+            const playersRef = collection(db, "matches", matchId, "players");
+            const snap = await getDocs(playersRef);
+
+            let slotsNeeded = 1;
+
+            // 🔥 SQUAD = 4 SLOT AUTO BOOK
+            if(match.mode.toLowerCase() === "squad") slotsNeeded = 4;
+            if(match.mode.toLowerCase() === "duo") slotsNeeded = 2;
+
+            if (snap.size + slotsNeeded > match.totalSlots) {
+                throw new Error("Not enough slots ❌");
+            }
+
+            const userDoc = await transaction.get(userRef);
+            const userData = userDoc.data();
+
+            if (userData.balance < match.entry) {
+                throw new Error("Insufficient balance");
+            }
+
+            // 💾 ADD PLAYERS (MULTI SLOT)
+            for(let i=0; i<slotsNeeded; i++){
+                await addDoc(playersRef, {
+                    userId: currentUser.uid,
+                    teamName,
+                    slot: snap.size + i + 1,
+                    kills: 0,
+                    createdAt: new Date()
+                });
+            }
+
+            // 💸 DEDUCT
+            transaction.update(userRef, {
+                balance: userData.balance - match.entry
+            });
+
+            transaction.update(matchRef, {
+                joined: increment(slotsNeeded)
+            });
+
+        });
+
+        alert("Joined Successfully ✅");
+
+        loadScoreboard();
+
+    }catch(err){
+        alert(err.message);
+    }
+};
+
+
+// 📊 SCOREBOARD
+async function loadScoreboard(){
+
+    const list = document.getElementById("scoreList");
+    list.innerHTML = "";
+
+    const playersRef = collection(db, "matches", matchId, "players");
+    const snap = await getDocs(playersRef);
+
+    snap.forEach(docSnap => {
+
+        const p = docSnap.data();
+
+        list.innerHTML += `
+        <div class="card">
+            <p>Slot ${p.slot} - ${p.teamName}</p>
+            <p>Kills: ${p.kills}</p>
+        </div>
+        `;
+    });
+}
+
+
+// ⏳ TIMER
 function startTimer(matchTime){
 
     const countdown = document.getElementById("countdown");
@@ -123,21 +286,10 @@ function startTimer(matchTime){
 
         const now = new Date();
 
-        // ⚠️ TIME FORMAT: 21:00 (24h)
+        const [hour, minute] = matchTime.split(":").map(Number);
+
         const target = new Date();
-        const parts = matchTime.split(":");
-
-        if(parts.length < 2){
-            countdown.innerText = "Invalid time format";
-            return;
-        }
-
-        const hour = parseInt(parts[0]);
-        const minute = parseInt(parts[1]);
-
-        target.setHours(hour);
-        target.setMinutes(minute);
-        target.setSeconds(0);
+        target.setHours(hour, minute, 0);
 
         const diff = target - now;
 
@@ -147,25 +299,35 @@ function startTimer(matchTime){
             return;
         }
 
-        const h = Math.floor(diff / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
 
         countdown.innerText = `Starting in ${h}h ${m}m`;
     }
 
     update();
-    setInterval(update, 1000); // 🔥 auto update
+    setInterval(update, 1000);
 }
+
+
+// 🔗 SHARE
+window.shareRoom = function(){
+
+    const text = `Room ID: 123456\nPassword: 9999`;
+
+    if(navigator.share){
+        navigator.share({ text });
+    }else{
+        navigator.clipboard.writeText(text);
+        alert("Copied ✅");
+    }
+};
 
 
 // 🔙 BACK
 window.goBack = function(){
     window.location.href = "dashboard.html";
 };
-
-
-// 🚀 INIT
-loadMatch();
 
 </script>
 
