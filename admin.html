@@ -21,31 +21,23 @@
     ₹<span id="monthlyAmount">0</span>
   </div>
 
-  <!-- ✅ ONLY ONE PENDING BUTTON -->
   <div class="gold-box" onclick="openPending()">
     ⏳ Pending Requests <br>
     <span id="pendingCount">0</span>
   </div>
 
-</div> <!-- ✅ yaha close -->
-
-<!-- 🎮 CREATE MATCH (OUTSIDE) -->
-<div class="card" style="margin:20px;">
-  <h3>Create Match</h3>
-  
-<!-- Delete Match -->
-<div class="card" style="margin:20px;">
-  <h3>🗑️ Delete Matches</h3>
-  <div id="matchDeleteList">Loading...</div>
 </div>
 
-  <!-- 🔥 TYPE -->
+
+<!-- 🎮 CREATE MATCH -->
+<div class="card" style="margin:20px;">
+  <h3>Create Match</h3>
+
   <select id="type">
     <option value="match">Match</option>
     <option value="tournament">Tournament</option>
   </select>
 
-  <!-- 🔥 MODE -->
   <select id="mode">
     <option value="Solo">Solo</option>
     <option value="Duo">Duo</option>
@@ -56,9 +48,8 @@
   <input type="number" id="perKill" placeholder="Per Kill ₹">
   <input type="number" id="booyah" placeholder="Booyah Bonus ₹">
   <input type="number" id="slots" placeholder="Total Slots">
-  <input type="text" id="time" placeholder="Match Time (e.g. 9:00 PM)">
+  <input type="text" id="time" placeholder="Match Time (e.g. 09:00)">
 
-  <!-- 🔥 RULES -->
   <textarea id="rules" placeholder="Enter match rules..." style="width:100%; height:80px;"></textarea>
 
   <button onclick="createMatch()" class="play-btn" style="margin-top:10px;">
@@ -66,13 +57,34 @@
   </button>
 </div>
 
+
+<!-- 🗑️ DELETE + VIEW MATCH -->
+<div class="card" style="margin:20px;">
+  <h3>🎮 Manage Matches</h3>
+  <div id="matchDeleteList">Loading...</div>
+</div>
+
+
+<!-- 👥 MATCH DETAILS POPUP -->
+<div id="matchDetailsPopup" class="popup">
+  <div class="popup-box">
+    <h3>👥 Match Players</h3>
+
+    <div id="matchPlayersList">Loading...</div>
+
+    <button onclick="closeMatchDetails()">Close</button>
+  </div>
+</div>
+
+
 <!-- 📝 ADMIN HISTORY -->
 <div class="card" style="margin:20px;">
   <h3>📜 Admin Activity</h3>
   <div id="adminHistory">Loading...</div>
 </div>
 
-<!-- ✅ POPUP -->
+
+<!-- ⏳ PENDING POPUP -->
 <div id="pendingPopup" class="popup">
   <div class="popup-box">
     <h3>Pending Requests</h3>
@@ -82,10 +94,18 @@
   </div>
 </div>
 
+
 <!-- 🔥 LOGOUT -->
 <div style="text-align:center; margin-top:20px;">
   <button onclick="logout()" class="play-btn">Logout</button>
 </div>
+
+
+<script>
+function closeMatchDetails(){
+  document.getElementById("matchDetailsPopup").style.display = "none";
+}
+</script>
 
 <script type="module" src="js/admin.js"></script>
 
