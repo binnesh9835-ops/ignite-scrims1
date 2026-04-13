@@ -13,7 +13,8 @@ import {
     collection,
     addDoc,
     getDocs,
-    increment
+    increment,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let currentUser = null;
@@ -67,6 +68,20 @@ async function loadMatch(){
     document.getElementById("joinEntry").innerText = matchData.entry;
 }
 
+// 🔴 LIVE SLOT LISTENER
+const playersRef = collection(db, "matches", matchId, "players");
+
+onSnapshot(playersRef, (snap) => {
+    const joined = snap.size;
+
+    document.getElementById("slots").innerText =
+        `${joined} / ${matchData.totalSlots}`;
+
+    // 🔒 AUTO FULL LOCK
+    if (joined >= matchData.totalSlots) {
+        document.getElementById("joinBtn")?.remove();
+    }
+});
 
 // 🎯 JOIN MATCH
 window.confirmJoin = async function(){
@@ -81,49 +96,50 @@ window.confirmJoin = async function(){
     try{
 
         const userRef = doc(db, "users", currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        const user = userSnap.data();
 
-        if(user.balance < matchData.entry){
-            alert("Not enough balance");
-            return;
-        }
-
-        const playersRef = collection(db, "matches", matchId, "players");
-        const snap = await getDocs(playersRef);
-
-        if(snap.size >= matchData.totalSlots){
-            alert("Match full");
-            return;
-        }
-
-        const slot = snap.size + 1;
-
-        // ✅ SAVE PLAYER
-        await addDoc(playersRef, {
-            userId: currentUser.uid,
-            teamName,
-            slot,
-            kills: 0,
-            createdAt: new Date()
-        });
-
-        // 💸 DEDUCT MONEY
         await runTransaction(db, async (transaction) => {
 
-    const userDoc = await transaction.get(userRef);
-    const userData = userDoc.data();
+            const matchRef = doc(db, "matches", matchId);
+            const matchSnap = await transaction.get(matchRef);
+            const match = matchSnap.data();
 
-    if (userData.balance < matchData.entry) {
-        throw new Error("Insufficient balance!");
-    }
+            const playersRef = collection(db, "matches", matchId, "players");
+            const snap = await getDocs(playersRef);
 
-    // 💸 SAFE DEDUCT
-    transaction.update(userRef, {
-        balance: userData.balance - matchData.entry
-    });
+            if (snap.size >= match.totalSlots) {
+                throw new Error("Match full ❌");
+            }
 
-});
+            const userDoc = await transaction.get(userRef);
+            const userData = userDoc.data();
+
+            if (userData.balance < match.entry) {
+                throw new Error("Insufficient balance");
+            }
+
+            const slot = snap.size + 1;
+
+            // 💾 SAVE PLAYER
+            await addDoc(playersRef, {
+                userId: currentUser.uid,
+                teamName,
+                slot,
+                kills: 0,
+                createdAt: new Date()
+            });
+
+            // 💸 DEDUCT
+            transaction.update(userRef, {
+                balance: userData.balance - match.entry
+            });
+
+            // 🔥 UPDATE MATCH JOIN COUNT
+            transaction.update(matchRef, {
+                joined: increment(1),
+                status: (snap.size + 1 >= match.totalSlots) ? "full" : "open"
+            });
+
+        });
 
         alert("Joined Successfully ✅");
 
@@ -133,7 +149,6 @@ window.confirmJoin = async function(){
         alert(err.message);
     }
 };
-
 
 // 📊 SCOREBOARD
 async function loadScoreboard(){
