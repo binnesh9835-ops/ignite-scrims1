@@ -16,30 +16,50 @@
     color: white;
 }
 
-#roomBox {
-    border: 1px solid orange;
-}
-
 #countdown {
     font-size: 18px;
     color: yellow;
 }
 
-.join-box {
-    text-align: center;
-    margin: 15px;
+.join-btn {
+    background: limegreen;
+    color: black;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 5px lime; }
+    to { box-shadow: 0 0 20px lime; }
+}
+
+.loader {
+    position: fixed;
+    background: black;
+    color: white;
+    width: 100%;
+    height: 100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size: 24px;
+    z-index:999;
+    display:none;
 }
 </style>
 </head>
 
 <body>
 
+<div id="loader" class="loader">Checking Balance: 3</div>
+
 <h2 style="text-align:center;">🎮 Match Details</h2>
 
-<!-- 🎮 MATCH INFO -->
 <div class="card">
   <h2 id="mode"></h2>
-
   <p>💰 Entry: ₹<span id="entry"></span></p>
   <p>🎯 Per Kill: ₹<span id="perKill"></span></p>
   <p>🏆 Booyah: ₹<span id="booyah"></span></p>
@@ -47,197 +67,172 @@
   <p>👥 Slots: <span id="slots">0</span></p>
 </div>
 
-<!-- 📜 RULES -->
 <div class="card">
   <h3>📜 Rules</h3>
-  <p id="rulesText">No rules</p>
+  <p id="rulesText"></p>
 </div>
 
-<!-- 🎯 JOIN BOX -->
-<div class="join-box">
-    <input type="text" id="teamInput" placeholder="Team Name">
-
-    <br><br>
-
-    <button id="joinBtn" onclick="confirmJoin()">
-        Join Match
-    </button>
+<div style="text-align:center;">
+    <input id="teamInput" placeholder="Enter IGN / Team Name"><br><br>
+    <button id="joinBtn" class="join-btn" onclick="confirmJoin()">JOIN MATCH</button>
 </div>
 
-<!-- 🔐 ROOM BOX -->
-<div class="card" id="roomBox">
-
+<div class="card">
   <h3>🔐 Room Details</h3>
-
-  <p id="countdown">Loading...</p>
+  <p id="countdown"></p>
 
   <div id="roomDetails" style="display:none;">
     <p>Room ID: 123456</p>
     <p>Password: 9999</p>
-
-    <button onclick="shareRoom()">Share Room</button>
+    <button onclick="shareRoom()">Share</button>
   </div>
-
 </div>
 
-<!-- 📊 SCOREBOARD -->
 <div class="card">
-    <h3>📊 Players</h3>
-    <div id="scoreList"></div>
+<h3>📊 Players</h3>
+<div id="scoreList"></div>
 </div>
-
-<!-- 🔙 BACK -->
-<div style="text-align:center;">
-  <button onclick="goBack()">⬅ Back</button>
-</div>
-
 
 <script type="module">
 
 import { auth, db } from "./js/firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-    doc,
-    getDoc,
-    collection,
-    addDoc,
-    getDocs,
-    updateDoc,
-    increment,
-    runTransaction,
-    onSnapshot
+doc, getDoc, collection, addDoc, getDocs,
+runTransaction, increment, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-let currentUser = null;
-let matchId = null;
-let matchData = null;
+let currentUser, matchId, matchData;
 
-
-// 🔍 GET ID
 function getMatchId(){
-    const url = new URL(window.location.href);
-    return url.searchParams.get("id");
+    return new URLSearchParams(window.location.search).get("id");
 }
 
+onAuthStateChanged(auth, async (user)=>{
+    if(!user) return location.href="login.html";
 
-// 🔐 AUTH
-onAuthStateChanged(auth, async (user) => {
-
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    currentUser = user;
-    matchId = getMatchId();
+    currentUser=user;
+    matchId=getMatchId();
 
     await loadMatch();
     loadScoreboard();
 });
 
-
-// 🎮 LOAD MATCH
 async function loadMatch(){
 
-    const ref = doc(db, "matches", matchId);
-    const snap = await getDoc(ref);
-
-    if(!snap.exists()){
-        alert("Match not found");
-        return;
-    }
-
+    const snap = await getDoc(doc(db,"matches",matchId));
     matchData = snap.data();
 
-    document.getElementById("mode").innerText = matchData.mode + " Match";
+    document.getElementById("mode").innerText = matchData.mode;
     document.getElementById("entry").innerText = matchData.entry;
     document.getElementById("perKill").innerText = matchData.perKill;
     document.getElementById("booyah").innerText = matchData.booyah;
     document.getElementById("time").innerText = matchData.time;
-
     document.getElementById("rulesText").innerText = matchData.rules || "No rules";
 
     startTimer(matchData.time);
 
-    // 🔥 LIVE SLOT COUNTER
-    const playersRef = collection(db, "matches", matchId, "players");
+    const playersRef = collection(db,"matches",matchId,"players");
 
-    onSnapshot(playersRef, (snap) => {
+    onSnapshot(playersRef,(snap)=>{
 
         const joined = snap.size;
-
         document.getElementById("slots").innerText =
             `${joined} / ${matchData.totalSlots}`;
 
-        if (joined >= matchData.totalSlots) {
-            document.getElementById("joinBtn").disabled = true;
-            document.getElementById("joinBtn").innerText = "Match Full 🔒";
+        // ❌ already joined check
+        let already = false;
+
+        snap.forEach(d=>{
+            if(d.data().userId === currentUser.uid){
+                already = true;
+            }
+        });
+
+        if(already){
+            const btn = document.getElementById("joinBtn");
+            btn.disabled = true;
+            btn.innerText = "Already Joined ✅";
         }
+
+        if(joined >= matchData.totalSlots){
+            const btn = document.getElementById("joinBtn");
+            btn.disabled = true;
+            btn.innerText = "Match Full 🔒";
+        }
+
     });
 }
 
-
-// 🎯 JOIN MATCH (AUTO SLOT SYSTEM)
 window.confirmJoin = async function(){
 
-    const teamName = document.getElementById("teamInput").value.trim();
+    const name = document.getElementById("teamInput").value.trim();
+    if(!name) return alert("Enter name");
 
-    if (!teamName) {
-        alert("Enter team name");
-        return;
-    }
+    // 🔥 loader
+    const loader = document.getElementById("loader");
+    loader.style.display="flex";
+
+    let count = 3;
+
+    const interval = setInterval(()=>{
+        loader.innerText = "Checking Balance: " + count;
+        count--;
+    },1000);
+
+    await new Promise(res=>setTimeout(res,3000));
+    clearInterval(interval);
 
     try{
 
-        const userRef = doc(db, "users", currentUser.uid);
+        await runTransaction(db, async (transaction)=>{
 
-        await runTransaction(db, async (transaction) => {
-
-            const matchRef = doc(db, "matches", matchId);
+            const matchRef = doc(db,"matches",matchId);
             const matchSnap = await transaction.get(matchRef);
             const match = matchSnap.data();
 
-            const playersRef = collection(db, "matches", matchId, "players");
+            const userRef = doc(db,"users",currentUser.uid);
+            const userSnap = await transaction.get(userRef);
+            const user = userSnap.data();
+
+            const playersRef = collection(db,"matches",matchId,"players");
             const snap = await getDocs(playersRef);
 
+            // ❌ duplicate रोक
+            snap.forEach(d=>{
+                if(d.data().userId === currentUser.uid){
+                    throw new Error("Already joined");
+                }
+            });
+
             let slotsNeeded = 1;
+            if(match.mode.toLowerCase()==="squad") slotsNeeded=4;
+            if(match.mode.toLowerCase()==="duo") slotsNeeded=2;
 
-            // 🔥 SQUAD = 4 SLOT AUTO BOOK
-            if(match.mode.toLowerCase() === "squad") slotsNeeded = 4;
-            if(match.mode.toLowerCase() === "duo") slotsNeeded = 2;
-
-            if (snap.size + slotsNeeded > match.totalSlots) {
-                throw new Error("Not enough slots ❌");
+            if(snap.size + slotsNeeded > match.totalSlots){
+                throw new Error("Not enough slots");
             }
 
-            const userDoc = await transaction.get(userRef);
-            const userData = userDoc.data();
-
-            if (userData.balance < match.entry) {
-                throw new Error("Insufficient balance");
+            if(user.balance < match.entry){
+                throw new Error("Low balance");
             }
 
-            // 💾 ADD PLAYERS (MULTI SLOT)
-            for(let i=0; i<slotsNeeded; i++){
-                await addDoc(playersRef, {
+            // 💾 add players
+            for(let i=0;i<slotsNeeded;i++){
+                await addDoc(playersRef,{
                     userId: currentUser.uid,
-                    teamName,
-                    slot: snap.size + i + 1,
-                    kills: 0,
-                    createdAt: new Date()
+                    teamName: name,
+                    slot: snap.size+i+1,
+                    kills:0
                 });
             }
 
-            // 💸 DEDUCT
-            transaction.update(userRef, {
-                balance: userData.balance - match.entry
+            transaction.update(userRef,{
+                balance: user.balance - match.entry
             });
 
-            transaction.update(matchRef, {
+            transaction.update(matchRef,{
                 joined: increment(slotsNeeded)
             });
 
@@ -245,88 +240,70 @@ window.confirmJoin = async function(){
 
         alert("Joined Successfully ✅");
 
-        loadScoreboard();
-
     }catch(err){
         alert(err.message);
     }
+
+    loader.style.display="none";
 };
 
-
-// 📊 SCOREBOARD
 async function loadScoreboard(){
 
-    const list = document.getElementById("scoreList");
-    list.innerHTML = "";
+    const list=document.getElementById("scoreList");
+    const snap=await getDocs(collection(db,"matches",matchId,"players"));
 
-    const playersRef = collection(db, "matches", matchId, "players");
-    const snap = await getDocs(playersRef);
+    list.innerHTML="";
 
-    snap.forEach(docSnap => {
-
-        const p = docSnap.data();
-
-        list.innerHTML += `
+    snap.forEach(d=>{
+        const p=d.data();
+        list.innerHTML+=`
         <div class="card">
-            <p>Slot ${p.slot} - ${p.teamName}</p>
-            <p>Kills: ${p.kills}</p>
-        </div>
-        `;
+        Slot ${p.slot} - ${p.teamName}
+        </div>`;
     });
 }
 
+function startTimer(time){
 
-// ⏳ TIMER
-function startTimer(matchTime){
-
-    const countdown = document.getElementById("countdown");
-    const roomDetails = document.getElementById("roomDetails");
+    const el=document.getElementById("countdown");
+    const room=document.getElementById("roomDetails");
 
     function update(){
 
-        const now = new Date();
-
-        const [hour, minute] = matchTime.split(":").map(Number);
-
-        const target = new Date();
-        target.setHours(hour, minute, 0);
-
-        const diff = target - now;
-
-        if(diff <= 0){
-            countdown.innerText = "Match Live 🔥";
-            roomDetails.style.display = "block";
+        if(!time || !time.includes(":")){
+            el.innerText="Invalid time";
             return;
         }
 
-        const h = Math.floor(diff / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
+        const [h,m]=time.split(":").map(Number);
 
-        countdown.innerText = `Starting in ${h}h ${m}m`;
+        const now=new Date();
+        const target=new Date();
+
+        target.setHours(h,m,0);
+
+        const diff=target-now;
+
+        if(diff<=0){
+            el.innerText="Match Live 🔥";
+            room.style.display="block";
+            return;
+        }
+
+        const hh=Math.floor(diff/3600000);
+        const mm=Math.floor((diff%3600000)/60000);
+
+        el.innerText=`Starting in ${hh}h ${mm}m`;
     }
 
     update();
-    setInterval(update, 1000);
+    setInterval(update,1000);
 }
 
-
-// 🔗 SHARE
-window.shareRoom = function(){
-
-    const text = `Room ID: 123456\nPassword: 9999`;
-
-    if(navigator.share){
-        navigator.share({ text });
-    }else{
-        navigator.clipboard.writeText(text);
-        alert("Copied ✅");
-    }
-};
-
-
-// 🔙 BACK
-window.goBack = function(){
-    window.location.href = "dashboard.html";
+window.shareRoom=function(){
+    const text="Room ID: 123456 Password: 9999";
+    navigator.clipboard.writeText(text);
+    alert("Copied ✅");
 };
 
 </script>
