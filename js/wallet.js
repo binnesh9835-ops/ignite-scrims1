@@ -33,24 +33,26 @@ onAuthStateChanged(auth, (user) => {
     const userRef = doc(db, "users", user.uid);
 
     // 🔥 REAL-TIME LISTENER
-    onSnapshot(userRef, (snap) => {
+    import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        if (!snap.exists()) return;
+onSnapshot(userRef, (snap) => {
 
-        const d = snap.data();
+    if (snap.exists()) {
+        const data = snap.data();
 
-        const deposit = d.depositBalance || 0;
-        const winning = d.winningBalance || 0;
+        const deposit = data.balance || 0;
+        const winning = data.winningBalance || 0;
         const total = deposit + winning;
 
         const dEl = document.getElementById("deposit");
-const wEl = document.getElementById("winning");
-const bEl = document.getElementById("balance");
+        const wEl = document.getElementById("winning");
+        const bEl = document.getElementById("balance");
 
-if(dEl) dEl.innerText = deposit;
-if(wEl) wEl.innerText = winning;
-if(bEl) bEl.innerText = total;
-    });
+        if(dEl) dEl.innerText = deposit;
+        if(wEl) wEl.innerText = winning;
+        if(bEl) bEl.innerText = total;
+    }
+});
 
     loadHistory();
 });
