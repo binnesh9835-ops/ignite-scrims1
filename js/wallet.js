@@ -43,9 +43,13 @@ onAuthStateChanged(auth, (user) => {
         const winning = d.winningBalance || 0;
         const total = deposit + winning;
 
-        document.getElementById("deposit").innerText = deposit;
-        document.getElementById("winning").innerText = winning;
-        document.getElementById("balance").innerText = total;
+        const dEl = document.getElementById("deposit");
+const wEl = document.getElementById("winning");
+const bEl = document.getElementById("balance");
+
+if(dEl) dEl.innerText = deposit;
+if(wEl) wEl.innerText = winning;
+if(bEl) bEl.innerText = total;
     });
 
     loadHistory();
@@ -205,3 +209,7 @@ function toast(msg){
 
     setTimeout(()=> t.remove(), 2500);
 }
+
+window.closePending = function(){
+    hide("pendingPopup");
+};
