@@ -2,6 +2,7 @@ console.log("admin loaded");
 
 // 🔥 IMPORTS
 import { auth, db } from "./firebase.js";
+import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import {
     onAuthStateChanged,
@@ -307,11 +308,11 @@ window.loadTeams = async function () {
         const row = document.createElement("div");
 
         row.innerHTML = `
-            <p>${t.teamName}</p>
-            <input type="number" placeholder="Kills" id="tk-${docSnap.id}">
-            <input type="number" placeholder="Placement" id="tp-${docSnap.id}">
-            <button onclick="saveTournament('${tId}', '${docSnap.id}')">Save</button>
-        `;
+    <p>Slot ${p.slot} - ${p.teamName}</p>
+    <input type="number" placeholder="Kills" id="kills-${docSnap.id}">
+    <input type="checkbox" id="booyah-${docSnap.id}">
+    <button onclick="savePlayer('${matchId}', '${docSnap.id}')">Save</button>
+`;
 
         list.appendChild(row);
     });
@@ -571,8 +572,6 @@ async function loadAdminHistory(){
     });
 }
 
-import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 window.deleteMatch = async function(id){
 
     const confirmDelete = confirm("Delete this match?");
@@ -610,8 +609,13 @@ async function loadMatchesForDelete(){
             <p><b>${m.mode}</b> | ₹${m.entry}</p>
             <p>${m.time}</p>
 
-            <button style="background:red;color:white;padding:6px;border:none;border-radius:6px;"
-                onclick="deleteMatch('${docSnap.id}')">
+            <button onclick="viewMatch('${docSnap.id}')"
+                style="background:blue;color:white;padding:6px;border:none;border-radius:6px;">
+                View
+            </button>
+
+            <button onclick="deleteMatch('${docSnap.id}')"
+                style="background:red;color:white;padding:6px;border:none;border-radius:6px;margin-left:5px;">
                 Delete
             </button>
         `;
@@ -623,3 +627,40 @@ async function loadMatchesForDelete(){
         list.innerHTML = "No matches";
     }
 }
+    if(snap.empty){
+        list.innerHTML = "No matches";
+    }
+}
+
+window.viewMatch = async function(id){
+
+    const container = document.getElementById("matchPlayersView");
+
+    container.style.display = "block";
+    container.innerHTML = "Loading players...";
+
+    const snap = await getDocs(collection(db, "matches", id, "players"));
+
+    container.innerHTML = "";
+
+    if(snap.empty){
+        container.innerHTML = "No players joined";
+        return;
+    }
+
+    snap.forEach(docSnap => {
+
+        const p = docSnap.data();
+
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <p><b>Slot:</b> ${p.slot}</p>
+            <p><b>Team:</b> ${p.teamName}</p>
+            <p><b>User ID:</b> ${p.userId}</p>
+        `;
+
+        container.appendChild(div);
+    });
+};
