@@ -1,4 +1,4 @@
-console.log("wallet loaded");
+console.log("PRO wallet loaded");
 
 // 🔥 IMPORTS
 import { auth, db } from "./firebase.js";
@@ -9,86 +9,86 @@ import {
 
 import {
     doc,
-    getDoc,
     collection,
     addDoc,
     query,
     orderBy,
-    getDocs
+    onSnapshot,
+    getDocs,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let currentUser = null;
 
 
-// 🔐 LOAD USER DATA
-onAuthStateChanged(auth, async (user) => {
+// =============================
+// 🔐 AUTH + REALTIME USER DATA
+// =============================
+onAuthStateChanged(auth, (user) => {
 
     if (!user) return;
 
     currentUser = user;
 
     const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
 
-    if (snap.exists()) {
-        const data = snap.data();
+    // 🔥 REAL-TIME LISTENER
+    onSnapshot(userRef, (snap) => {
 
-        document.getElementById("balance").innerText = data.balance || 0;
-        document.getElementById("totalWinning").innerText = data.totalWinning || 0;
-        document.getElementById("totalSpent").innerText = data.totalSpent || 0;
-        document.getElementById("totalWithdraw").innerText = data.totalWithdraw || 0;
-    }
+        if (!snap.exists()) return;
+
+        const d = snap.data();
+
+        const deposit = d.depositBalance || 0;
+        const winning = d.winningBalance || 0;
+        const total = deposit + winning;
+
+        document.getElementById("deposit").innerText = deposit;
+        document.getElementById("winning").innerText = winning;
+        document.getElementById("balance").innerText = total;
+    });
 
     loadHistory();
 });
 
 
-// 💰 POPUPS (GLOBAL)
-window.openAddMoney = () => showPopup("addMoneyPopup");
-window.openWithdraw = () => showPopup("withdrawPopup");
+// =============================
+// 💰 POPUPS
+// =============================
+window.openAddMoney = () => show("addMoneyPopup");
+window.openWithdraw = () => show("withdrawPopup");
 
 window.closePopup = () => {
     document.querySelectorAll(".popup").forEach(p => p.classList.remove("show"));
 };
 
-window.backToAdd = () => {
-    hidePopup("paymentPopup");
-    showPopup("addMoneyPopup");
-};
-
-
-// ✅ SHOW / HIDE (FINAL FIX)
-function showPopup(id){
-    const el = document.getElementById(id);
-    if(el){
-        el.classList.add("show");   // ✅ SHOW CLASS
-    }
+function show(id){
+    document.getElementById(id)?.classList.add("show");
 }
-
-function hidePopup(id){
-    const el = document.getElementById(id);
-    if(el){
-        el.classList.remove("show"); // ✅ REMOVE SHOW
-    }
+function hide(id){
+    document.getElementById(id)?.classList.remove("show");
 }
 
 
-// ➡️ NEXT STEP (ADD MONEY)
+// =============================
+// ➡️ ADD MONEY STEP
+// =============================
 window.nextAddStep = function () {
 
     const amount = Number(document.getElementById("amount").value);
 
-    if (!amount || amount <= 0) {
-        alert("Enter valid amount");
-        return;
+    if (!amount || amount < 10) {
+        return toast("Minimum ₹10 required ❌");
     }
 
-    hidePopup("addMoneyPopup");
-    showPopup("paymentPopup");
+    hide("addMoneyPopup");
+    show("paymentPopup");
 };
 
 
-// 📤 SUBMIT PAYMENT (ADD MONEY REQUEST)
+// =============================
+// 📤 ADD MONEY REQUEST
+// =============================
 window.submitPayment = async function () {
 
     const amount = Number(document.getElementById("amount").value);
@@ -96,124 +96,112 @@ window.submitPayment = async function () {
     const sender = document.getElementById("sender").value.trim();
 
     if (!utr || !sender) {
-        alert("All fields required!");
-        return;
+        return toast("Fill all fields ❌");
     }
 
-    try {
-        await addDoc(collection(db, "transactions"), {
-            userId: currentUser.uid,
-            type: "add",
-            amount,
-            utr,
-            sender,
-            status: "pending",
-            createdAt: new Date()
-        });
+    await addDoc(collection(db, "transactions"), {
+        userId: currentUser.uid,
+        type: "add",
+        amount,
+        utr,
+        sender,
+        status: "pending",
+        createdAt: new Date()
+    });
 
-        closePopup();
-        showPopup("pendingPopup");
-
-        loadHistory();
-
-    } catch (err) {
-        alert(err.message);
-    }
+    closePopup();
+    show("pendingPopup");
+    loadHistory();
 };
 
 
+// =============================
 // 💸 WITHDRAW
+// =============================
 window.submitWithdraw = async function () {
 
     const amount = Number(document.getElementById("withdrawAmount").value);
 
     if (!amount || amount < 100) {
-        alert("Minimum ₹100");
-        return;
+        return toast("Minimum ₹100 ❌");
     }
 
-    try {
-        const userRef = doc(db, "users", currentUser.uid);
-        const snap = await getDoc(userRef);
-        const data = snap.data();
+    const userRef = doc(db, "users", currentUser.uid);
+    const snap = await getDoc(userRef);
+    const data = snap.data();
 
-        if (amount > (data.winningBalance || 0)) {
-            alert("Only winning balance allowed");
-            return;
-        }
-
-        await addDoc(collection(db, "transactions"), {
-            userId: currentUser.uid,
-            type: "withdraw",
-            amount,
-            status: "pending",
-            createdAt: new Date()
-        });
-
-        closePopup();
-        alert("Withdraw request sent ✅");
-
-        loadHistory();
-
-    } catch (err) {
-        alert(err.message);
+    if (amount > (data.winningBalance || 0)) {
+        return toast("Only winning balance allowed ❌");
     }
+
+    await addDoc(collection(db, "transactions"), {
+        userId: currentUser.uid,
+        type: "withdraw",
+        amount,
+        status: "pending",
+        createdAt: new Date()
+    });
+
+    closePopup();
+    toast("Withdraw request sent ✅");
+    loadHistory();
 };
 
 
-// 📜 HISTORY
-async function loadHistory() {
+// =============================
+// 📜 REALTIME HISTORY
+// =============================
+async function loadHistory(){
 
     const list = document.getElementById("historyList");
     if(!list) return;
-
-    list.innerHTML = "Loading...";
 
     const q = query(
         collection(db, "transactions"),
         orderBy("createdAt", "desc")
     );
 
-    const snapshot = await getDocs(q);
+    onSnapshot(q, (snapshot) => {
 
-    list.innerHTML = "";
+        list.innerHTML = "";
 
-    snapshot.forEach(docSnap => {
+        snapshot.forEach(docSnap => {
 
-        const d = docSnap.data();
-        if (d.userId !== currentUser.uid) return;
+            const d = docSnap.data();
+            if (d.userId !== currentUser.uid) return;
 
-        const color =
-            d.status === "approved" ? "green" :
-            d.status === "pending" ? "orange" : "red";
+            const color =
+                d.status === "approved" ? "lime" :
+                d.status === "pending" ? "orange" : "red";
 
-        const item = `
-        <div class="card">
-            ₹${d.amount} (${d.type}) - 
-            <span style="color:${color}">${d.status}</span>
-        </div>
-        `;
+            const date = d.createdAt?.toDate?.().toLocaleString() || "";
 
-        list.innerHTML += item;
+            list.innerHTML += `
+            <div class="card">
+                <b>₹${d.amount}</b> (${d.type.toUpperCase()})  
+                <span style="color:${color}">${d.status}</span><br>
+                <small>${date}</small><br>
+                ${d.utr ? `<small>UTR: ${d.utr}</small>` : ""}
+            </div>`;
+        });
+
+        if(list.innerHTML === ""){
+            list.innerHTML = "No transactions yet";
+        }
     });
-
-    if(list.innerHTML === ""){
-        list.innerHTML = "No transactions yet";
-    }
 }
 
 
-// ✅ CLOSE PENDING POPUP
-window.closePending = function(){
+// =============================
+// 🔔 TOAST SYSTEM
+// =============================
+function toast(msg){
 
-    hidePopup("pendingPopup");
+    let t = document.createElement("div");
+    t.className = "toast";
+    t.innerText = msg;
 
-    // reset form
-    const amount = document.getElementById("amount");
-    const utr = document.getElementById("utr");
-    const sender = document.getElementById("sender");
+    document.body.appendChild(t);
 
-    if(amount) amount.value = "";
-    if(utr) utr.value = "";
-    if(sender) sender.value = "";
-};
+    setTimeout(()=> t.remove(), 2500);
+}
