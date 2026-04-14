@@ -610,9 +610,9 @@ async function loadMatchesForDelete(){
             <p>${m.time}</p>
 
             <button onclick="viewMatch('${docSnap.id}')"
-                style="background:blue;color:white;padding:6px;border:none;border-radius:6px;">
-                View
-            </button>
+ style="background:blue;color:white;padding:6px;border:none;border-radius:6px;">
+ View
+</button>
 
             <button onclick="deleteMatch('${docSnap.id}')"
                 style="background:red;color:white;padding:6px;border:none;border-radius:6px;margin-left:5px;">
@@ -623,10 +623,6 @@ async function loadMatchesForDelete(){
         list.appendChild(item);
     });
 
-    if(snap.empty){
-        list.innerHTML = "No matches";
-    }
-}
     if(snap.empty){
         list.innerHTML = "No matches";
     }
