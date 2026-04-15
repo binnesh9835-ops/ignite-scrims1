@@ -240,3 +240,7 @@ window.showQR = function(){
 window.closeQR = function(){
     hide("qrPopup");
 };
+window.backToAdd = function(){
+    hide("paymentPopup");
+    show("addMoneyPopup");
+};
