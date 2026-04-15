@@ -59,8 +59,13 @@ if(bEl) bEl.innerText = total;
 // =============================
 // 💰 POPUPS
 // =============================
-window.openAddMoney = () => show("addMoneyPopup");
-window.openWithdraw = () => show("withdrawPopup");
+window.openAddMoney = function(){
+    document.getElementById("addMoneyPopup").classList.add("show");
+}
+window.openWithdraw = function(){
+    document.getElementById("withdrawPopup").classList.add("show");
+}
+
 
 window.closePopup = () => {
     document.querySelectorAll(".popup").forEach(p => p.classList.remove("show"));
@@ -234,16 +239,18 @@ window.closePending = function(){
 // 📷 QR POPUP
 // =============================
 window.showQR = function(){
-    show("qrPopup");
-};
+    document.getElementById("qrPopup").classList.add("show");
+}
 
 window.closeQR = function(){
-    hide("qrPopup");
+    document.getElementById("qrPopup")?.classList.remove("show");
 };
+
 window.backToAdd = function(){
-    hide("paymentPopup");
-    show("addMoneyPopup");
+    document.getElementById("paymentPopup")?.classList.remove("show");
+    document.getElementById("addMoneyPopup")?.classList.add("show");
 };
+
 window.backToWallet = function(){
-    closePopup();
+    document.querySelectorAll(".popup").forEach(p => p.classList.remove("show"));
 };
