@@ -14,7 +14,8 @@ import {
     query,
     orderBy,
     onSnapshot,
-    getDoc
+    getDoc,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let currentUser = null;
@@ -31,7 +32,6 @@ onAuthStateChanged(auth, (user) => {
 
     const userRef = doc(db, "users", user.uid);
 
-    // ✅ REAL-TIME LISTENER
     onSnapshot(userRef, (snap) => {
 
         if (snap.exists()) {
@@ -42,13 +42,9 @@ onAuthStateChanged(auth, (user) => {
             const winning = data.winningBalance || 0;
             const total = deposit + winning;
 
-            const dEl = document.getElementById("deposit");
-            const wEl = document.getElementById("winning");
-            const bEl = document.getElementById("balance");
-
-            if (dEl) dEl.innerText = deposit;
-            if (wEl) wEl.innerText = winning;
-            if (bEl) bEl.innerText = total;
+            document.getElementById("deposit").innerText = deposit;
+            document.getElementById("winning").innerText = winning;
+            document.getElementById("balance").innerText = total;
         }
     });
 
@@ -101,6 +97,20 @@ window.submitPayment = async function () {
 
     if (!utr || !sender) {
         return toast("Fill all fields ❌");
+    }
+
+    // 🔒 DUPLICATE UTR CHECK
+    const snap = await getDocs(collection(db, "transactions"));
+    let duplicate = false;
+
+    snap.forEach(d => {
+        if(d.data().utr === utr){
+            duplicate = true;
+        }
+    });
+
+    if(duplicate){
+        return toast("UTR already used ❌");
     }
 
     await addDoc(collection(db, "transactions"), {
@@ -156,7 +166,6 @@ window.submitWithdraw = async function () {
 function loadHistory(){
 
     const list = document.getElementById("historyList");
-    if(!list) return;
 
     const q = query(
         collection(db, "transactions"),
@@ -195,7 +204,7 @@ function loadHistory(){
 
 
 // =============================
-// 🔔 TOAST SYSTEM
+// 🔔 TOAST
 // =============================
 function toast(msg){
 
@@ -214,4 +223,16 @@ function toast(msg){
 // =============================
 window.closePending = function(){
     hide("pendingPopup");
+};
+
+
+// =============================
+// 📷 QR POPUP
+// =============================
+window.showQR = function(){
+    show("qrPopup");
+};
+
+window.closeQR = function(){
+    hide("qrPopup");
 };
