@@ -14,7 +14,6 @@ import {
     query,
     orderBy,
     onSnapshot,
-    getDocs,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -32,27 +31,26 @@ onAuthStateChanged(auth, (user) => {
 
     const userRef = doc(db, "users", user.uid);
 
-    // 🔥 REAL-TIME LISTENER
-    import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    // ✅ REAL-TIME LISTENER
+    onSnapshot(userRef, (snap) => {
 
-onSnapshot(userRef, (snap) => {
+        if (snap.exists()) {
 
-    if (snap.exists()) {
-        const data = snap.data();
+            const data = snap.data();
 
-        const deposit = data.balance || 0;
-        const winning = data.winningBalance || 0;
-        const total = deposit + winning;
+            const deposit = data.balance || 0;
+            const winning = data.winningBalance || 0;
+            const total = deposit + winning;
 
-        const dEl = document.getElementById("deposit");
-        const wEl = document.getElementById("winning");
-        const bEl = document.getElementById("balance");
+            const dEl = document.getElementById("deposit");
+            const wEl = document.getElementById("winning");
+            const bEl = document.getElementById("balance");
 
-        if(dEl) dEl.innerText = deposit;
-        if(wEl) wEl.innerText = winning;
-        if(bEl) bEl.innerText = total;
-    }
-});
+            if (dEl) dEl.innerText = deposit;
+            if (wEl) wEl.innerText = winning;
+            if (bEl) bEl.innerText = total;
+        }
+    });
 
     loadHistory();
 });
@@ -117,7 +115,6 @@ window.submitPayment = async function () {
 
     closePopup();
     show("pendingPopup");
-    loadHistory();
 };
 
 
@@ -150,14 +147,13 @@ window.submitWithdraw = async function () {
 
     closePopup();
     toast("Withdraw request sent ✅");
-    loadHistory();
 };
 
 
 // =============================
 // 📜 REALTIME HISTORY
 // =============================
-async function loadHistory(){
+function loadHistory(){
 
     const list = document.getElementById("historyList");
     if(!list) return;
@@ -203,7 +199,7 @@ async function loadHistory(){
 // =============================
 function toast(msg){
 
-    let t = document.createElement("div");
+    const t = document.createElement("div");
     t.className = "toast";
     t.innerText = msg;
 
@@ -212,6 +208,10 @@ function toast(msg){
     setTimeout(()=> t.remove(), 2500);
 }
 
+
+// =============================
+// ❌ CLOSE PENDING
+// =============================
 window.closePending = function(){
     hide("pendingPopup");
 };
