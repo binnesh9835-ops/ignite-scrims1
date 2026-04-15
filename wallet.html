@@ -62,8 +62,24 @@
     </div>
 
 </div>
+<button onclick="showQR()" class="play-btn" style="margin-top:10px;">
+    Show QR Code 📷
+</button>
 
+    <!-- 📷 QR POPUP -->
+<div id="qrPopup" class="popup hidden">
+    <div class="popup-box" style="text-align:center;">
 
+        <h3>Scan & Pay</h3>
+
+        <img src="images/qr.png" alt="QR" style="width:200px;">
+
+        <br><br>
+
+        <button onclick="closeQR()">Close</button>
+    </div>
+</div>
+    
 <!-- 🧾 PAYMENT DETAILS POPUP -->
 <div id="paymentPopup" class="popup hidden">
 
