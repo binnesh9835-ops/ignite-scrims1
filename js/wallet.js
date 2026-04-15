@@ -244,3 +244,6 @@ window.backToAdd = function(){
     hide("paymentPopup");
     show("addMoneyPopup");
 };
+window.backToWallet = function(){
+    closePopup();
+};
