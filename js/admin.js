@@ -635,6 +635,10 @@ window.viewMatch = async function(id){
     container.style.display = "block";
     container.innerHTML = "Loading players...";
 
+    const matchRef = doc(db,"matches",id);
+    const matchSnap = await getDoc(matchRef);
+    const match = matchSnap.data();
+
     const snap = await getDocs(collection(db, "matches", id, "players"));
 
     container.innerHTML = "";
@@ -648,15 +652,149 @@ window.viewMatch = async function(id){
 
         const p = docSnap.data();
 
+        const amount = (p.kills || 0) * (match.perKill || 0) + 
+                      (p.booyah ? (match.booyah || 0) : 0);
+
         const div = document.createElement("div");
         div.className = "card";
 
         div.innerHTML = `
             <p><b>Slot:</b> ${p.slot}</p>
             <p><b>Team:</b> ${p.teamName}</p>
-            <p><b>User ID:</b> ${p.userId}</p>
+
+            <input placeholder="IGN" id="ign-${docSnap.id}" value="${p.ign || ""}">
+            <input type="number" placeholder="Kills" id="kills-${docSnap.id}" value="${p.kills || 0}">
+
+            <label>
+                Booyah
+                <input type="checkbox" id="booyah-${docSnap.id}" ${p.booyah ? "checked" : ""}>
+            </label>
+
+            <p style="color:lime;">Amount: ₹${amount}</p>
+
+            <button onclick="savePlayerFull('${id}','${docSnap.id}')">Save</button>
+            <button onclick="kickUser('${id}','${docSnap.id}')">Kick ❌</button>
         `;
 
         container.appendChild(div);
     });
+
+    // ✅ START / END BUTTON
+    container.innerHTML += `
+        <button onclick="startMatch('${id}')">Start Match 🚀</button>
+        <button onclick="endMatch('${id}')">End Match 🛑</button>
+    `;
 };
+
+
+window.startMatch = async function(matchId){
+
+    await updateDoc(doc(db,"matches",matchId),{
+        status: "live"
+    });
+
+    alert("Match Started 🚀");
+};
+
+window.endMatch = async function(matchId){
+
+    await updateDoc(doc(db,"matches",matchId),{
+        status: "ended"
+    });
+
+    alert("Match Ended 🛑");
+};
+
+window.savePlayerFull = async function(matchId, playerId){
+
+    const ign = document.getElementById(`ign-${playerId}`).value;
+    const kills = Number(document.getElementById(`kills-${playerId}`).value);
+    const booyah = document.getElementById(`booyah-${playerId}`).checked;
+
+    const matchSnap = await getDoc(doc(db,"matches",matchId));
+    const match = matchSnap.data();
+
+    const amount = (kills * match.perKill) + (booyah ? match.booyah : 0);
+
+    const playerRef = doc(db,"matches",matchId,"players",playerId);
+    const playerSnap = await getDoc(playerRef);
+    const player = playerSnap.data();
+
+    // ✅ UPDATE PLAYER
+    await updateDoc(playerRef,{
+        ign,
+        kills,
+        booyah,
+        amount,
+        processed: true
+    });
+
+    // ✅ ADD WINNING TO USER
+    const userRef = doc(db,"users",player.userId);
+
+    await updateDoc(userRef,{
+        winningBalance: increment(amount)
+    });
+
+    // ✅ ADD TRANSACTION HISTORY
+    await addDoc(collection(db,"transactions"),{
+        userId: player.userId,
+        type: "winning",
+        amount,
+        status: "approved",
+        note: "Match Winning",
+        createdAt: new Date()
+    });
+
+    alert("Player Updated + Winning Added ✅");
+};
+
+window.kickUser = async function(matchId, playerId){
+
+    if(!confirm("Kick this user?")) return;
+
+    const playerRef = doc(db,"matches",matchId,"players",playerId);
+    const playerSnap = await getDoc(playerRef);
+    const player = playerSnap.data();
+
+    const matchSnap = await getDoc(doc(db,"matches",matchId));
+    const match = matchSnap.data();
+
+    // ❌ DELETE PLAYER
+    await deleteDoc(playerRef);
+
+    // 💰 REFUND
+    const userRef = doc(db,"users",player.userId);
+
+    await updateDoc(userRef,{
+        balance: increment(match.entry)
+    });
+
+    // 📜 HISTORY
+    await addDoc(collection(db,"transactions"),{
+        userId: player.userId,
+        type: "refund",
+        amount: match.entry,
+        status: "approved",
+        note: "Match Kick Refund",
+        createdAt: new Date()
+    });
+
+    // 🔄 SLOT FIX
+    rearrangeSlots(matchId);
+
+    alert("User kicked + refunded ✅");
+};
+
+async function rearrangeSlots(matchId){
+
+    const snap = await getDocs(collection(db,"matches",matchId,"players"));
+
+    let i = 1;
+
+    for(const d of snap.docs){
+        await updateDoc(d.ref,{
+            slot: i++
+        });
+    }
+}
