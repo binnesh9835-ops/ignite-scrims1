@@ -9,6 +9,7 @@
 
 <h2 style="text-align:center;">🔥 Admin Dashboard</h2>
 
+<!-- 📊 STATS -->
 <div class="wallet-stats">
 
   <div class="gold-box">
@@ -29,10 +30,14 @@
 </div>
 
 
-<!-- 🎮 CREATE MATCH -->
-<div class="card" style="margin:20px;">
-  <h3>Create Match</h3>
+<!-- 🎮 CREATE MATCH TOGGLE -->
+<div class="card" style="margin:20px; cursor:pointer;" onclick="toggleCreateMatch()">
+  <h3>➕ Create Match (Click to Open)</h3>
+</div>
 
+<!-- 🎮 CREATE MATCH FORM -->
+<div id="createMatchBox" class="card" style="margin:20px; display:none;">
+  
   <select id="type">
     <option value="match">Match</option>
     <option value="tournament">Tournament</option>
@@ -52,34 +57,29 @@
 
   <textarea id="rules" placeholder="Enter match rules..." style="width:100%; height:80px;"></textarea>
 
-  <button onclick="createMatch()" class="play-btn" style="margin-top:10px;">
+  <button onclick="createMatch()" class="play-btn">
     Create Match
   </button>
 </div>
 
 
-<!-- 🗑️ DELETE + VIEW MATCH -->
+<!-- 🎮 MANAGE MATCH -->
 <div class="card" style="margin:20px;">
   <h3>🎮 Manage Matches</h3>
   <div id="matchDeleteList">Loading...</div>
 </div>
-<div id="matchPlayersView" style="display:none; margin:20px;"></div>
 
-<!-- 👥 MATCH DETAILS POPUP -->
-<div id="matchDetailsPopup" class="popup">
-  <div class="popup-box">
-    <h3>👥 Match Players</h3>
+<!-- 👥 MATCH PLAYERS VIEW -->
+<div id="matchPlayersView" style="margin:20px;"></div>
 
-    <div id="matchPlayersList">Loading...</div>
 
-    <button onclick="closeMatchDetails()">Close</button>
-  </div>
+<!-- 📜 ADMIN ACTIVITY TOGGLE -->
+<div class="card" style="margin:20px; cursor:pointer;" onclick="toggleAdminHistory()">
+  <h3>📜 Admin Activity (Click to Load)</h3>
 </div>
 
-
-<!-- 📝 ADMIN HISTORY -->
-<div class="card" style="margin:20px;">
-  <h3>📜 Admin Activity</h3>
+<!-- 📜 ADMIN HISTORY -->
+<div id="adminHistoryBox" class="card" style="margin:20px; display:none;">
   <div id="adminHistory">Loading...</div>
 </div>
 
@@ -101,9 +101,26 @@
 </div>
 
 
+<!-- ⚡ SCRIPTS -->
 <script>
-function closeMatchDetails(){
-  document.getElementById("matchDetailsPopup").style.display = "none";
+function toggleCreateMatch(){
+  const box = document.getElementById("createMatchBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+function toggleAdminHistory(){
+  const box = document.getElementById("adminHistoryBox");
+
+  if(box.style.display === "none"){
+    box.style.display = "block";
+
+    // 🔥 LOAD ONLY WHEN CLICK
+    if(typeof loadAdminHistory === "function"){
+      loadAdminHistory();
+    }
+  }else{
+    box.style.display = "none";
+  }
 }
 </script>
 
