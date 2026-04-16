@@ -720,6 +720,12 @@ window.savePlayerFull = async function(matchId, playerId){
     const playerSnap = await getDoc(playerRef);
     const player = playerSnap.data();
 
+    if(user.isCreator){
+    await updateDoc(userRef,{
+        monthlyKills: increment(kills)
+    });
+}
+
     // ✅ UPDATE PLAYER
     await updateDoc(playerRef,{
         ign,
@@ -798,3 +804,67 @@ async function rearrangeSlots(matchId){
         });
     }
 }
+
+window.loadCreatorRequests = async function(){
+
+    const box = document.getElementById("creatorRequests");
+    box.innerHTML = "Loading...";
+
+    const snap = await getDocs(collection(db,"users"));
+
+    box.innerHTML = "";
+
+    snap.forEach(docSnap=>{
+
+        const u = docSnap.data();
+
+        if(u.creatorRequest?.status === "pending"){
+
+            const div = document.createElement("div");
+            div.className = "card";
+
+            div.innerHTML = `
+                <p>${u.creatorRequest.channelLink}</p>
+                <p>Subs: ${u.creatorRequest.subscribers}</p>
+                <p>Views: ${u.creatorRequest.views}</p>
+
+                <button onclick="approveCreator('${docSnap.id}')">Approve</button>
+                <button onclick="rejectCreator('${docSnap.id}')">Reject</button>
+                <button onclick="pendingCreator('${docSnap.id}')">Pending</button>
+            `;
+
+            box.appendChild(div);
+        }
+    });
+};
+
+window.approveCreator = async function(uid){
+
+    await updateDoc(doc(db,"users",uid),{
+        isCreator:true,
+        "creatorRequest.status":"approved"
+    });
+
+    alert("Approved ✅");
+    loadCreatorRequests();
+};
+
+window.rejectCreator = async function(uid){
+
+    await updateDoc(doc(db,"users",uid),{
+        isCreator:false,
+        "creatorRequest.status":"rejected"
+    });
+
+    alert("Rejected ❌");
+    loadCreatorRequests();
+};
+
+window.pendingCreator = async function(uid){
+
+    await updateDoc(doc(db,"users",uid),{
+        "creatorRequest.status":"pending"
+    });
+
+    alert("Marked Pending ⏳");
+};
