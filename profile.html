@@ -63,6 +63,28 @@ input {
 
 </div>
 
+    <button onclick="openCreatorVerify()" id="creatorBtn" class="play-btn">
+  Verify as Creator ⭐
+</button>
+
+    <div id="creatorPopup" class="popup">
+  <div class="popup-box">
+
+    <h3>Become a Creator ⭐</h3>
+
+    <p style="font-size:13px;">
+      Get featured on leaderboard & earn by uploading gameplay videos.
+    </p>
+
+    <input id="channelLink" placeholder="Channel Link">
+    <input id="subs" type="number" placeholder="Subscribers">
+    <input id="views" type="number" placeholder="Monthly Views">
+
+    <button onclick="submitCreator()">Submit</button>
+    <button onclick="closeCreator()">Back</button>
+
+  </div>
+</div>
 
 <!-- 👤 INFO SECTION -->
 <div class="card">
