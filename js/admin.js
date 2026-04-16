@@ -260,7 +260,7 @@ window.loadPlayers = async function () {
         const row = document.createElement("div");
 
         row.innerHTML = `
-            <p>Slot ${p.slot} - ${p.teamName}</p>
+            <p>Slot ${p.slot} - ${p.teamName} ${p.isCreator ? '<span class="creator-badge">(creator)</span>' : ''}
             <input type="number" placeholder="Kills" id="kills-${docSnap.id}">
             <input type="checkbox" id="booyah-${docSnap.id}">
             <button onclick="savePlayer('${matchId}', '${docSnap.id}')">Save</button>
@@ -308,7 +308,7 @@ window.loadTeams = async function () {
         const row = document.createElement("div");
 
         row.innerHTML = `
-    <p>Slot ${p.slot} - ${p.teamName}</p>
+    <p>Slot ${p.slot} - ${p.teamName} ${p.isCreator ? '<span class="creator-badge">(creator)</span>' : ''}
     <input type="number" placeholder="Kills" id="kills-${docSnap.id}">
     <input type="checkbox" id="booyah-${docSnap.id}">
     <button onclick="savePlayer('${matchId}', '${docSnap.id}')">Save</button>
@@ -660,7 +660,7 @@ window.viewMatch = async function(id){
 
         div.innerHTML = `
             <p><b>Slot:</b> ${p.slot}</p>
-            <p><b>Team:</b> ${p.teamName}</p>
+            <p><b>Team:</b> ${p.teamName} ${p.isCreator ? '<span class="creator-badge">(creator)</span>' : ''}
 
             <input placeholder="IGN" id="ign-${docSnap.id}" value="${p.ign || ""}">
             <input type="number" placeholder="Kills" id="kills-${docSnap.id}" value="${p.kills || 0}">
@@ -867,4 +867,17 @@ window.pendingCreator = async function(uid){
     });
 
     alert("Marked Pending ⏳");
+};
+
+window.resetLeaderboard = async function(){
+
+    const snap = await getDocs(collection(db,"users"));
+
+    snap.forEach(async d=>{
+        await updateDoc(d.ref,{
+            monthlyKills:0
+        });
+    });
+
+    alert("Leaderboard Reset 🔁");
 };
