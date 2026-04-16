@@ -40,3 +40,8 @@ async function loadLeaderboard(){
 }
 
 loadLeaderboard();
+
+if(!localStorage.getItem("leaderboardSeen")){
+    alert("This leaderboard shows top creators based on kills.\nIt resets every 30 days.\nPlay more to rank higher!");
+    localStorage.setItem("leaderboardSeen", "yes");
+}
