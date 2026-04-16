@@ -275,3 +275,15 @@ h3 {
     border-radius: 8px;
     z-index: 9999;
 }
+
+.creator-badge {
+    color: gold;
+    font-weight: bold;
+    animation: shineText 1.5s infinite linear;
+}
+
+@keyframes shineText {
+    0% { text-shadow: 0 0 5px gold; }
+    50% { text-shadow: 0 0 20px gold; }
+    100% { text-shadow: 0 0 5px gold; }
+}
