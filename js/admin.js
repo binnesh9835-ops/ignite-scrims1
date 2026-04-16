@@ -537,7 +537,7 @@ window.approveTx = async function(txId){
 // =============================
 // 📝 LOAD ADMIN HISTORY
 // =============================
-async function loadAdminHistory(){
+window.loadAdminHistory = async function(){
 
     const list = document.getElementById("adminHistory");
     if(!list) return;
