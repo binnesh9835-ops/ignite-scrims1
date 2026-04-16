@@ -67,3 +67,40 @@ window.logoutUser = function () {
     });
 
 };
+
+window.openCreatorVerify = function(){
+    document.getElementById("creatorPopup").classList.add("show");
+};
+
+window.closeCreator = function(){
+    document.getElementById("creatorPopup").classList.remove("show");
+};
+
+window.submitCreator = async function(){
+
+    const link = document.getElementById("channelLink").value;
+    const subs = Number(document.getElementById("subs").value);
+    const views = Number(document.getElementById("views").value);
+
+    if(!link || !subs || !views){
+        alert("Fill all fields ❌");
+        return;
+    }
+
+    const userRef = doc(db,"users",currentUser.uid);
+
+    await updateDoc(userRef,{
+        creatorRequest:{
+            status:"pending",
+            channelLink:link,
+            subscribers:subs,
+            views:views,
+            appliedAt:new Date()
+        }
+    });
+
+    alert("Request Sent 🚀");
+    closeCreator();
+
+    document.getElementById("creatorBtn").disabled = true;
+};
