@@ -76,17 +76,24 @@ body {
     margin-top: 10px;
 }
 
-/* 🎮 BUTTON */
+/* 🔘 SMALL BUTTON */
 .play-btn {
     width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(45deg, red, yellow);
-    color: black;
-    font-weight: bold;
-    margin-top: 10px;
-    cursor: pointer;
+    padding: 10px; /* ⬅️ pehle 12px tha */
+    font-size: 14px; /* ⬅️ thoda chota */
+    border-radius: 6px;
+    transition: 0.2s ease;
+}
+
+/* 🔥 CLICK ANIMATION */
+.play-btn:active {
+    transform: scale(0.95);
+}
+
+/* ✨ HOVER ANIMATION */
+.play-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 10px rgba(255,0,0,0.6);
 }
 
 /* 👤 PROFILE BOX */
