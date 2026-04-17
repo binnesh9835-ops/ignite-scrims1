@@ -36,16 +36,15 @@ onAuthStateChanged(auth, async (user) => {
 }
 
         // ✅ SAFE CHECK (important)
-        if (snap.exists()) {
+        const nameEl = document.getElementById("pName");
+const emailEl = document.getElementById("pEmail");
+const phoneEl = document.getElementById("pPhone");
+const ignEl = document.getElementById("pIgn");
 
-    const data = snap.data();
-
-    document.getElementById("pName")?.innerText = data.name || "Not set";
-    document.getElementById("pEmail")?.innerText = data.email || "Not set";
-    document.getElementById("pPhone")?.innerText = data.phone || "Not set";
-    document.getElementById("pIgn")?.innerText = data.ign || "Not set";
-}
-
+if(nameEl) nameEl.innerText = data.name || "Not set";
+if(emailEl) emailEl.innerText = data.email || "Not set";
+if(phoneEl) phoneEl.innerText = data.phone || "Not set";
+if(ignEl) ignEl.innerText = data.ign || "Not set";
 
 // 🔧 EDIT PROFILE
 window.openEditProfile = function () {
