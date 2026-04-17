@@ -12,7 +12,8 @@ import {
     collection,
     getDocs,
     query,
-    orderBy
+    orderBy,
+    limit
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -237,4 +238,50 @@ function setDefaultTabs() {
 
 window.openEditProfile = function () {
     window.location.href = "profile.html";
+};
+
+window.loadLeaderboard = async function(){
+
+    const list = document.getElementById("leaderboardList");
+    if(!list) return;
+
+    list.innerHTML = "Loading...";
+
+    try{
+
+        const q = query(
+            collection(db,"users"),
+            orderBy("monthlyKills","desc"),
+            limit(50)
+        );
+
+        const snap = await getDocs(q);
+
+        list.innerHTML = "";
+
+        let rank = 1;
+
+        snap.forEach(docSnap=>{
+
+            const u = docSnap.data();
+
+            if(!u.isCreator) return;
+
+            const div = document.createElement("div");
+            div.className = "card";
+
+            div.innerHTML = `
+                <p>#${rank++}</p>
+                <p class="creator-ign">
+                    ${u.ign || "Player"} (creator)
+                </p>
+                <p>Kills: ${u.monthlyKills || 0}</p>
+            `;
+
+            list.appendChild(div);
+        });
+
+    }catch(err){
+        list.innerHTML = "Error loading leaderboard";
+    }
 };
