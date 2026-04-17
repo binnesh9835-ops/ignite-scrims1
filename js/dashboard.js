@@ -49,6 +49,7 @@ onAuthStateChanged(auth, async (user) => {
     // 🔥 DEFAULT LOAD
     loadMatches("all");
     loadTournaments("all");
+    loadLeaderboard();
 
     // 🔥 DEFAULT TAB ACTIVE
     setDefaultTabs();
@@ -245,6 +246,12 @@ window.loadLeaderboard = async function(){
     const list = document.getElementById("leaderboardList");
     if(!list) return;
 
+    // ✅ FIRST TIME POPUP
+    if(!localStorage.getItem("leaderboardInfoShown")){
+        alert("This leaderboard shows top creators based on kills. It resets every 30 days.");
+        localStorage.setItem("leaderboardInfoShown", "true");
+    }
+
     list.innerHTML = "Loading...";
 
     try{
@@ -260,6 +267,7 @@ window.loadLeaderboard = async function(){
         list.innerHTML = "";
 
         let rank = 1;
+        let found = false;
 
         snap.forEach(docSnap=>{
 
@@ -267,12 +275,14 @@ window.loadLeaderboard = async function(){
 
             if(!u.isCreator) return;
 
+            found = true;
+
             const div = document.createElement("div");
             div.className = "card";
 
             div.innerHTML = `
-                <p>#${rank++}</p>
-                <p class="creator-ign">
+                <p><b>#${rank++}</b></p>
+                <p class="creator-glow">
                     ${u.ign || "Player"} (creator)
                 </p>
                 <p>Kills: ${u.monthlyKills || 0}</p>
@@ -281,7 +291,12 @@ window.loadLeaderboard = async function(){
             list.appendChild(div);
         });
 
+        if(!found){
+            list.innerHTML = "No creators yet 😴";
+        }
+
     }catch(err){
-        list.innerHTML = "Error loading leaderboard";
+        list.innerHTML = "Error loading leaderboard ❌";
+        console.error(err);
     }
 };
