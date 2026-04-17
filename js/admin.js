@@ -808,76 +808,135 @@ async function rearrangeSlots(matchId){
 window.loadCreatorRequests = async function(){
 
     const box = document.getElementById("creatorRequests");
+    if(!box) return;
+
     box.innerHTML = "Loading...";
 
-    const snap = await getDocs(collection(db,"users"));
+    try{
 
-    box.innerHTML = "";
+        const snap = await getDocs(collection(db,"users"));
 
-    snap.forEach(docSnap=>{
+        box.innerHTML = "";
 
-        const u = docSnap.data();
+        let found = false;
 
-        if(u.creatorRequest?.status === "pending"){
+        snap.forEach(docSnap=>{
 
-            const div = document.createElement("div");
-            div.className = "card";
+            const u = docSnap.data();
 
-            div.innerHTML = `
-                <p>${u.creatorRequest.channelLink}</p>
-                <p>Subs: ${u.creatorRequest.subscribers}</p>
-                <p>Views: ${u.creatorRequest.views}</p>
+            if(u.creatorRequest?.status === "pending"){
 
-                <button onclick="approveCreator('${docSnap.id}')">Approve</button>
-                <button onclick="rejectCreator('${docSnap.id}')">Reject</button>
-                <button onclick="pendingCreator('${docSnap.id}')">Pending</button>
-            `;
+                found = true;
 
-            box.appendChild(div);
+                const div = document.createElement("div");
+                div.className = "card";
+
+                div.innerHTML = `
+                    <p><b>${u.name || "User"}</b></p>
+                    <p>${u.creatorRequest.channelLink}</p>
+                    <p>Subs: ${u.creatorRequest.subscribers}</p>
+                    <p>Views: ${u.creatorRequest.views}</p>
+
+                    <div style="margin-top:10px;">
+                        <button onclick="approveCreator('${docSnap.id}')"
+                        style="background:green;color:white;padding:6px;border:none;border-radius:6px;">
+                            Approve
+                        </button>
+
+                        <button onclick="rejectCreator('${docSnap.id}')"
+                        style="background:red;color:white;padding:6px;border:none;border-radius:6px;margin-left:5px;">
+                            Reject
+                        </button>
+
+                        <button onclick="pendingCreator('${docSnap.id}')"
+                        style="background:orange;color:black;padding:6px;border:none;border-radius:6px;margin-left:5px;">
+                            Pending
+                        </button>
+                    </div>
+                `;
+
+                box.appendChild(div);
+            }
+        });
+
+        if(!found){
+            box.innerHTML = "No pending creator requests";
         }
-    });
+
+    }catch(err){
+        box.innerHTML = "Error loading requests";
+        console.error(err);
+    }
 };
 
 window.approveCreator = async function(uid){
 
-    await updateDoc(doc(db,"users",uid),{
-        isCreator:true,
-        "creatorRequest.status":"approved"
-    });
+    try{
+        await updateDoc(doc(db,"users",uid),{
+            isCreator:true,
+            "creatorRequest.status":"approved",
+            monthlyKills:0 // 🔥 leaderboard start
+        });
 
-    alert("Approved ✅");
-    loadCreatorRequests();
+        alert("Approved ✅");
+        loadCreatorRequests();
+
+    }catch(err){
+        alert(err.message);
+    }
 };
 
 window.rejectCreator = async function(uid){
 
-    await updateDoc(doc(db,"users",uid),{
-        isCreator:false,
-        "creatorRequest.status":"rejected"
-    });
+    try{
+        await updateDoc(doc(db,"users",uid),{
+            isCreator:false,
+            "creatorRequest.status":"rejected"
+        });
 
-    alert("Rejected ❌");
-    loadCreatorRequests();
+        alert("Rejected ❌");
+        loadCreatorRequests();
+
+    }catch(err){
+        alert(err.message);
+    }
 };
 
 window.pendingCreator = async function(uid){
 
-    await updateDoc(doc(db,"users",uid),{
-        "creatorRequest.status":"pending"
-    });
+    try{
+        await updateDoc(doc(db,"users",uid),{
+            "creatorRequest.status":"pending"
+        });
 
-    alert("Marked Pending ⏳");
+        alert("Marked Pending ⏳");
+
+    }catch(err){
+        alert(err.message);
+    }
 };
 
 window.resetLeaderboard = async function(){
 
-    const snap = await getDocs(collection(db,"users"));
+    try{
 
-    snap.forEach(async d=>{
-        await updateDoc(d.ref,{
-            monthlyKills:0
+        const snap = await getDocs(collection(db,"users"));
+
+        const promises = [];
+
+        snap.forEach(docSnap=>{
+            promises.push(
+                updateDoc(docSnap.ref,{
+                    monthlyKills:0
+                })
+            );
         });
-    });
 
-    alert("Leaderboard Reset 🔁");
+        await Promise.all(promises);
+
+        alert("Leaderboard Reset 🔁");
+
+    }catch(err){
+        alert(err.message);
+    }
 };
