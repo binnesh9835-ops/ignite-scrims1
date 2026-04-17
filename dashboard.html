@@ -69,6 +69,7 @@
 <div class="top-nav">
     <button onclick="checkAuth('matches')">Matches</button>
     <button onclick="checkAuth('tournaments')">Tournaments</button>
+    <button onclick="openLeaderboard()">Leaderboard</button>
     <button onclick="checkAuth('wallet')">Wallet</button>
     <button onclick="checkAuth('profile')">Profile</button>
 </div>
@@ -92,6 +93,32 @@
         <button class="tab" onclick="switchTab('squad')">Squad</button>
     </div>
 
+    <!-- 🏆 LEADERBOARD -->
+<div id="leaderboard" class="section">
+
+    <div class="card">
+        <h3>🏆 Top 50 Creators</h3>
+
+        <p style="font-size:12px; color:#aaa;">
+            This leaderboard resets every 30 days based on kills.
+        </p>
+
+        <div id="leaderboardList">Loading...</div>
+    </div>
+
+</div>
+
+    <div id="leaderboardInfoPopup" class="popup">
+  <div class="popup-box">
+    <p style="color:lime;">
+      This leaderboard shows top creators based on kills.
+      It resets every 30 days. Play more to rank higher!
+    </p>
+
+    <button onclick="closeLeaderboardInfo()">OK</button>
+  </div>
+</div>
+    
     <!-- ✅ REAL MATCH LIST -->
     <div id="matchList"></div>
 
@@ -311,7 +338,7 @@ onAuthStateChanged(auth, (user) => {
     <h3>Pay via UPI</h3>
 
     <p>UPI: 9279072936@axl</p>
-    <p>Name: Vishal Kumar</p>
+    <p>Name: Anjali Kumari</p>
 
     <input type="text" id="sender" placeholder="Your Name">
     <input type="text" id="utr" placeholder="UTR Number">
@@ -386,6 +413,25 @@ onAuthStateChanged(auth, (user) => {
 function openAdmin(){
     window.location.href = "admin.html";
 }
+<script>
+window.openLeaderboard = function(){
+
+    showSection("leaderboard");
+
+    // 🔥 first time popup
+    if(!localStorage.getItem("lb_seen")){
+        document.getElementById("leaderboardInfoPopup").classList.add("show");
+        localStorage.setItem("lb_seen","yes");
+    }
+
+    if(window.loadLeaderboard){
+        loadLeaderboard();
+    }
+};
+
+window.closeLeaderboardInfo = function(){
+    document.getElementById("leaderboardInfoPopup").classList.remove("show");
+};
 </script>
 <script type="module" src="js/profile.js"></script>
 <script type="module" src="js/wallet.js"></script>
