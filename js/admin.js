@@ -255,7 +255,7 @@ window.loadPlayers = async function () {
 
     snap.forEach(docSnap => {
 
-        const p = docSnap.data();
+        const t = docSnap.data();
 
         const row = document.createElement("div");
 
@@ -660,8 +660,7 @@ window.viewMatch = async function(id){
 
         div.innerHTML = `
             <p><b>Slot:</b> ${p.slot}</p>
-            <p><b>Team:</b> ${p.teamName} ${p.isCreator ? '<span class="creator-badge">(creator)</span>' : ''}
-
+            <p><b>Team:</b> ${p.teamName} ${p.isCreator ? '<span class="creator-badge">(creator)</span>' : ''}</p>
             <input placeholder="IGN" id="ign-${docSnap.id}" value="${p.ign || ""}">
             <input type="number" placeholder="Kills" id="kills-${docSnap.id}" value="${p.kills || 0}">
 
@@ -680,11 +679,14 @@ window.viewMatch = async function(id){
     });
 
     // ✅ START / END BUTTON
-    container.innerHTML += `
-        <button onclick="startMatch('${id}')">Start Match 🚀</button>
-        <button onclick="endMatch('${id}')">End Match 🛑</button>
-    `;
-};
+    const controlDiv = document.createElement("div");
+
+controlDiv.innerHTML = `
+    <button onclick="startMatch('${id}')">Start Match 🚀</button>
+    <button onclick="endMatch('${id}')">End Match 🛑</button>
+`;
+
+container.appendChild(controlDiv);
 
 
 window.startMatch = async function(matchId){
@@ -720,7 +722,11 @@ window.savePlayerFull = async function(matchId, playerId){
     const playerSnap = await getDoc(playerRef);
     const player = playerSnap.data();
 
-    if(user.isCreator){
+    const userRef = doc(db,"users",player.userId);
+const userSnap = await getDoc(userRef);
+const userData = userSnap.data();
+
+if(userData?.isCreator){
     await updateDoc(userRef,{
         monthlyKills: increment(kills)
     });
