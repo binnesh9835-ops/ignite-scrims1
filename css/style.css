@@ -79,13 +79,12 @@ body {
 /* 🔘 SMALL BUTTON */
 .play-btn {
     width: 100%;
-    padding: 10px; /* ⬅️ pehle 12px tha */
-    font-size: 14px; /* ⬅️ thoda chota */
-    border-radius: 6px;
-    transition: 0.2s ease;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: 0.2s;
 }
 
-/* 🔥 CLICK ANIMATION */
 .play-btn:active {
     transform: scale(0.95);
 }
