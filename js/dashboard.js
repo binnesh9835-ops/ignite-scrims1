@@ -234,3 +234,7 @@ function setDefaultTabs() {
         tourTabs[0].classList.add("active");
     }
 }
+
+window.openEditProfile = function () {
+    window.location.href = "profile.html";
+};
