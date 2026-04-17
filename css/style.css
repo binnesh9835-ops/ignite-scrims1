@@ -96,6 +96,17 @@ body {
     box-shadow: 0 0 10px rgba(255,0,0,0.6);
 }
 
+#creatorBtn {
+    background: linear-gradient(45deg, #00ffcc, #00ff66);
+    color: black;
+    font-weight: bold;
+}
+
+#creatorBtn:disabled {
+    background: grey;
+    cursor: not-allowed;
+}
+
 /* 👤 PROFILE BOX */
 .info-box {
     margin-top: 10px;
