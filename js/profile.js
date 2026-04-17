@@ -36,20 +36,15 @@ onAuthStateChanged(auth, async (user) => {
 }
 
         // ✅ SAFE CHECK (important)
-        if (document.getElementById("pName"))
-            document.getElementById("pName").innerText = data.name || "";
+        if (snap.exists()) {
 
-        if (document.getElementById("pEmail"))
-            document.getElementById("pEmail").innerText = data.email || "";
+    const data = snap.data();
 
-        if (document.getElementById("pPhone"))
-            document.getElementById("pPhone").innerText = data.phone || "";
-
-        if (document.getElementById("pIgn"))
-            document.getElementById("pIgn").innerText = data.ign || "";
-    }
-
-});
+    document.getElementById("pName")?.innerText = data.name || "Not set";
+    document.getElementById("pEmail")?.innerText = data.email || "Not set";
+    document.getElementById("pPhone")?.innerText = data.phone || "Not set";
+    document.getElementById("pIgn")?.innerText = data.ign || "Not set";
+}
 
 
 // 🔧 EDIT PROFILE
