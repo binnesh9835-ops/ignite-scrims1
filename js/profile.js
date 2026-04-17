@@ -4,24 +4,36 @@ import {
     onAuthStateChanged,
     signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+import { updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
     doc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-
+let currentUser = null;
 // 🔐 AUTO LOAD USER DATA (SAFE)
 onAuthStateChanged(auth, async (user) => {
 
     if (!user) return;
+
+    currentUser = user; // ✅ IMPORTANT FIX
 
     const ref = doc(db, "users", user.uid);
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
 
-        const data = snap.data();
+    const data = snap.data();
+
+    // ✅ creator request check
+    if(data.creatorRequest){
+        const btn = document.getElementById("creatorBtn");
+        if(btn){
+            btn.disabled = true;
+            btn.innerText = "Request Sent ⏳";
+        }
+    }
+}
 
         // ✅ SAFE CHECK (important)
         if (document.getElementById("pName"))
