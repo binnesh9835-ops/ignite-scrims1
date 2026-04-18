@@ -255,7 +255,7 @@ window.loadPlayers = async function () {
 
     snap.forEach(docSnap => {
 
-        const t = docSnap.data();
+        const p = docSnap.data();
 
         const row = document.createElement("div");
 
@@ -303,7 +303,7 @@ window.loadTeams = async function () {
 
     snap.forEach(docSnap => {
 
-        const t = docSnap.data();
+        const p = docSnap.data();
 
         const row = document.createElement("div");
 
@@ -742,7 +742,6 @@ if(userData?.isCreator){
     });
 
     // ✅ ADD WINNING TO USER
-    const userRef = doc(db,"users",player.userId);
 
     await updateDoc(userRef,{
         winningBalance: increment(amount)
